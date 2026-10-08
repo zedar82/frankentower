@@ -60,6 +60,8 @@ The design's later addendum explicitly defers community publishing, Fame, public
 | `src/App.tsx` | Build/combat screens, inspection, records, and player controls |
 | `src/ui/Creature.tsx` | Modular anatomical rendering |
 
+`public/thumbnail.jpg` is the required 512×512 RUN thumbnail. `node scripts/render-thumbnail.mjs` renders it from the game's own vector creature. RUN text generation is explicitly disabled in `rundot/textGen.config.json`; this game makes no inference calls.
+
 Each timed or triggered activation carries an immutable branch ancestry containing item-instance IDs. An instance cannot activate again in the same branch; siblings remain independent. Passive effects such as an item's own-hit rule execute within that activation and have their own once-per-branch reaction guard. An emergency event budget reports a simulation failure instead of freezing. Battles enter explicit attrition after 90 simulated seconds.
 
 If a session closes during combat, the save resumes at that floor's build phase with its pre-fight HP and the same encounter seed. Completed fight outcomes and purchases are persisted through RUN storage. Content snapshots include the ruleset version.

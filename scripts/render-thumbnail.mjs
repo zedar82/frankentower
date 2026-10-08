@@ -1,0 +1,21 @@
+import { mkdir } from 'node:fs/promises';
+import { chromium } from '@playwright/test';
+const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const page=await browser.newPage({viewport:{width:512,height:512},deviceScaleFactor:1,reducedMotion:'reduce'});
+await page.goto('http://127.0.0.1:5173/');
+await page.evaluate(async()=>{
+  const {defaultSave,newRun,startRun}=await import('/src/game/run.ts');
+  const {ITEM_MAP}=await import('/src/game/content.ts');
+  const save=defaultSave(),run=newRun(65);startRun(run,'knife');run.floor=65;run.build.name='Agnes';
+  const additions=['hand','hand','hand','hand','head','head','foot','foot','foot','foot','heart','heart'];
+  additions.forEach((slot,i)=>run.build.parts.push({uid:`thumb-part-${i}`,slot,variant:'living'}));
+  const ids=['knife','bonewand','club','shield','bloodletter','stormwand','conductor','horns','hydra','octoboot','rabbit','bloodboots','plague','ironboots','dance','vampire','wizardheart','pump'];
+  ids.forEach((id,i)=>{const part=run.build.parts.find(p=>p.slot===ITEM_MAP[id].slot&&!p.item);if(part)part.item={uid:`thumb-item-${i}`,defId:id,level:1};});
+  save.run=run;localStorage.setItem('frankentower-save-v1',JSON.stringify(save));
+});
+await page.reload();await page.locator('.specimen .creature').waitFor();
+const svg=await page.locator('.specimen .creature').evaluate(el=>el.outerHTML);
+await page.setContent(`<!doctype html><html><head><style>*{box-sizing:border-box}body{margin:0;width:512px;height:512px;color:#e6e2cd;background:radial-gradient(ellipse at 50% 55%,#45503a,#182219 80%);font-family:Georgia,serif;overflow:hidden}.frame{position:absolute;inset:15px;border:1px solid #6b7750}.frame:before{content:'';position:absolute;inset:7px;border:1px solid #5b6b4144}h1{margin:0;position:absolute;top:50px;left:0;width:100%;text-align:center;font-size:40px;letter-spacing:-1.5px;z-index:2}h1 span{color:#b3c79d}.eyebrow{position:absolute;top:30px;width:100%;text-align:center;font:9px monospace;letter-spacing:3px;color:#b4bd97}.line{position:absolute;top:110px;left:50px;right:50px;height:1px;background:#738054}.rings{position:absolute;top:138px;left:87px;width:338px;height:338px;border:1px solid #8ba37033;border-radius:50%}.rings:after{content:'';position:absolute;inset:22px;border:1px dashed #8ba37033;border-radius:50%}.creature{position:absolute;top:122px;left:65px;width:382px;height:357px;filter:drop-shadow(0 8px 5px #0005)}.tagline{position:absolute;bottom:29px;text-align:center;width:100%;font:10px monospace;letter-spacing:2px;color:#bfcb9e}.annotation{position:absolute;top:256px;left:27px;font:8px monospace;letter-spacing:1px;color:#a3b18a;width:40px;line-height:1.7}.right{left:auto;right:27px;text-align:right}</style></head><body><div class="frame"></div><div class="eyebrow">A PRACTICAL GUIDE TO SELF-IMPROVEMENT</div><h1>FRANKEN<span>TOWER</span></h1><div class="line"></div><div class="rings"></div>${svg}<div class="annotation">06<br>HANDS</div><div class="annotation right">03<br>HEARTS</div><div class="tagline">YOUR BODY IS YOUR INVENTORY.</div></body></html>`);
+await mkdir('public',{recursive:true});
+await page.screenshot({path:'public/thumbnail.jpg',type:'jpeg',quality:92});
+await browser.close();console.log('Rendered 512×512 game thumbnail from the modular SVG creature.');
