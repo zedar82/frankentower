@@ -87,6 +87,8 @@ node scripts/playground-check.mjs
 
 They use installed Google Chrome on macOS, exercise actual controls and cloud persistence, and write screenshots to `/private/tmp`.
 
+`scripts/hosted-check.mjs` tests a deployed private version when `FRANKENTOWER_PREVIEW_URL` is supplied. Keep the share link out of source control.
+
 ## Private deployment and jam submission
 
 **Do not make the game public or submit it to the jam without Daniel's explicit approval.**

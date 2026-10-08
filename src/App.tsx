@@ -33,7 +33,7 @@ export function App({ initialSave }: { initialSave: Save }) {
   const sim = combatRef.current;
   const isCombat = run.phase === 'combat';
   const isEnd = ['dead', 'retired', 'complete'].includes(run.phase);
-  const s = stats(run.build);
+  const s = isCombat && sim ? sim.player.stats : stats(run.build);
   const nextEnemies = encounter(run.floor, run.seed, save.legacy);
   const notify = (message: string) => setToast(message);
   const update = (event?: string) => {
