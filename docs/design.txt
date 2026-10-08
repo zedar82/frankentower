@@ -1,0 +1,3495 @@
+Anatomy Autobattler
+
+Consolidated Design Concept — September 2026
+
+1. Concept
+
+The game is a buildcraft-heavy roguelite autobattler in which the player’s anatomy is their equipment inventory.
+
+The player begins with a relatively ordinary body. That body provides a collection of equipment slots: hands for weapons, heads for helmets, feet for shoes, hearts for cardiovascular equipment, and so forth.
+
+As the run progresses, the player acquires equipment and modifies their anatomy. Additional arms create additional hand slots. Additional heads create additional helmet slots. Additional feet allow more shoes. Hearts support the increasingly unreasonable cardiovascular demands of the resulting creature.
+
+The character fights automatically. The player’s role is primarily to construct the combat engine and then watch it operate.
+
+Over the course of a successful run, a recognisably humanoid adventurer can gradually become a multi-headed, many-armed, eight-footed biological catastrophe—not because the game asked the player to choose “become a monster,” but because every individual modification seemed useful at the time.
+
+The broad inspiration is:
+
+Path of Achra’s deranged combinatorial buildcraft + Dungeon 100’s build/watch autobattler structure and legacy bosses + Backpack Battles/Oaken Tower-style equipment interactions, with the original central mechanic that the player’s body determines the shape of their inventory.
+
+The game should produce stories such as:
+
+“I needed another weapon slot, so I added an arm. Then I needed more circulation, so I added a heart. Then I found the Octopod set, so obviously I needed another six feet. Then I converted the arms into two additional spellcasting heads because the build had stopped caring about weapons.”
+
+By level 100, the player may resemble something that should have been living in the dungeon from the beginning.
+
+⸻
+
+2. Fundamental Design Philosophy
+
+The game should have simple individual rules with ridiculous emergent consequences.
+
+Individual items should usually be understandable after reading one or two short effects. Body parts should usually be structurally obvious. Combat should have a relatively small vocabulary.
+
+The complexity comes from interactions.
+
+The player should not need to understand a spreadsheet of obscure secondary statistics to understand why a build works. Instead, they should be able to follow chains such as:
+
+This weapon causes Bleed.
+This heart gives Mana whenever Bleed occurs.
+This helmet triggers Wands whenever Mana is gained.
+These Wands reduce the weapon’s cooldown.
+
+The resulting machine may be insane. Its components should not be.
+
+The game’s primary authored content should therefore be player-facing combinatorial pieces, not enormous quantities of enemies or levels.
+
+Items, anatomical procedures, tags, sets and unusual physiological rules have multiplicative value because every new piece can interact with existing pieces.
+
+Enemy species mostly have additive value.
+
+The content budget should heavily favour the former.
+
+⸻
+
+3. Core Gameplay Loop
+
+The fundamental loop alternates between building and watching.
+
+Build Phase
+
+The player:
+
+* buys, sells and equips items;
+* considers equipment tags and set bonuses;
+* modifies or improves existing equipment where appropriate;
+* responds to weaknesses revealed by previous fights;
+* periodically modifies their anatomy;
+* manages the cardiovascular consequences of that anatomy;
+* decides whether to continue deeper into the dungeon.
+
+Combat Phase
+
+The creature automatically proceeds through the dungeon.
+
+When it encounters enemies, combat occurs automatically according to the character’s anatomy, equipment, statistics, timers and trigger relationships.
+
+The player watches the combat engine they created operate.
+
+Combat should be sufficiently readable that the player can diagnose why it succeeded or failed.
+
+The character then proceeds onward.
+
+The dungeon itself does not need to be mechanically elaborate. Its primary purpose is to give the autobattles physical context and personality.
+
+A simple 2D dungeon-crawler presentation is sufficient:
+
+walk → encounter → stop → autobattle → continue.
+
+The interesting gameplay occurs in construction and combat resolution, not navigation.
+
+⸻
+
+4. Anatomy Is the Inventory
+
+There is no conventional fixed equipment inventory.
+
+Instead:
+
+Body parts provide equipment slots.
+
+A basic humanoid might have:
+
+* 1 Head
+* 1 Torso
+* 2 Arms
+* 2 Hands
+* 2 Legs
+* 2 Feet
+* 1 Heart
+
+These create the relevant equipment opportunities.
+
+For example:
+
+Arm → Hand slot
+
+Head → Headwear slot
+
+Foot → Shoe slot
+
+Torso → Body armour slot
+
+Heart anatomy → Heart/cardiovascular slot
+
+The exact distinction between anatomical parts and their associated equipment sockets can remain implementation-driven, but the player-facing principle should remain physical and obvious.
+
+If the player wants four simultaneously equipped hand weapons, they need four hands.
+
+If they want eight shoes, they need eight feet.
+
+If they sacrifice both arms, they lose access to the equipment those arms supported.
+
+The character’s body is therefore effectively a dynamic Backpack Battles inventory whose topology changes during the run.
+
+⸻
+
+5. Body Parts Usually Do Not Do Things
+
+A major simplifying principle is:
+
+Ordinary body parts are structural, not behavioural.
+
+An Arm does not inherently attack.
+
+It provides a Hand slot.
+
+A Head does not inherently cast spells.
+
+It provides a Head equipment slot.
+
+A Foot does not automatically kick enemies.
+
+It provides a Shoe slot.
+
+Eight feet are already extraordinarily useful because they provide eight equipment opportunities. They do not also need eight innate attacks.
+
+This keeps combinatorial behaviour concentrated primarily in the equipment system rather than duplicating another complete effect system across anatomy.
+
+The normal hierarchy is:
+
+Anatomy provides slots.
+Equipment provides behaviour.
+Physiology constrains the anatomy.
+
+Body parts that possess inherent behaviour should therefore be rare and exciting exceptions.
+
+Examples might include:
+
+Serpent’s Head
+Provides a Head slot.
+Periodically bites and inflicts Poison.
+
+Clockwork Arm
+Provides a Hand slot.
+Requires no Circulation.
+
+Demon Hand
+Provides a Hand slot.
+Has an unusual interaction with the item it holds.
+
+Vestigial Arm
+Provides a restricted Hand slot at reduced cardiovascular cost.
+
+When an anatomical part contains actual rules text, the player should immediately recognise that it is unusual.
+
+Ordinary anatomy creates possibilities. Extraordinary anatomy breaks rules.
+
+⸻
+
+6. Anatomical Modification
+
+At intervals during a run, the player receives opportunities to alter their anatomy.
+
+The exact presentation depends on the final jam theme. A Frankenstein/Halloween version might use a recurring scientist. A fashion version might use a deranged fashion editor/surgeon. Other themes could use mutation, cybernetics, curses or magical transformation.
+
+The mechanical purpose remains the same.
+
+Early procedures may be straightforward:
+
+Additional Arm
+Gain 1 Arm and associated Hand slot.
+
+Second Heart
+Gain additional cardiovascular infrastructure.
+
+Additional Head
+Gain another Head equipment slot.
+
+Later procedures become much stranger.
+
+For example:
+
+Polycephalic Graft
+
+Gain two additional Heads.
+
+Lose both Arms.
+
+The fictional explanation is also the mechanical explanation: the additional brains and heads require blood, and the existing cardiovascular system cannot support everything.
+
+This is exactly the desired kind of choice.
+
+It may be an incredible upgrade for a spellcasting build that no longer cares about weapons.
+
+It may completely destroy a weapon build.
+
+Anatomical procedures should therefore include:
+
+* additions;
+* removals;
+* replacements;
+* conversions;
+* specialised body parts;
+* cardiovascular changes;
+* trade-offs between different slot types;
+* unusual exceptions to normal physiological rules.
+
+They should alter the topology of the build, rather than simply acting as another conventional stat-upgrade tree.
+
+⸻
+
+7. The Diamond Dogs Progression
+
+The intended long-term transformation resembles the logic of Diamond Dogs.
+
+No individual modification necessarily seems absurd when chosen.
+
+Each solves an immediate problem.
+
+The player wants another weapon, so they acquire another arm.
+
+The extra arm strains circulation, so they add another heart.
+
+They find an exceptional footwear set, so they begin pursuing additional feet.
+
+Their build becomes increasingly spell-focused, so they sacrifice weapon-supporting anatomy for more heads.
+
+Each decision is locally rational.
+
+Only later does the player look at the resulting creature and realise that there is almost nothing recognisably human left.
+
+This transformation should not be imposed by a scripted “monster path.”
+
+It should emerge from optimisation.
+
+The ideal emotional progression is:
+
+Level 1: Adventurer.
+
+Level 20: Slightly modified adventurer.
+
+Level 40: Questionable medical decisions have occurred.
+
+Level 60: This person has become a dungeon encounter.
+
+Level 80: Biological obscenity.
+
+Level 100: The dungeon was correct to contain you.
+
+⸻
+
+8. Circulation: The Central Anatomy Economy
+
+Without a limiting economy, additional anatomy risks becoming automatically desirable.
+
+An additional arm creates another weapon slot.
+
+Another head creates another helmet or spell slot.
+
+Another foot creates another shoe slot.
+
+If these have no systemic cost, the obvious strategy becomes:
+
+Take every body part offered.
+
+That destroys the interesting decision-making.
+
+The central economic constraint is therefore cardiovascular function.
+
+The body has some amount of Circulation Capacity.
+
+Active anatomy creates Circulatory Load.
+
+A normal body begins reasonably close to equilibrium.
+
+Adding additional active anatomy increases demand.
+
+Arms, heads, legs and other metabolically demanding body parts consume circulation.
+
+The exact numbers and formula remain balancing questions.
+
+The conceptual relationship is:
+
+Anatomy determines how many things you can equip. Circulation determines how efficiently you can support that anatomy.
+
+⸻
+
+9. Cardiovascular Overload Is Allowed
+
+Circulation should generally be a soft constraint rather than a hard slot limit.
+
+The game should not simply say:
+
+“You cannot attach this arm because you lack 2 Circulation.”
+
+The player should be allowed to create physiologically terrible creatures.
+
+Instead, inadequate cardiovascular capacity causes progressively worse performance.
+
+A creature operating at modestly above its sustainable load might only be slightly sluggish.
+
+A creature attempting to run eight arms, three heads and four legs from one exhausted heart might operate dramatically more slowly.
+
+The exact curve should probably be continuous rather than threshold-based.
+
+Avoid a system where:
+
+100% load = perfect
+
+101% load = sudden −20% penalty
+
+because players will simply optimise to a magic breakpoint.
+
+Instead, efficiency should deteriorate progressively.
+
+This creates a meaningful question whenever anatomy is offered:
+
+Is another equipment slot worth reducing the performance of all the anatomy I already have?
+
+An eight-arm build is therefore legal.
+
+It simply needs either an enormous cardiovascular investment or a compelling reason why eight slow weapons are better than four fast ones.
+
+That latter possibility should remain legitimate.
+
+A strange trigger build may actively prefer eight weapons firing infrequently because the important thing is the number of simultaneous item activations rather than raw attack speed.
+
+The system should constrain insanity without eliminating it.
+
+⸻
+
+10. Removal Can Be an Upgrade
+
+The circulation economy makes amputation and consolidation legitimate optimisation strategies.
+
+Suppose a creature has six mediocre arms and is badly cardiovascularly overloaded.
+
+Removing two arms may reduce its theoretical equipment capacity but cause the remaining four arms to operate dramatically faster.
+
+The result could be a net increase in combat effectiveness.
+
+This is desirable.
+
+The game should support both:
+
+Expansion builds — acquire more anatomy and find ways to support it.
+
+Consolidation builds — maintain relatively little anatomy and make every existing slot extraordinarily effective.
+
+A two-armed creature should remain capable of competing with an eight-armed creature if it has invested its resources differently.
+
+“More limbs” should be a strategy, not the universal endgame.
+
+⸻
+
+11. Hearts and Alternative Physiologies
+
+The cardiovascular economy creates an opportunity for unusual physiological archetypes.
+
+The preferred approach is not to have exotic creatures simply ignore Circulation.
+
+Instead, they should pay for it differently.
+
+For example:
+
+Living Heart
+
+Provides dependable Circulation continuously.
+
+Necrotic Heart
+
+Provides unusually strong Circulation while consuming Mana.
+
+When Mana reaches zero, the heart stops.
+
+This creates a fundamentally different economy without replacing the underlying system.
+
+An undead spellcaster with three heads might have extraordinary cardiovascular capacity—but now its spellcasting and cardiovascular system compete for the same Mana pool.
+
+A Mana-generating combat engine can therefore literally keep the creature’s heart beating.
+
+An undead build might function beautifully while killing enemies rapidly, then catastrophically slow when its Mana economy collapses.
+
+This is both mechanically interesting and visually understandable.
+
+Other future physiologies could follow the same principle:
+
+* clockwork systems use mechanical pumps;
+* demonic systems might exchange Health for circulation;
+* plant systems might connect circulation to healing/regeneration;
+* strange magical systems might transform another resource into blood flow.
+
+The universal rule remains understandable.
+
+Advanced builds simply discover new ways to pay the bill.
+
+⸻
+
+12. Equipment Is the Primary Behaviour System
+
+Most actual combat behaviour comes from equipment.
+
+The intended item design is inspired by systems such as Oaken Tower.
+
+An item is primarily composed from a small declarative vocabulary:
+
+TYPE + TAGS + TIMER + TRIGGERS + EFFECTS
+
+An item might:
+
+* activate every X seconds;
+* do something at the beginning of combat;
+* react when a particular event occurs;
+* trigger another item;
+* trigger all items of a particular Type;
+* trigger items with a particular Tag;
+* modify cooldowns;
+* create or consume resources;
+* apply statuses;
+* deal or prevent damage.
+
+The aim is for most items to be expressible through reusable engine primitives rather than bespoke code.
+
+⸻
+
+13. Example Item Structure
+
+A straightforward weapon might be:
+
+Butcher’s Knife
+
+Type: Weapon
+Tags: Blade, Blood
+
+Every 2 seconds: deal damage.
+
+When Bleed occurs: reduce this item’s cooldown.
+
+A heart might be:
+
+Vampire Heart
+
+Type: Heart
+Tags: Blood, Living
+
+Provides Circulation.
+
+Start of Fight: lose Health.
+
+Whenever a Blood item activates: heal.
+
+A helmet might be:
+
+Conductor’s Hat
+
+Type: Helmet
+Tags: Arcane
+
+Every 5 seconds: trigger all equipped Wand items.
+
+The individual effects remain simple.
+
+The complexity comes from assembling them.
+
+⸻
+
+14. Types and Tags Are Different
+
+Items should have both Types and potentially multiple Tags.
+
+Types represent their fundamental equipment identity.
+
+Possible Types might include:
+
+* Weapon
+* Shield
+* Helmet
+* Armour
+* Shoe
+* Heart
+* Wand
+* Ring
+
+The final list should remain compact.
+
+Tags provide cross-cutting build identities.
+
+Examples might include:
+
+* Blood
+* Bone
+* Fire
+* Arcane
+* Holy
+* Poison
+* Mechanical
+* Blade
+* Blunt
+
+An item can therefore participate in multiple overlapping systems.
+
+For example:
+
+Femur of Saint Barry
+
+Type: Weapon
+
+Tags:
+
+* Bone
+* Holy
+* Blunt
+
+One effect can care about Weapons.
+
+Another can care about Bone items.
+
+Another can care about Holy items.
+
+Another can care about Blunt items.
+
+This is a major source of combinatorial depth.
+
+⸻
+
+15. Timed Activation
+
+Many active items operate on independent timers.
+
+For example:
+
+Every 2.0 seconds: activate.
+
+The item then performs its standard activation effect.
+
+Attack speed, cardiovascular efficiency, buffs, debuffs and other mechanics may alter these timings.
+
+This gives combat a readable rhythm.
+
+A huge weapon might fire infrequently for enormous damage.
+
+A small weapon might fire rapidly.
+
+A spellcasting build might contain several independent item clocks.
+
+The player should be able to watch the build and understand these rhythms.
+
+⸻
+
+16. Triggered Activation
+
+Items can also cause other items to activate.
+
+This is central to the desired buildcraft.
+
+For example:
+
+Conductor’s Hat
+
+Every 5 seconds:
+
+Trigger all Wand items.
+
+The important semantic rule is:
+
+A triggered item performs its normal activation.
+
+This allows triggered activations to participate naturally in other systems.
+
+Suppose:
+
+Bone Wand
+Every 4 seconds: deal damage.
+
+Conductor’s Hat
+Every 5 seconds: trigger all Wands.
+
+Wizard’s Heart
+Whenever a Wand activates: gain Mana.
+
+Second Brain Helmet
+Whenever you gain Mana: reduce Helmet cooldowns.
+
+Four individually simple items now form a feedback engine.
+
+Additional anatomy expands the possibilities.
+
+A second Head might support another Conductor’s Hat.
+
+An additional Heart slot might support another Mana interaction.
+
+An additional Hand might hold another Wand.
+
+Anatomy therefore controls the number and arrangement of nodes available to the trigger network.
+
+⸻
+
+17. Event Vocabulary
+
+The event vocabulary should remain deliberately small.
+
+Potential common events include:
+
+* Fight Start
+* Item Activated
+* Hit
+* Critical Hit
+* Kill
+* Damage Taken
+* Block
+* Heal
+* Status Applied
+* Resource Gained
+* Resource Spent
+
+Not every possible game event needs its own trigger.
+
+The aim is to create a small number of broadly reusable hooks from which complicated engines emerge.
+
+Likewise, effects should come from a small generic vocabulary:
+
+* deal damage;
+* heal;
+* apply status;
+* remove status;
+* gain resource;
+* spend resource;
+* trigger item;
+* reduce cooldown;
+* increase cooldown;
+* modify statistic;
+* disable item;
+* repeat/duplicate an effect.
+
+The fewer primitives required to generate interesting combinations, the stronger the system.
+
+⸻
+
+18. Trigger Targeting
+
+Effects need generic ways to select other items.
+
+Useful selectors might include:
+
+* this item;
+* a random item;
+* all items of Type X;
+* all items with Tag Y;
+* the item occupying a particular body part;
+* all items associated with Arms/Heads/Feet/etc.;
+* potentially neighbouring or related slots if positional relationships become useful.
+
+Anatomy itself therefore becomes another queryable property.
+
+For example:
+
+War Heart
+
+Whenever an item equipped to an Arm activates:
+
+Gain 1 Rage.
+
+Growing another Arm now does more than provide another weapon slot.
+
+It creates another potential event producer feeding the War Heart.
+
+But that additional arm also increases cardiovascular load.
+
+This is the central interaction between anatomy and equipment.
+
+⸻
+
+19. Trigger Chains and Infinite Loop Prevention
+
+Combinatorial trigger systems naturally risk recursion.
+
+For example:
+
+Hat triggers Wand.
+Wand triggers Heart.
+Heart triggers Hat.
+
+The solution should itself be a simple game rule rather than an invisible arbitrary engine limit.
+
+The proposed rule is:
+
+An individual item instance may activate at most once within a single causal trigger chain.
+
+Every triggered activation carries its trigger ancestry.
+
+Suppose:
+
+Hat → Wand → Heart → Hat
+
+When Heart attempts to trigger Hat, the engine sees that the same Hat instance already exists in the ancestry of that chain.
+
+The second Hat activation is suppressed.
+
+The chain terminates.
+
+⸻
+
+20. Trigger Ancestry Is Per Branch
+
+The “already activated” set belongs to each causal branch, not the entire combat tick.
+
+For example:
+
+Hat
+├── Wand A
+│   └── Heart
+└── Wand B
+    └── Heart
+
+Heart may legitimately activate once through Wand A and once through Wand B.
+
+Those are separate chains:
+
+Hat → Wand A → Heart
+
+Hat → Wand B → Heart
+
+What is prohibited is recursion within one branch:
+
+Hat → Wand A → Heart → Hat
+
+The second Hat activation is suppressed.
+
+This distinction preserves powerful branching trigger combinations while guaranteeing that recursive loops terminate.
+
+⸻
+
+21. Item Instances Matter
+
+Trigger ancestry tracks individual item instances, not item definitions or Types.
+
+Two identical Bone Wands are distinct nodes.
+
+Therefore:
+
+Bone Wand #1 → Bone Wand #2
+
+is legal.
+
+If Bone Wand #2 then attempts to trigger Bone Wand #1 within the same branch:
+
+Bone Wand #1 → Bone Wand #2 → Bone Wand #1
+
+the final activation is suppressed.
+
+This means duplicate items can legitimately extend trigger chains.
+
+That itself becomes part of buildcraft.
+
+⸻
+
+22. Scheduled Activations Create New Chains
+
+Natural timer activations are root events.
+
+If an item’s cooldown expires, its activation begins a fresh trigger chain with fresh ancestry.
+
+An item is not prevented from activating merely because an earlier activation of the same item initiated some other chain.
+
+This preserves the distinction between:
+
+normal scheduled activation
+
+and
+
+recursive triggered activation.
+
+An extremely high emergency event budget may still exist internally as protection against bugs, but it should not be the player-facing rule governing legitimate combinations.
+
+The ancestry rule should normally guarantee termination.
+
+⸻
+
+23. Trigger Debugging and Readability
+
+Because trigger ancestry is explicit, the engine can explain suppressed recursion.
+
+For example:
+
+Trigger suppressed: Conductor’s Hat
+Conductor’s Hat → Bone Wand → Vampire Heart → Conductor’s Hat
+
+This is valuable both during development and potentially in player-facing combat analysis.
+
+If a player’s clever combination does not behave as expected, the game should ideally help explain why.
+
+This is particularly important in a system whose pleasure comes from understanding complicated interactions.
+
+⸻
+
+24. Sets
+
+Equipment sets sit on top of Types and Tags rather than replacing them.
+
+A set creates another overlapping reason to acquire particular items.
+
+Sets should often interact with anatomy.
+
+The defining example is:
+
+Octopod
+
+A footwear set requiring increasingly absurd numbers of shoes.
+
+Possible thresholds:
+
+2 Shoes — minor bonus.
+
+4 Shoes — stronger bonus.
+
+6 Shoes — major bonus.
+
+8 Shoes — full Octopod effect.
+
+A normal humanoid can discover Octopod pieces but cannot complete the set.
+
+The equipment therefore creates an anatomical ambition:
+
+I need six more feet.
+
+The player may subsequently reshape their body specifically to complete the set.
+
+This is exactly the kind of feedback loop the design wants.
+
+The distinction between Eight-Inch Heels and eight inch-heels remains fertile territory: one is an alarmingly tall pair of shoes; the other is eight modest one-inch heels suitable for a fashionable spider.
+
+⸻
+
+25. Anatomy Should Respond to Equipment
+
+The anatomical progression should not always dictate the build from above.
+
+Ideally the relationship works in both directions.
+
+Sometimes the player acquires anatomy and then asks:
+
+“What can I do with this additional Head?”
+
+At other times they discover an extraordinary item or set and ask:
+
+“How do I modify my body so I can use this?”
+
+The latter is particularly important.
+
+Finding a spectacular item that requires four Feet while currently possessing two gives the player a future anatomical objective.
+
+Enemy drops can create the same effect.
+
+A centaur might drop equipment requiring four Feet.
+
+The player cannot currently use it.
+
+Now becoming quadrupedal is suddenly attractive.
+
+⸻
+
+26. Duck-Typed Body Archetypes
+
+The game does not need conventional character classes.
+
+Instead, the player’s current anatomy can be classified dynamically.
+
+Possible anatomical identities include:
+
+Bicephalic
+Has two Heads.
+
+Polycephalic
+Has several Heads.
+
+Many-Armed
+Has at least some threshold number of Arms.
+
+Octopod
+Has the relevant eight-limb/foot configuration.
+
+Polycardiac
+Has multiple Hearts.
+
+Serpentine
+Possesses appropriate legless/slithering anatomy.
+
+These classifications should generally not be mutually exclusive.
+
+A character can simultaneously be:
+
+Polycephalic + Many-Armed + Polycardiac + Octopod.
+
+These anatomical achievements can unlock specialised equipment pools during the run.
+
+This naturally gates complexity.
+
+A new character initially sees equipment appropriate to a mostly normal humanoid.
+
+As the player makes their anatomy stranger, stranger equipment becomes available.
+
+The player effectively unlocks complexity by demonstrating that they have a body capable of using it.
+
+⸻
+
+27. Monstrosity
+
+If the player’s anatomy becomes sufficiently chaotic, the game can classify them simply as:
+
+Monstrosity
+
+This should not be an error state or joke fallback.
+
+It is a legitimate anatomical archetype.
+
+Monstrosity can itself unlock equipment or effects rewarding anatomical diversity and chaos.
+
+This provides a mechanical home for characters that no longer fit clean biological categories.
+
+⸻
+
+28. Generated Character Identity
+
+The duck-typed anatomy system can generate character epithets.
+
+Rather than displaying:
+
+Level 60 Warrior
+
+the game can produce names describing actual anatomy:
+
+Digby the Bicephalic Many-Armed Slug
+
+Channing, Octopus of Many Trunks
+
+Agnes the Polycardiac Monstrosity
+
+The exact name-generation system can be playful.
+
+The important point is that the title reflects the actual build.
+
+This becomes particularly valuable when characters are preserved as bosses.
+
+A generated name is both memorable and safe from the moderation problems of unrestricted user-generated boss names.
+
+⸻
+
+29. Enemies Use the Same Basic Model
+
+The player and enemies should use the same underlying anatomy/combat representation wherever practical.
+
+A centaur might simply possess:
+
+* 1 Head
+* 1 Torso
+* 2 Arms
+* 4 Legs
+
+A spider possesses eight appropriate limbs.
+
+A hydra possesses multiple Heads.
+
+A serpent possesses no conventional legs but has serpentine locomotion.
+
+Enemy equipment and innate exceptional parts can then use the same combat language as player equipment.
+
+This substantially reduces the number of bespoke systems required.
+
+It also teaches the player about possible anatomical configurations before they acquire them.
+
+The player may eventually become stranger than the dungeon monsters they originally fought.
+
+⸻
+
+30. Enemies Are Not the Primary Content
+
+The game probably does not require a large bestiary.
+
+Most of the value comes from build variety.
+
+Enemies primarily exist to apply increasing pressure and ask different questions of the player’s build.
+
+A relatively small collection of enemy archetypes can scale through:
+
+* increased Health;
+* increased Damage;
+* increased Armour;
+* increased speed;
+* larger groups;
+* different combinations;
+* different equipment;
+* status effects;
+* regeneration;
+* ranged pressure.
+
+Potential broad roles include:
+
+* ordinary melee;
+* fast/light;
+* slow/heavy;
+* armoured;
+* ranged;
+* caster;
+* swarm;
+* regeneration/support.
+
+The exact number can remain small.
+
+Because enemies share the same anatomy/equipment model, many apparent variants can also emerge cheaply from equipment.
+
+A skeleton with a sword, a skeleton with armour and a four-armed skeleton need not be three completely different enemy implementations.
+
+⸻
+
+31. Enemy Encounters as Build Tests
+
+Enemy variety only needs to be sufficient to stop one universal damage engine from solving everything.
+
+Encounters can ask questions such as:
+
+Can you handle high Health?
+
+Can you penetrate Armour?
+
+Can you survive burst damage?
+
+Can you deal with many enemies?
+
+Can you reach ranged attackers?
+
+Can you overcome regeneration?
+
+These questions can largely emerge from numerical scaling and combinations of reusable enemy components.
+
+This leaves development time for the systems that create player build variety.
+
+⸻
+
+32. Combat Must Remain Comprehensible
+
+Although buildcraft should become extremely complicated, the basic combat vocabulary should remain relatively small.
+
+Potential core concepts include:
+
+* Health
+* Damage
+* Armour
+* Cooldown/Attack Speed
+* Movement Speed
+* Range
+* Critical Hits
+* Healing
+* Mana and other limited resources
+* a small number of statuses such as Bleed, Poison, Burn or Stun
+
+Avoid filling the game with dozens of opaque damage types, resistance percentages and secondary statistics unless they demonstrably create useful build decisions.
+
+The player should be able to watch two bizarre creatures fight and broadly understand what is happening.
+
+⸻
+
+33. Different Builds Should Look Different in Combat
+
+Build diversity should not merely mean different DPS calculations.
+
+Different engines should visibly behave differently.
+
+Examples:
+
+* many rapid attacks stacking Bleed;
+* one enormous slow critical strike;
+* defensive retaliation;
+* multi-head spellcasting;
+* Mana loops;
+* status proliferation;
+* heavily armoured attrition;
+* trigger cascades;
+* many slow weapons feeding activation-based effects.
+
+The early prototype succeeds only if a small item pool can already produce several combat engines that are obviously different when watched.
+
+⸻
+
+34. 100-Level Campaign
+
+A complete run consists of approximately 100 levels.
+
+Major checkpoints occur at:
+
+20
+
+40
+
+60
+
+80
+
+100
+
+Each checkpoint initially contains an authored boss.
+
+These five authored bosses seed the game’s legacy system.
+
+The intervening levels do not need bespoke authored content.
+
+Threat can increase through numerical scaling, encounter composition and equipment.
+
+Level 73 does not need a unique Level 73 monster.
+
+⸻
+
+35. Retirement at Checkpoints
+
+After defeating a checkpoint boss, the player can choose whether to continue or retire.
+
+Continue
+
+Proceed deeper into the dungeon with the current character.
+
+Retire
+
+End this character’s run at the current checkpoint.
+
+The current build becomes the new guardian of that checkpoint.
+
+This creates a push-your-luck decision.
+
+The player may have an unusually powerful level-40 build and decide:
+
+“This would be fucking horrible for another level-40 character to fight.”
+
+They can bank it.
+
+If they instead continue toward level 60 and die, they have lost the opportunity to preserve that earlier version of the build.
+
+This makes retirement a strategic choice rather than merely failure or victory.
+
+⸻
+
+36. Personal Legacy
+
+By default, the game is a Legacy campaign.
+
+The player’s retired characters replace the authored checkpoint bosses.
+
+Future characters must therefore fight the player’s previous successful builds.
+
+Eventually the dungeon contains a history of the player’s own experiments.
+
+For example:
+
+Level 20
+Digby the Bicephalic
+
+Level 40
+Agnes the Many-Armed Slug
+
+Level 60
+Channing, Octopus of Many Trunks
+
+Level 80
+Margaret the Monstrosity
+
+Level 100
+Something deeply regrettable
+
+The player is gradually constructing their own dungeon bosses.
+
+This is the default experience.
+
+Community opponents are not thrown at new players immediately.
+
+⸻
+
+37. Reaching Level 100 Unlocks the Community Game
+
+The player first completes their own 100-level Legacy.
+
+Only after reaching level 100 do they gain the option to publish their results and begin fighting community-created opponents.
+
+This creates a clean progression:
+
+Single-player buildcraft → personal Legacy → asynchronous community endgame.
+
+It also ensures that someone entering the community mode understands the game’s systems.
+
+A new player is not immediately destroyed by a bizarre community exploit they cannot comprehend.
+
+They first learn by fighting authored enemies and their own creations.
+
+⸻
+
+38. Publishing Is Optional
+
+Completing level 100 should allow the player to:
+
+Publish Legacy
+
+Publishing should be explicitly optional.
+
+A player can enjoy the entire local/single-player experience without uploading anything.
+
+Publishing makes the player’s retired checkpoint builds eligible to appear in community games.
+
+The published object could potentially be the entire five-boss Legacy rather than only independent boss records.
+
+This allows both:
+
+Whole Legacy challenges — fight one player’s complete 20/40/60/80/100 history.
+
+and
+
+Randomised challenges — draw different checkpoint bosses from different published players.
+
+The same stored data can support both.
+
+⸻
+
+39. Community Bosses as Buildcraft Puzzles
+
+One of the strongest expected experiences is encountering someone else’s level-20 boss and thinking:
+
+How the fuck did they manage THAT by level 20?
+
+Low-level community bosses may actually be more interesting than level-100 bosses.
+
+At level 100, extreme builds are expected.
+
+At level 20, resources and anatomical opportunities are constrained.
+
+A terrifying level-20 build demonstrates that another player found an unusually efficient interaction using approximately the same amount of progression available to the challenger.
+
+This makes community fights into buildcraft puzzles.
+
+The implicit communication is:
+
+“I found this. Deal with it.”
+
+The challenger responds by constructing something capable of defeating it.
+
+⸻
+
+40. Boss Inspection
+
+Community bosses should generally be inspectable before combat.
+
+The challenge should not depend on hiding their clever interaction.
+
+The player should be able to examine:
+
+* anatomy;
+* equipped items;
+* tags;
+* sets;
+* circulation;
+* relevant resources;
+* major trigger relationships.
+
+They can then attempt to solve the problem.
+
+If a community boss destroys them, they should be able to inspect it afterward and understand why.
+
+Opacity is not the objective.
+
+The pleasure comes from appreciating someone else’s machine and figuring out how to dismantle it.
+
+⸻
+
+41. Cheap Asynchronous Multiplayer
+
+The community system requires no live multiplayer.
+
+There are:
+
+* no synchronous battles;
+* no networked movement;
+* no rollback;
+* no lobbies;
+* no latency-sensitive actions;
+* no disconnect handling.
+
+A retired boss is essentially a deterministic build snapshot.
+
+The server needs to store enough information to reconstruct it:
+
+* checkpoint;
+* anatomy;
+* equipment;
+* modifications;
+* generated identity;
+* relevant configuration;
+* ruleset/content version;
+* statistics.
+
+Community mode downloads an appropriate snapshot and simulates the fight locally or through whatever simple authoritative mechanism is appropriate.
+
+This is intentionally extremely cheap multiplayer.
+
+⸻
+
+42. Ruleset Versioning
+
+Published builds should carry a ruleset/content version.
+
+Balance changes may alter item definitions.
+
+For the jam, there is no need to maintain permanent historical simulation of every old item version.
+
+The simplest policy is likely:
+
+Published bosses operate under the current compatible ruleset.
+
+Old/incompatible bosses can be invalidated or recalculated when necessary.
+
+The important thing is to include version information from the beginning so that compatibility is explicit.
+
+⸻
+
+43. Anti-Cheat Is Not a Jam Priority
+
+A purely client-submitted boss snapshot can theoretically be manipulated.
+
+Someone could submit an impossible level-20 creature with hundreds of arms or absurd statistics.
+
+A robust production system could eventually:
+
+* validate run history;
+* validate checkpoint legality;
+* sign checkpoint snapshots;
+* reproduce builds from seeds;
+* make relevant progression server-authoritative.
+
+None of this should be a major four-week jam priority.
+
+The architecture should avoid making future validation impossible, but robust anti-cheat can wait until there is evidence anyone cares enough to cheat.
+
+⸻
+
+44. Fame
+
+Published bosses can accumulate Fame.
+
+Fame makes successful or memorable community creations more visible.
+
+The exact formula remains to be balanced, but Fame might reflect:
+
+* unique encounters;
+* victories;
+* streaks;
+* community reactions;
+* unusual accomplishments.
+
+Fame should have diminishing returns so early random exposure does not create an irreversible rich-get-richer effect.
+
+New and low-exposure bosses should deliberately receive opportunities to be discovered.
+
+Fame should influence visibility, not combat power.
+
+A famous boss must not gain additional statistics merely for being famous.
+
+Otherwise success produces power, which produces success, and the ecosystem becomes self-reinforcing.
+
+⸻
+
+45. Famous Monsters
+
+Fame allows the community to generate its own recurring named monsters.
+
+A checkpoint might eventually announce:
+
+LEVEL 20 GUARDIAN
+Digby the Bicephalic Many-Armed Slug
+NOTORIOUS
+
+2,841 challengers
+1,907 kills
+
+A player can encounter a name they recognise and think:
+
+Oh fuck, it’s Digby.
+
+This creates something resembling persistent world bosses without maintaining a persistent shared world.
+
+The monsters become famous because players created and encountered them.
+
+⸻
+
+46. Post-Fight Reactions
+
+After fighting a community boss, the player can optionally react with one of four simple icons:
+
+⭐ Star
+
+❤️ Heart
+
+🖕 Middle Finger
+
+💀 Skull
+
+These should not behave like a conventional 1–5 star quality rating.
+
+They communicate different emotional responses.
+
+Broadly:
+
+⭐ — impressive, clever or particularly good build.
+
+❤️ — lovable, funny or memorable.
+
+🖕 — infuriating; “fuck you for making this.”
+
+💀 — terrifying/deadly.
+
+Importantly, the middle finger is not a negative moderation signal.
+
+Receiving thousands of middle fingers may be one of the greatest achievements available.
+
+All four reactions can potentially contribute to visibility or reputation in different ways.
+
+⸻
+
+47. Reactions Create Informal Reputation
+
+Reaction distributions can tell a story that a numerical rating cannot.
+
+For example:
+
+Digby the Bicephalic Many-Armed Slug
+
+⭐ 318
+❤️ 204
+🖕 1,486
+💀 972
+
+This immediately suggests what kind of creature Digby is.
+
+Possible informal reputations might emerge:
+
+Acclaimed — unusually high ⭐.
+
+Beloved — unusually high ❤️.
+
+Infamous — unusually high 🖕.
+
+Feared — unusually high 💀.
+
+These labels are optional presentation rather than necessary mechanics.
+
+A boss with huge Star and Middle Finger counts is probably an exquisitely engineered nightmare.
+
+A boss with many Hearts but few kills may be a hilarious gimmick everyone enjoys encountering.
+
+⸻
+
+48. Reactions Should Be Optional and Frictionless
+
+Do not force the player through a rating modal after every fight.
+
+The four icons can simply appear on the result screen.
+
+If the player feels something strongly enough to click one, they do.
+
+No reaction is perfectly valid.
+
+The ideal interaction is spontaneous:
+
+“Oh, FUCK this thing.”
+
+🖕
+
+Somewhere else, the creator later discovers that their monster received another fourteen middle fingers overnight.
+
+⸻
+
+49. Hall of Shame
+
+Retired characters are preserved in a Hall of Shame.
+
+Before publishing, this is primarily the player’s personal record of their Legacy.
+
+After publishing, it also displays the public careers of those creations.
+
+Possible information includes:
+
+* checkpoint retired at;
+* encounters;
+* kills;
+* losses;
+* win rate;
+* current streak;
+* best streak;
+* Fame;
+* Star reactions;
+* Heart reactions;
+* Middle Finger reactions;
+* Skull reactions.
+
+The character’s final anatomy and equipment should remain inspectable.
+
+The Hall of Shame should feel like checking on creatures that have gone out into the world.
+
+One level-80 build that seemed brilliant may have lost almost every encounter.
+
+A stupid level-20 gimmick may somehow have murdered thousands of people.
+
+That unpredictability is part of the appeal.
+
+⸻
+
+50. Community Content Creates Enemy Content
+
+The legacy/community system produces a useful inversion.
+
+The developers do not need to author an enormous quantity of sophisticated endgame opponents.
+
+Players create sophisticated characters.
+
+Those characters retire.
+
+Retired characters become opponents.
+
+Therefore:
+
+The players eventually build the interesting monsters for us.
+
+This is another reason to spend development effort on items and anatomy rather than enemy species.
+
+Every improvement to player build variety eventually improves community boss variety as well.
+
+⸻
+
+51. Possible Community Modes
+
+The exact post-100 mode structure remains open, but the underlying data can support several inexpensive options.
+
+Published Legacy
+
+Fight one player’s complete sequence of checkpoint bosses.
+
+Random Run
+
+Draw an appropriate community boss independently at each checkpoint.
+
+Daily Run
+
+Everyone receives the same:
+
+* random/shop seed;
+* encounter progression;
+* community checkpoint bosses.
+
+This creates a comparable daily challenge without live multiplayer.
+
+These are extensions of the same asynchronous boss repository rather than separate networking systems.
+
+They do not all need to exist in the jam release.
+
+⸻
+
+52. Presentation
+
+The intended visual presentation is a simple 2D dungeon crawler/autobattler.
+
+The player watches their character move through dungeon spaces and automatically fight enemies.
+
+The presentation should prioritise:
+
+1. readable combat;
+2. readable equipment;
+3. visible anatomical transformation;
+4. personality.
+
+High-end procedural animation is unnecessary.
+
+The project should explicitly avoid becoming a procedural-creature-animation research project.
+
+⸻
+
+53. Modular Creature Rendering
+
+The body should be visually assembled from modular pieces.
+
+Parts attach at predefined sockets or approximate attachment locations.
+
+Equipment is drawn on or near the corresponding parts.
+
+Animation can use broad categories:
+
+* arms swing/bob;
+* legs cycle;
+* heads bounce;
+* tails move;
+* tentacles wiggle;
+* serpentine bodies slither.
+
+The system does not need to physically simulate arbitrary anatomy.
+
+If a seven-legged, four-headed creature moves awkwardly, that is entirely compatible with the tone.
+
+The important thing is that the player can look at the creature and see the history of their decisions.
+
+⸻
+
+54. Paper-Doll/Fashion Theme Possibility
+
+One particularly strong thematic treatment is literal paper-doll fashion.
+
+The body is visibly modular.
+
+Clothing and equipment layer over it.
+
+A monstrous fashion editor/surgeon insists that current trends require increasingly absurd anatomy.
+
+For example:
+
+“Two legs? In October?”
+
+or:
+
+“Three heads. Imagine the hats.”
+
+This has several advantages:
+
+* modular graphics are thematically justified;
+* clothing naturally maps to anatomical slots;
+* sets become fashion collections;
+* anatomical modifications become absurd fashion demands;
+* visual inconsistency can become part of the joke.
+
+The game does not require this theme, however.
+
+⸻
+
+55. Frankenstein/Halloween Theme Possibility
+
+A Halloween version could instead centre on a recurring scientist.
+
+The scientist performs increasingly grotesque procedures while discussing them in calm medical language.
+
+Early procedures seem almost plausible.
+
+Later procedures involve multi-headed grafts, extra cardiovascular systems and radical limb exchanges.
+
+This naturally supports the central body-modification mechanic and the transformation into a dungeon monster.
+
+⸻
+
+56. Theme Independence
+
+The underlying mechanical architecture should remain theme-independent until the October jam theme is known.
+
+Possible skins include:
+
+* Frankenstein surgery;
+* fashion/body modification;
+* cybernetic reconstruction;
+* alien mutation;
+* magical curses;
+* chimera construction;
+* robotic reconfiguration.
+
+The core remains:
+
+anatomy → slots → equipment → trigger network → combat.
+
+⸻
+
+57. Technical Architecture
+
+Despite the conceptual complexity, the game should be technically manageable if implemented around a small generic rules language.
+
+The core systems are primarily:
+
+* creature anatomy;
+* equipment slots;
+* item definitions;
+* resources;
+* timers;
+* events;
+* triggers;
+* effects;
+* deterministic combat resolution.
+
+The difficult technical system is not anatomy itself.
+
+It is the generic event/trigger/effect engine.
+
+That engine should be treated as foundational.
+
+If it is clean, adding content becomes primarily data authoring.
+
+If every item requires bespoke combat code, development will become increasingly difficult as the item pool grows.
+
+⸻
+
+58. Declarative Content
+
+Where practical, an item should be describable as data.
+
+Conceptually:
+
+type: Weapon
+tags: [Blood, Blade]
+activation:
+  every: 2.0
+effects:
+  - damage: 8
+triggers:
+  - event: BleedApplied
+    effect:
+      reduceCooldown:
+        target: self
+        amount: 0.2
+
+The exact implementation format is not yet important.
+
+The principle is.
+
+The 80th item should usually require assembling existing primitives, not adding another special branch to the combat engine.
+
+⸻
+
+59. Shared Rules Between Players and Enemies
+
+The same engine should resolve both player and enemy combat.
+
+This means:
+
+* the same item activation system;
+* the same statuses;
+* the same cooldowns;
+* the same anatomy representation;
+* the same physiological concepts where relevant.
+
+This makes the game easier to reason about and reduces implementation duplication.
+
+It also makes community bosses almost free conceptually: they are simply ordinary player builds loaded into the enemy side of the same simulation.
+
+⸻
+
+60. What Actually Makes the Project Difficult
+
+The largest risk is not raw implementation volume.
+
+The largest risk is whether the item/build system is actually interesting.
+
+The project needs enough interaction density that players discover coherent but surprising engines.
+
+The hard questions are therefore:
+
+* Are the trigger primitives expressive enough?
+* Are there enough competing strategies?
+* Do items combine in unexpected but understandable ways?
+* Does anatomy meaningfully alter build possibilities?
+* Does Circulation actually create difficult trade-offs?
+* Can relatively small item pools produce radically different combat behaviour?
+* Can players understand why they won or lost?
+
+This is design and balancing work more than conventional engineering difficulty.
+
+⸻
+
+61. Four-Week Jam Strategy
+
+The project should be developed from the combat engine outward.
+
+Week 1: Prove Buildcraft
+
+The earliest prototype can be visually terrible.
+
+Two rectangles fighting is sufficient.
+
+It should contain the real intended event/trigger system, not a temporary fake combat implementation.
+
+Build:
+
+* basic deterministic combat;
+* timers;
+* event queue;
+* trigger ancestry;
+* item Types;
+* Tags;
+* generic effects;
+* a simple humanoid equipment structure;
+* approximately 20–30 carefully chosen items;
+* a tiny number of enemies.
+
+The crucial milestone is not “the game has 20 levels.”
+
+It is:
+
+Can these items already produce several obviously different combat engines?
+
+Examples might include:
+
+* rapid Bleed;
+* slow enormous attacks;
+* retaliation/tank;
+* Mana-driven spellcasting;
+* activation-chain builds.
+
+If that is not interesting, solve it before creating large quantities of content.
+
+⸻
+
+62. Week 2: Anatomy and Physiology
+
+Once equipment combat works:
+
+* make anatomy mutable;
+* dynamically create/remove equipment slots;
+* implement Circulation Capacity and Load;
+* add cardiovascular performance penalties;
+* add Hearts;
+* add anatomical procedures;
+* test multi-arm/head/foot builds;
+* implement at least one alternative physiology such as Necrotic Hearts.
+
+At this point the distinctive game should become visible.
+
+⸻
+
+63. Week 3: Content and Legacy
+
+Expand the combinatorial space:
+
+* more items;
+* sets;
+* additional Tags;
+* unusual body parts;
+* anatomical classifications;
+* Monstrosity;
+* generated names;
+* checkpoint retirement;
+* saved Legacy bosses;
+* authored checkpoint bosses;
+* additional enemy configurations.
+
+If time allows, begin the online boss repository.
+
+⸻
+
+64. Week 4: Community and Presentation
+
+Priorities can include:
+
+* publishing;
+* random community bosses;
+* Fame;
+* reactions;
+* Hall of Shame;
+* visual body assembly;
+* combat readability;
+* effects;
+* sound;
+* tutorialisation;
+* balancing;
+* polish.
+
+Features should be cut from the outside inward.
+
+The core game does not require every community feature to be complete.
+
+A strong local Legacy game is more important than a half-functional social ecosystem.
+
+⸻
+
+65. Scope Discipline
+
+Several things should explicitly not become major jam projects.
+
+Do not build:
+
+* sophisticated live multiplayer;
+* a huge bestiary;
+* 100 handcrafted levels;
+* complex dungeon navigation;
+* arbitrary procedural skeletal animation;
+* production-grade anti-cheat;
+* dozens of elemental resistance systems;
+* bespoke code for every item;
+* enormous class trees.
+
+The richness should come from recombination of a relatively small number of robust systems.
+
+⸻
+
+66. The Central Systemic Triangle
+
+The current concept can be reduced to three interacting systems:
+
+Anatomy
+
+Determines what can be equipped.
+
+Equipment
+
+Determines what the creature does.
+
+Physiology
+
+Determines how much anatomy the creature can efficiently operate.
+
+These interact through the event system.
+
+Additional anatomy creates additional equipment opportunities.
+
+Additional equipment creates additional event sources and trigger targets.
+
+Additional anatomy increases physiological demand.
+
+Equipment and unusual body parts can manipulate physiology.
+
+Physiology changes the rate at which the equipment network operates.
+
+The resulting combat engine creates pressure for further anatomical changes.
+
+That loop is the heart of the game.
+
+⸻
+
+67. The Central Player Fantasy
+
+The game is not fundamentally about collecting stronger swords.
+
+It is about discovering that an item interaction would be incredible if only you had another hand.
+
+Then getting another hand.
+
+Then discovering that the extra hand has overloaded your cardiovascular system.
+
+Then installing another heart.
+
+Then discovering that the new heart interacts with Blood items.
+
+Then rebuilding around Blood.
+
+Then finding a procedure that converts both arms into two additional Heads.
+
+Then realising you don’t need the swords anymore.
+
+Then reaching level 60 and discovering that your character is a four-headed legless undead thing whose magically powered hearts must consume Mana continuously or the entire organism slows to a crawl.
+
+And thinking:
+
+Yes. This is exactly what I meant to build.
+
+That is the game.
+
+
+----------------------------------
+
+
+FRANKENTOWER — Design Notes Addendum
+
+This addendum captures design decisions made after the consolidated design notes, particularly around dungeon structure, encounter generation, content scope, and development priorities.
+
+The central conclusion is that FRANKENTOWER is not fundamentally a dungeon-design game. It is a buildcraft/autobattler game. The tower exists to provide progression, context and a sequence of problems for the player’s creature to solve.
+
+Accordingly, the first implementation should aggressively prioritise the item/anatomy/combat ecosystem over environmental complexity.
+
+1. Working Title: FRANKENTOWER
+
+FRANKENTOWER is the current working title.
+
+The title communicates both major pieces of the premise:
+
+* Franken-: the player progressively reconstructs themselves into an increasingly grotesque creature.
+* -tower: the game consists of a structured ascent through increasingly difficult encounters.
+
+The game does not need to be a literal Frankenstein adaptation. The Frankenstein association is enough to establish the tone of grotesque self-modification.
+
+⸻
+
+PART I — FIRST-PASS IMPLEMENTATION
+
+The first pass exists to answer one question:
+
+Is assembling a grotesque creature from anatomy and equipment, then watching its build fight automatically, actually fun?
+
+Anything that does not materially help answer that question should be deferred.
+
+2. The Dungeon Is Initially Just an Arena Framework
+
+The first implementation does not require interesting dungeon layouts.
+
+A floor can simply be:
+
+one room + enemies + exit/staircase
+
+The same basic room may be reused throughout the entire prototype.
+
+There is no initial requirement for:
+
+* exploration,
+* procedural dungeon maps,
+* maze navigation,
+* environmental puzzles,
+* multiple routes,
+* secrets,
+* positioning-focused level design,
+* biome-specific mechanics,
+* elaborate floor decoration,
+* mechanically distinct room layouts.
+
+The dungeon provides fiction and pacing for a sequence of arena fights.
+
+The player enters a room, the encounter occurs, the player wins or dies, and progression continues upward.
+
+If the combat/build system is good, players will rapidly stop paying much attention to the room itself.
+
+That is acceptable.
+
+3. Encounter Budget Generation
+
+Normal floors should preferably use procedural encounter composition rather than a completely fixed encounter list.
+
+Each enemy receives an approximate Threat Cost.
+
+Each floor receives an Encounter Budget based primarily on depth.
+
+The encounter generator spends that budget on enemies.
+
+Illustrative example only:
+
+* Rat — 1
+* Skeleton — 2
+* Archer — 3
+* Mage — 4
+* Knight — 5
+* Ogre — 7
+* Golem — 12
+
+A 14-point encounter might therefore contain:
+
+* 2 Ogres,
+* 1 Ogre + 1 Mage + assorted weak enemies,
+* several Knights,
+* a large swarm of cheap enemies,
+* or some other composition within reasonable generation constraints.
+
+Exact costs and generation rules are balancing data, not fixed design.
+
+4. Enemy Combinations Are the Encounter
+
+The encounter generator should not attempt to make every encounter equally difficult for every possible build.
+
+Different enemy compositions should naturally punish different strategies.
+
+An extreme but desirable generated encounter might be:
+
+15 Mages + 1 enormous Golem
+
+The Golem consumes a large part of the threat budget. Individual Mages are relatively cheap.
+
+For one build, this may be manageable.
+
+For a build dependent on reactions to Melee attacks, it may be catastrophic.
+
+This is desirable.
+
+The interesting question is not merely:
+
+“How strong is this floor?”
+
+It is:
+
+“What does this particular collection of enemies do to this particular build?”
+
+FRANKENTOWER should produce encounters where a player occasionally enters the room, looks at what is waiting for them, and immediately thinks:
+
+Well, I die here.
+
+That is acceptable provided the broader game gives players reasonable opportunities to prepare and adapt.
+
+5. Enemy Variety Should Test Different Build Assumptions
+
+The initial enemy roster should remain relatively small.
+
+Variety should come from enemies having meaningfully different attack profiles rather than from dozens of cosmetic species.
+
+Useful initial archetypes include:
+
+Ogre
+Extremely slow, enormous Melee attack. Punishes builds relying on frequent enemy actions and can overwhelm small defensive triggers.
+
+Rat / Rat Swarm
+Extremely rapid, low-damage attacks. Feeds reactive builds but can overwhelm fragile builds.
+
+Knight / Golem
+High mitigation or armour. Punishes rapid low-damage attacks.
+
+Mage
+Magical attacks. Punishes builds heavily specialised against physical/Melee damage.
+
+Archer
+Ranged attacks, providing another attack category for defensive and offensive interactions.
+
+Additional archetypes such as Vampire, Executioner and Berserker can be introduced once the basic combat ecosystem exists.
+
+The first pass does not need all proposed enemy archetypes.
+
+6. Encounter Generation Should Be Build-Agnostic
+
+The generator should not inspect the player’s current build and deliberately generate counters.
+
+The tower presents problems.
+
+The player builds something capable of surviving those problems.
+
+If the player creates an extremely specialised creature, it is acceptable for some randomly generated encounters to be extraordinarily favourable and others extraordinarily dangerous.
+
+This asymmetry is part of the appeal.
+
+7. Initial Item Content Target
+
+The initial full content target is approximately:
+
+10 items per star rarity
+
+With five rarity levels, this gives approximately:
+
+50 base items
+
+This is already a substantial combinatorial pool once anatomy, tags, triggers, duplicate upgrades and Lv3 abilities are considered.
+
+This number is a target rather than a requirement for the earliest prototype.
+
+The first external playtest should happen before all 50 items exist.
+
+Approximately 20–30 functional items should be sufficient to begin discovering whether the item language works.
+
+8. Different Rarity Bands Have Different Jobs
+
+Item rarity should not merely represent increasingly large numbers.
+
+A useful broad progression is:
+
+1★ — Vocabulary
+
+Simple, broadly useful components that establish the game’s fundamental nouns and mechanics.
+
+Examples include basic weapons, shields, hearts, boots, helmets and wands.
+
+These items should remain potentially relevant because duplicate upgrades and Lv3 signatures can make humble early items important later.
+
+2★ — Connections
+
+Items begin explicitly connecting systems:
+
+* On Block…
+* When Bleed is applied…
+* Whenever a Magical attack occurs…
+* Whenever a Blood item activates…
+
+3★ — Build Direction
+
+Items increasingly suggest engines or build identities.
+
+Finding one may cause the player to reconsider what they are building.
+
+4★ — Rule Bending
+
+Items begin creating unusual interactions between previously separate systems.
+
+5★ — Exceptional Effects
+
+Rare items may significantly redirect a build or permit interactions that ordinary items cannot.
+
+This is guidance rather than a rigid content formula.
+
+9. Item Ecosystem Is the Main Design Work
+
+The major design challenge is not implementing the tower.
+
+It is producing an item ecosystem where many different approaches remain at least somewhat viable.
+
+Perfect balance is neither expected nor particularly desirable.
+
+Players should occasionally discover combinations that feel absurdly powerful.
+
+The goal is instead to avoid a state where a small number of strategies clearly dominate and most of the item pool is irrelevant.
+
+Potential build engines include:
+
+* rapid Melee activation,
+* enormous slow attacks,
+* Ranged attacks,
+* Magical/Mana engines,
+* Bleed,
+* Poison,
+* Crit,
+* Armour/Block,
+* retaliation,
+* healing feedback,
+* low-Circulation reactive Blob builds,
+* multi-head spellcasting,
+* many weak limbs,
+* few highly efficient limbs,
+* extreme footwear/anatomy builds,
+* undead Mana-powered circulation.
+
+Not every one of these must exist in the first implementation.
+
+The early item pool should instead prove that qualitatively different engines can coexist.
+
+10. Prefer Shared Vocabulary Over Bespoke Mechanics
+
+Items should primarily combine the existing vocabulary of:
+
+* Types,
+* Tags,
+* Timers,
+* Events,
+* Triggers,
+* Resources,
+* Statuses,
+* Effects.
+
+Whenever designing a new item, prefer:
+
+“Can this be expressed using mechanics that many other items already understand?”
+
+over:
+
+“Can we create a special subsystem for this item?”
+
+For example:
+
+Bloodletter
+Every 1.2s: make a Melee attack and apply Bleed.
+
+Hungry Heart
+Whenever Bleed is applied: Heal.
+
+Red Hat
+Whenever you Heal: reduce the cooldown of Blood items.
+
+The value comes from the network of interactions rather than isolated complexity.
+
+11. Lv3 Is Where Items May Become Strange
+
+Lv2 should usually provide a straightforward quantitative improvement.
+
+Lv3 should normally provide a memorable signature effect.
+
+These signatures may:
+
+* introduce a new trigger,
+* alter a tag interaction,
+* create permanent scaling,
+* change how another mechanic works,
+* enable a new feedback loop,
+* transform the item’s role.
+
+This helps low-rarity items remain exciting.
+
+A humble 1★ item acquired near the beginning of a run may become central enough at Lv3 that replacing it with a newly discovered 5★ item is not obviously correct.
+
+12. Early External Playtesting Is a Priority
+
+FRANKENTOWER should reach outside players as soon as the basic build loop is functional.
+
+Do not wait for:
+
+* all 50 items,
+* finished art,
+* the full tower,
+* final balance,
+* segment mechanics,
+* community features,
+* elaborate animations.
+
+The early test exists to discover whether players can create interesting machines from the item system.
+
+Useful qualitative observations include:
+
+* Which items are automatic purchases?
+* Which items are consistently ignored?
+* What do players think their build is trying to do?
+* Which interactions surprise them?
+* Which items do they desperately reroll for?
+* When does a player feel there was no meaningful choice?
+* Which discovered combinations produce a “holy shit” response?
+* Which apparently intended build archetypes never actually work?
+
+Unexpectedly powerful interactions are not automatically bugs.
+
+They may be evidence that the combinatorial system is succeeding.
+
+13. Analytics Should Support Balance Work
+
+Where practical, early builds should record enough information to inspect actual player behaviour.
+
+Useful information includes:
+
+* offered items,
+* purchased items,
+* rerolls,
+* sold/replaced items,
+* equipped items,
+* items reaching Lv2/Lv3,
+* anatomy modifications selected,
+* Circulation efficiency,
+* gold saved/spent,
+* floor reached,
+* encounter composition at death,
+* boss victories,
+* final creature/build state.
+
+Item co-occurrence is particularly valuable.
+
+An item appearing frequently in successful runs is not necessarily a problem.
+
+An item appearing almost exclusively alongside the same two other items may indicate that an apparently open-ended mechanic has effectively become a prescribed set.
+
+14. Death/Run Summary Should Preserve the Build
+
+When a creature dies, the game should retain enough information to understand what the player had created.
+
+At minimum, a useful run summary should eventually expose:
+
+* floor reached,
+* anatomy,
+* equipped items,
+* item levels,
+* relevant build statistics,
+* final enemy encounter.
+
+This is useful both for players and for playtesting.
+
+A screenshot of a ridiculous creature and the encounter that finally killed it is far more informative than:
+
+“Died on Floor 47.”
+
+⸻
+
+PART II — EXPLICITLY NOT REQUIRED FOR FIRST PASS
+
+The following ideas are promising but should not be prerequisites for the first playable implementation.
+
+15. Mechanical Dungeon Layouts — Stretch Goal
+
+Different room layouts may eventually affect combat.
+
+Examples include:
+
+Maze
+Broken sightlines and short engagement distances. Naturally disadvantages some Ranged builds.
+
+Open Hall
+Long sightlines. Favours Ranged attacks and exposes Melee builds during approach.
+
+Pillared Chamber
+Intermittent line-of-sight obstruction.
+
+Narrow Corridor
+Restricts simultaneous engagement and creates bottlenecks.
+
+Split Chamber
+Enemies approach from multiple directions.
+
+This could become an excellent additional build axis.
+
+However, it introduces substantial implementation complexity:
+
+* movement,
+* pathfinding,
+* range,
+* line of sight,
+* collision/occupancy,
+* target selection,
+* spatial combat readability.
+
+Therefore:
+
+Mechanical room geometry is not part of the first-pass combat system.
+
+Melee, Ranged and Magical should initially function as attack tags/categories without requiring a sophisticated spatial simulation.
+
+16. Segment Modifiers — Stretch Goal
+
+Twenty-floor sections may eventually receive modifiers such as:
+
+* Armoured,
+* Speedy,
+* Vicious,
+* Stout,
+* Regenerating,
+* Magical,
+* Bloodthirsty.
+
+These modifiers can alter enemy statistics or encounter-generation weights.
+
+They are not required for the first pass.
+
+17. Composite Named Tower Segments — Stretch Goal
+
+Long-term, a tower segment can be generated from several independent dimensions:
+
+Layout + Theme + Modifier + Enemy Weighting
+
+These factors can produce procedural segment identities such as:
+
+* The Iron Maze
+* The Mystic Hall
+* The Vicious Gallery
+* The Restless Crypt
+* The Bloody Warrens
+
+The generated name provides flavour while the underlying factors provide mechanics.
+
+For example:
+
+The Iron Maze
+Layout: Maze
+Modifier: Armoured
+Enemy weighting: normal
+
+or:
+
+The Mystic Hall
+Layout: Open Hall
+Enemy weighting: Magical
+Theme: Arcane
+
+The exact mechanical properties should remain explicitly inspectable. Players should never have to memorise that a flavour adjective secretly means +15% Armour.
+
+This system is attractive because each dimension can be implemented independently.
+
+However:
+
+Named/composite segments are stretch content and should not delay core combat development.
+
+18. Tower-Wide Advance Information
+
+If mechanically significant segment layouts/modifiers are eventually implemented, the full tower structure should preferably be generated at run start and visible to the player.
+
+This allows long-term adaptation.
+
+For example:
+
+Floors 1–20 — The Iron Maze
+Floors 21–40 — The Mystic Hall
+Floors 41–60 — The Vicious Gallery
+Floors 61–80 — The Restless Crypt
+Floors 81–100 — The Bloody Warrens
+
+The player can therefore recognise future threats and build toward solutions rather than discovering a hard counter immediately before fighting it.
+
+This remains unnecessary while segments have no gameplay effects.
+
+19. Elaborate Dungeon Furnishing — Polish / Stretch
+
+The same basic room art can be reused throughout the tower.
+
+A possible polish layer is to make rooms increasingly elaborate as the player climbs:
+
+* early floors: bare stone, rubble, cheap torches,
+* middle floors: furniture, banners, weapon racks, bookshelves,
+* high floors: statues, carpets, ornate lighting, magical apparatus,
+* final floors: extravagant or absurdly luxurious furnishings.
+
+This could provide visual progression extremely cheaply if suitable assets already exist.
+
+It adds essentially nothing to the underlying game.
+
+Therefore:
+
+Progressive furnishing is polish, not core content.
+
+The entire first version may use the same room.
+
+20. Scientist Cell — Stretch Presentation
+
+Anatomical modification opportunities may eventually be represented by a recurring scientist imprisoned in a small cell or alcove within periodic floors.
+
+This could provide:
+
+* physical context for surgery,
+* recurring visual character,
+* humour,
+* environmental storytelling,
+* increasingly elaborate laboratory furnishings.
+
+It does not create an additional meaningful gameplay decision.
+
+Therefore:
+
+The scientist’s physical cell is explicitly a stretch goal.
+
+In the first implementation, anatomical modification can simply occur through a UI screen at the appropriate progression interval.
+
+The surgery mechanic matters.
+
+The room containing the surgery mechanic does not.
+
+21. Advanced Character Art — Limited Scope
+
+The player character does not need to visually represent every individual body part and equipped item.
+
+The mechanical anatomy screen is authoritative.
+
+The combat sprite is representative.
+
+The preferred eventual approach remains a small collection of threshold-based body archetype sprites, such as:
+
+* Humanoid,
+* Many-Armed,
+* Many-Headed,
+* Many-Legged,
+* Octopod,
+* Serpentine,
+* Blob,
+* Monstrosity.
+
+The renderer chooses an appropriate visual archetype based on actual anatomy.
+
+However:
+
+A complete set of transformation sprites is not required before testing the game.
+
+The first playable version may use one placeholder character sprite regardless of anatomy.
+
+Visible transformation is an important eventual reward, but it is subordinate to proving the build system.
+
+22. Custom Art Budget Should Remain Small
+
+Where possible, purchased/coherent asset packs should supply:
+
+* dungeon tiles,
+* ordinary enemies,
+* props,
+* effects,
+* ordinary humanoids,
+* general environmental art.
+
+Custom art should concentrate on things that materially establish FRANKENTOWER’s identity, especially transformed player body types.
+
+Do not create bespoke art for information that UI or effects can communicate adequately.
+
+In particular, there is no requirement to:
+
+* render every equipped weapon,
+* render every heart,
+* visually distinguish five arms from six,
+* animate every anatomical modification independently.
+
+Custom art is a production cost and should be treated accordingly.
+
+⸻
+
+PART III — DEVELOPMENT PRIORITY
+
+23. Core Development Order
+
+The current priority order is:
+
+A. Prove Combat
+
+Build one ugly arena with:
+
+* player,
+* enemy,
+* timers,
+* attacks,
+* damage,
+* events,
+* triggers,
+* effects.
+
+The real event/effect architecture should exist from the beginning rather than being replaced later.
+
+B. Prove Buildcraft
+
+Add:
+
+* anatomy slots,
+* equipment,
+* shop,
+* rerolls,
+* basic economy,
+* enough items to create several distinct engines.
+
+This is the first major fun test.
+
+C. Add Physiology
+
+Add:
+
+* body-part HP,
+* Circulation,
+* Circulatory Load,
+* Circulation-dependent timed activation speed,
+* anatomical modification.
+
+Test whether “more body” versus “better-supported body” creates interesting decisions.
+
+D. Add Item Progression
+
+Add:
+
+* rarity stars,
+* duplicate combining,
+* Lv2 scaling,
+* Lv3 signature abilities,
+* shop-level rarity probabilities.
+
+E. Add Run Structure
+
+Add:
+
+* floor progression,
+* procedural encounter budgets,
+* enemy archetypes,
+* checkpoint bosses,
+* retirement/legacy structure.
+
+At this point, the core game should be recognisably FRANKENTOWER.
+
+F. Expand Content Based on Testing
+
+Only then aggressively expand:
+
+* item count,
+* anatomy modifications,
+* enemy types,
+* Lv3 signatures,
+* build archetypes.
+
+Content should respond to observed weaknesses rather than arbitrary numerical symmetry.
+
+G. Presentation and Stretch Systems
+
+Only after the above is working:
+
+* transformed player sprites,
+* progressive furnishing,
+* segment modifiers,
+* named segments,
+* mechanical layouts,
+* scientist cell,
+* advanced visual effects.
+
+Community publishing, Fame, reactions, Hall of Shame and related asynchronous metagame systems remain later/post-jam features unless development proceeds dramatically faster than expected.
+
+24. Primary Four-Week Risk
+
+The main schedule risk is not implementing features.
+
+The main risk is balancing and enriching the combinatorial ecosystem.
+
+A modern coding workflow can produce implementations of many bounded systems rapidly.
+
+That does not automatically answer:
+
+* Is this item worth buying?
+* Is this trigger understandable?
+* Does this build have enough support?
+* Is this combination accidentally mandatory?
+* Does Circulation create decisions rather than annoyance?
+* Can a defensive build actually kill anything?
+* Does a 5★ item feel exceptional without making 1★ items obsolete?
+* Are Lv3 signatures exciting enough to justify duplicate hunting?
+* Do generated encounters expose interesting weaknesses?
+* Can several fundamentally different creatures succeed?
+
+Those questions require iteration and human play.
+
+Therefore, spare development time should generally favour:
+
+more testing → better items → better upgrades → better enemy interactions
+
+before environmental or metagame expansion.
+
+25. Scope Test
+
+When considering any new feature during the jam, ask:
+
+Does this create or improve an interesting build decision or combat interaction?
+
+If yes, it may belong in the core-content discussion.
+
+If no, it is probably polish or a stretch goal.
+
+A useful second question is:
+
+Would FRANKENTOWER still be fun if this feature were represented by a button and placeholder art?
+
+If yes, prove the underlying game first.
+
+The ultimate minimum viable version remains extremely simple:
+
+Build a monster. Equip its anatomy. Manage the physiology required to operate it. Watch it fight. Discover ridiculous interactions. Climb. Die. Build something worse.
+
+Everything else is negotiable.
+
+
+FRANKENTOWER — Design Notes Addendum II
+
+1. Current Numerical Baseline
+
+These numbers are prototype calibration anchors, not permanent balance commitments. Their purpose is to provide a common scale for designing and comparing items and encounters.
+
+Starting Human
+
+* Approximately 100 HP.
+* Begins anatomically human:
+    * 1 head
+    * 1 torso/chest
+    * 2 arms/hands
+    * 2 legs/feet
+    * 1 heart
+* Begins with an explicit choice of one basic weapon.
+
+Floor 1 Reference Encounter
+
+The encounter as a whole, rather than any individual enemy, is the useful unit of calibration.
+
+Approximate Floor 1 target:
+
+* ~100 total enemy HP
+* ~10 initial total enemy DPS
+
+The encounter budget may generate encounters above or below either number while remaining approximately equivalent in overall threat.
+
+For example, 100 HP distributed among several enemies behaves very differently from one 100-HP enemy because killing individual enemies progressively removes incoming DPS.
+
+Threat cost therefore cannot be derived from HP × DPS alone. Attack cadence, Armour, statuses, enemy count and other mechanics contribute to actual threat.
+
+Basic Offensive Scale
+
+A straightforward 1★ offensive item should provide roughly:
+
+* 10–12 raw DPS
+
+This gives the starting player enough offence to handle a Floor 1 encounter while leaving meaningful room for damage taken, defensive equipment and synergy.
+
+⸻
+
+2. Damage Cadence Is Part of Enemy Identity
+
+Enemies with identical sustained DPS can pose radically different problems.
+
+Example:
+
+* Rat: many tiny rapid attacks.
+* Goblin: medium attacks.
+* Skeleton: slower heavy attacks.
+* Ogre: enormous infrequent attacks.
+
+This matters particularly because Armour and Shield respond oppositely to attack cadence.
+
+Armour
+
+Armour subtracts a flat amount from every incoming damage event, to a minimum of zero.
+
+Example:
+
+* Incoming damage: 6
+* Armour: 2
+* HP damage: 4
+
+Armour therefore excels against rapid small attacks.
+
+Shield
+
+Shield protects against one incoming attack only.
+
+Shield X: Reduce the next incoming attack by up to X, to a minimum of zero. After that attack resolves, all remaining Shield is lost.
+
+Examples:
+
+* 20 Shield vs 5 damage → 0 HP damage; Shield disappears.
+* 20 Shield vs 50 damage → 30 HP damage; Shield disappears.
+
+Shield therefore excels against large, infrequent attacks and performs poorly against swarms.
+
+A successful complete prevention may generate a Block event for item interactions.
+
+Prototype defensive scale:
+
+* Basic Armour: approximately 1
+* Basic Shield activation: approximately 15–25
+
+The apparently enormous difference is intentional because Shield is temporary, timing-dependent and can be almost entirely wasted.
+
+⸻
+
+3. Bleed
+
+Bleed is not a damage-over-time effect.
+
+Bleed X: When an attack successfully deals at least 1 HP damage to the Bleeding creature, deal X additional Bleed damage.
+
+Important consequences:
+
+* The triggering attack must penetrate all relevant defence.
+* If Armour reduces the triggering attack to zero, Bleed does not trigger.
+* If Shield completely absorbs the triggering attack, Bleed does not trigger.
+* Bleed damage itself does not recursively trigger Bleed.
+* Fast attacks naturally exploit Bleed more frequently.
+* Heavy attacks are more likely to penetrate Armour and therefore successfully trigger Bleed.
+
+This creates a useful interaction where a fast Dagger may be an excellent Bleed exploiter against unarmoured enemies but become ineffective once Armour completely stops its individual hits.
+
+“Trigger Bleed” should be available as an event for item effects.
+
+⸻
+
+4. Crit
+
+Crit affects direct attack damage only.
+
+It does not automatically multiply:
+
+* Bleed
+* Poison
+* healing
+* Shield
+* triggered downstream effects
+* retaliation damage
+* other secondary effects
+
+Default prototype Crit Damage can be approximately +100% direct damage per Crit tier.
+
+Crit Chance Is Uncapped
+
+Crit Chance may exceed 100%.
+
+Every complete 100% guarantees an additional Crit tier. Any remainder is rolled for another tier.
+
+Examples:
+
+* 15% → 15% chance of one Crit tier.
+* 100% → guaranteed one Crit tier.
+* 130% → guaranteed one tier + 30% chance of a second.
+* 200% → guaranteed two tiers.
+* 330% → guaranteed three tiers + 30% chance of a fourth.
+
+With +100% damage per tier:
+
+* ordinary hit = ×1
+* one Crit tier = ×2
+* two Crit tiers = ×3
+* three Crit tiers = ×4
+
+Crit tiers are additive rather than repeatedly doubling damage.
+
+⸻
+
+5. Universal Chance Overflow
+
+Percentage chances generally do not cap at 100%.
+
+Every complete 100% guarantees one success. The remainder rolls for an additional success.
+
+Thus:
+
+* 40% → 40% chance of one success.
+* 140% → one guaranteed success + 40% chance of another.
+* 330% → three guaranteed successes + 30% chance of a fourth.
+
+This rule applies naturally to proc effects as well as Crit unless a particular effect explicitly behaves differently.
+
+This creates substantial design space for global chance manipulation.
+
+Example effect:
+
+Your percentage chances are increased by 25%.
+
+Prefer multiplicative/shared chance scaling over simply adding 25 percentage points.
+
+Chance amplification can become a complete build axis.
+
+Example Emergent Build
+
+A creature might eventually have:
+
+* eight Rabbit Feet
+* multiple Hands holding chance-enhancing Dice
+* one Hand holding an enormous extremely slow Maul
+
+The anatomy and equipment exist primarily to turn an initially tiny chance effect into multiple guaranteed successes.
+
+This is desirable emergent buildcraft rather than something the game should prevent by default.
+
+⸻
+
+6. Cooldown Vocabulary
+
+Several superficially similar mechanics should remain mechanically distinct.
+
+Activation Speed
+
+Changes the rate at which a timer naturally counts down.
+
+This is the primary quantity affected by Circulation.
+
+Flat Remaining-Cooldown Reduction
+
+Example:
+
+Reduce this item’s remaining cooldown by 0.5 seconds.
+
+If an item has 2.2 seconds remaining, it now has 1.7 seconds remaining.
+
+If reduction takes remaining cooldown to zero, the item activates immediately.
+
+Flat reduction is especially useful for short timers and for finishing items that are nearly ready.
+
+Percentage Remaining-Cooldown Reduction
+
+Example:
+
+Reduce the longest remaining cooldown by 50%.
+
+This is particularly powerful with extremely long timers.
+
+An 8-second timer can be progressively collapsed:
+
+8 → 4 → 2 → 1 → 0.5…
+
+Because it acts on the remaining timer, it has inherent diminishing returns.
+
+Percentage remaining-CDR should probably be relatively uncommon because it can provide powerful alternatives to solving poor Circulation conventionally.
+
+Trigger
+
+Immediately activate another item according to trigger-chain rules.
+
+Triggering bypasses waiting for its natural timer.
+
+Strategic Consequence
+
+These create four distinct routes to more activations:
+
+* Activation Speed
+* Flat remaining-CDR
+* Percentage remaining-CDR
+* Direct Trigger
+
+A badly circulated monster can therefore potentially compensate through a sufficiently clever trigger/CDR engine instead of simply adding another heart.
+
+This is desirable.
+
+⸻
+
+7. Trigger Chains
+
+The existing recursion protection remains:
+
+An individual item instance may activate at most once in a single causal trigger chain.
+
+Track ancestry per causal branch.
+
+A new natural timer activation begins a fresh causal chain.
+
+This allows elaborate trigger engines while preventing true infinite loops.
+
+⸻
+
+8. Prototype 1★ Item Pool
+
+These are prototype designs, not final balance values.
+
+Their main purpose is to establish the game’s basic vocabulary.
+
+Rusty Dagger — Hand
+
+Every 0.5s: deal 6 damage.
+
+Fast basic weapon.
+
+Approximately 12 raw DPS.
+
+Heavy Club — Hand
+
+Every 2.5s: deal 30 damage.
+
+Slow basic weapon.
+
+Approximately 12 raw DPS.
+
+The Dagger and Club deliberately begin with similar paper DPS so that attack cadence, Armour, Bleed, Crit and overkill determine their relative value.
+
+Butcher’s Knife — Hand
+
+Every 1s: deal 8 damage and apply 2 Bleed.
+
+Lower raw DPS in exchange for establishing a Bleed engine.
+
+Wooden Shield — Hand
+
+Every 4s: gain 20 Shield.
+
+Basic burst defence.
+
+Iron Breastplate — Chest
+
+Gain 1 Armour.
+
+Basic persistent defence.
+
+Spiked Cuirass — Chest
+
+When hit: deal 2 damage to the attacker.
+
+Basic reactive damage.
+
+Horned Helmet — Head
+
+Every 2s: deal 20 damage.
+
+Head slots should be capable of providing genuine offence rather than merely utility.
+
+Executioner’s Hood — Head
+
+Your direct attacks gain 15% Crit Chance.
+
+Basic Crit support.
+
+Running Shoes — Foot
+
+Timed activations are approximately 10% faster.
+
+Exact value requires testing because global Activation Speed becomes increasingly valuable as the creature acquires more active equipment.
+
+Bloodstained Boots — Foot
+
+When you trigger Bleed: heal 2 HP.
+
+Connects Bleed to sustain.
+
+Venomous Boots — Foot
+
+Every 2s: apply 3 Poison.
+
+Introduces Poison.
+
+Exact Poison tick rules remain to be calibrated.
+
+Iron-Toed Boots — Foot
+
+Every 2s: deal 10 damage.
+
+A normal human wearing two provides approximately one conventional weapon’s worth of offence.
+
+This helps support weaponless and low-arm builds.
+
+Possible Additional Item: Bandaged Cap — Head
+
+Every 4s: heal 8 HP.
+
+Provides a clean introduction to Heal if the initial pool otherwise teaches healing only through synergy.
+
+There is no requirement for the pool to contain exactly 10 or 12 items. Content count should follow the needs of the vocabulary.
+
+⸻
+
+9. Prototype 2★ Item Direction
+
+1★ items establish basic nouns.
+
+2★ items begin making those nouns talk to each other.
+
+Design progression:
+
+* 1★: Here are the pieces.
+* 2★: Pieces interact.
+* 3★: Your anatomy becomes part of the combo.
+* 4★: Rules begin bending.
+* 5★: Extreme build-defining effects.
+
+Prototype 2★ concepts:
+
+Serrated Cleaver — Hand
+
+Every 1.5s: deal 12 damage.
+
+When this triggers Bleed, apply 1 Bleed.
+
+Maul — Hand
+
+Every 3s: deal heavy damage.
+
+Prefer outcome-based synergy rather than explicit “anti-Armour” wording.
+
+Possible effect:
+
+If this attack deals at least 20 HP damage, gain 5 Shield.
+
+Parrying Shield — Hand
+
+Every 4s: gain 25 Shield.
+
+On Block: reduce this item’s remaining cooldown by 1s.
+
+Bloodletter — Hand
+
+Every 1s: deal 7 damage.
+
+When this triggers Bleed, trigger another random Blade.
+
+This demonstrates tags becoming mechanically important.
+
+Barbed Plate — Chest
+
+Gain 1 Armour.
+
+When you take HP damage, deal 3 damage to the attacker.
+
+Bloodsoaked Apron — Chest
+
+When you trigger Bleed: heal 2 HP.
+
+Ram’s Helm — Head
+
+Every 3s: deal 25 damage.
+
+If you currently have Shield, deal +15 damage.
+
+Turns Shield into an offensive setup rather than purely defence.
+
+War Drummer’s Helm — Head
+
+Every 5s: reduce the remaining cooldown of all Hand items by 0.5s.
+
+Naturally becomes more valuable as the player acquires additional arms without explicitly checking arm count.
+
+Viper Hood — Head
+
+When you apply Poison: 25% chance to apply additional Poison.
+
+This is one natural entry point into the global Chance system.
+
+Spurred Boots — Foot
+
+Every 2s: deal 8 damage.
+
+On Crit: trigger another equipped Foot item.
+
+Bloodrunner Boots — Foot
+
+When you trigger Bleed: reduce a random Hand item’s remaining cooldown by 0.2s.
+
+Plaguewalkers — Foot
+
+Every 3s: apply Poison.
+
+When Poison deals damage: heal 1 HP.
+
+Exact numbers throughout this section remain provisional.
+
+⸻
+
+10. Extreme Slow Weapons
+
+The item system should permit deliberately absurd items whose obvious weakness demands a build-around solution.
+
+Example:
+
+Enormous Maul — High Rarity
+
+Every 8s: deal approximately 3000 damage.
+
+May have a small Crit Chance or another low-probability payoff.
+
+On its own this may be wildly impractical.
+
+A sufficiently specialised creature might combine:
+
+* chance amplification
+* percentage remaining-CDR
+* flat remaining-CDR
+* trigger effects
+* additional anatomy
+* Circulation solutions
+
+until the apparently unusable Maul becomes extremely effective.
+
+A player discovering a way to make an eight-second, 3000-damage weapon activate at absurd speed is a success state for the buildcraft system, not automatically a balance failure.
+
+Do not reflexively nerf spectacular interactions merely because they look broken. Intervene when they eliminate meaningful alternatives or trivialise the game broadly.
+
+⸻
+
+11. Anatomy-Derived Statistics
+
+Anatomy should matter beyond merely creating equipment slots.
+
+Keep the derived-stat vocabulary small.
+
+HP
+
+Primarily derived from body parts.
+
+New anatomy usually adds HP; amputation removes HP.
+
+Circulation
+
+Living anatomy creates Circulatory Load.
+
+Hearts and other Circulatory anatomy provide capacity.
+
+Insufficient Circulation slows natural timed activations.
+
+Triggered activations and direct remaining-CDR are not automatically slowed, allowing alternative physiological strategies.
+
+Mana
+
+Heads are likely to contribute Max Mana.
+
+This naturally makes additional heads attractive to magical builds without requiring a Wizard class.
+
+Necrotic circulation may consume Mana, creating competition between spellcasting and sustaining the body.
+
+Movement Speed
+
+Primarily derived from locomotor anatomy.
+
+Likely qualitative progression:
+
+* 0 legs: extremely slow/crawling unless another locomotion system exists
+* 1 leg: slow/hopping
+* 2 legs: normal baseline
+* 4 legs: fast
+* 6+ legs: increasingly fast with diminishing returns
+
+Movement becomes more important when Ranged combat is introduced.
+
+⸻
+
+12. Headless Physiology
+
+Headless creatures should have unique consequences rather than merely losing Mana and Head slots.
+
+A normal living creature may require at least one head unless alternative control anatomy exists.
+
+Possible enabling anatomy:
+
+* Ganglion Cluster
+* Clockwork Controller
+* Necrotic Nervous System
+
+“Headless” can be an emergent classification rather than a formal class.
+
+⸻
+
+13. Anatomy Achievement Challenges
+
+Achievements should function primarily as build riddles and challenge prompts, not permanent progression.
+
+No permanent statistical rewards are required.
+
+Examples:
+
+Hop to It
+
+Win with exactly one leg.
+
+Headless Horseman
+
+Win with:
+
+* 4 legs
+* 2 arms
+* 0 heads
+
+Mostly Armless
+
+Win with exactly one arm.
+
+Snailmaxxing
+
+Have at least 20 Armour and no limbs.
+
+This need not require winning. Some achievements should simply recognise that the player has successfully created an especially ridiculous state.
+
+Other challenge spaces include:
+
+* win using only 1★ items
+* win without levelling an item
+* enormous numbers of heads
+* enormous numbers of legs
+* extreme heart counts
+* no circulation upgrades
+* extremely large single hits
+* victories without taking HP damage
+* unusual equipment/anatomy combinations
+
+Some achievements should be visible challenges. Others can be hidden jokes discovered through experimentation.
+
+Pun names are encouraged where they fit naturally.
+
+⸻
+
+14. Body Horror Through Optimisation
+
+The player always begins recognisably human.
+
+This is important.
+
+The intended transformation arc is not:
+
+Choose what kind of monster you want to play.
+
+It is:
+
+Make individually sensible improvements until you discover that you are no longer recognisably human.
+
+The horror should emerge from rational optimisation.
+
+There should be no explicit Humanity meter.
+
+The anatomy screen itself records what has happened.
+
+Every retired horror at the top of the tower began as essentially the same ordinary human.
+
+⸻
+
+15. Scientist and Procedure-Screen Tone
+
+The scientist establishes the intended voice of the game.
+
+Initial line:
+
+“You’ll never make it to the top with your body like that. Here, let me help…”
+
+The scientist should be:
+
+* medical
+* professional
+* warm
+* reassuring
+* competent
+* genuinely helpful
+* completely unconcerned by conventional anatomical boundaries
+
+He is not a cackling mad scientist.
+
+He does not trick the player into becoming a monster.
+
+The player wants to reach the top. The scientist correctly observes that their current anatomy is inadequate and offers useful solutions.
+
+Example later dialogue:
+
+“Your additional arms have taken nicely. Circulation is a little below where I’d like it, but nothing we can’t address.”
+
+“Mobility may be an issue. Fortunately, you have several options.”
+
+“The second heart is functioning beautifully. I think there’s room for another.”
+
+The comedy comes from professional bedside manner being applied to increasingly indefensible medicine.
+
+⸻
+
+16. Overall Writing Tone
+
+The scientist’s attitude should broadly define FRANKENTOWER’s entire tone.
+
+The world treats grotesque absurdity as a practical problem.
+
+Avoid constantly pointing out that something is weird.
+
+Do not have characters react with:
+
+“Three heads?! That’s crazy!”
+
+Three heads are interesting because they provide:
+
+* three Head slots
+* additional Mana
+* additional HP
+* additional Circulatory Load
+
+The relevant question is whether the cardiovascular system can support them.
+
+UI language should likewise remain clinical and straightforward.
+
+Example:
+
+Circulation insufficient.
+Timed activations are 23% slower.
+Consider additional cardiovascular tissue.
+
+This is preferable to melodramatic body-horror narration.
+
+Useful vocabulary includes:
+
+* procedure
+* graft
+* donor limb
+* augmentation
+* replacement
+* circulatory demand
+* cardiovascular capacity
+* compatibility
+* neural control
+* recovery
+
+Even supernatural anatomy can be discussed as established medical practice.
+
+Tone Principle
+
+If the joke is explaining that something is absurd, cut the joke. Present the absurd thing sincerely and let the player notice.
+
+Achievements and item names can be more overtly playful, but the world itself should take its systems seriously.
+
+FRANKENTOWER is not primarily a parody of horror.
+
+It is a world in which body horror has become optimisation.
+
+⸻
+
+17. Real-Time Learning Curve
+
+The game’s complexity should emerge at approximately the same rate as the player’s creature becomes complex.
+
+The player should not need to learn FRANKENTOWER before playing FRANKENTOWER.
+
+Early game:
+
+I have 100 HP.
+My weapon attacks every half-second.
+Kill the enemies.
+
+Then systems arrive contextually:
+
+* Armour teaches flat damage reduction.
+* Bleed teaches successful penetration.
+* A third arm introduces extra slots and Circulation pressure.
+* Remaining-CDR demonstrates that cooldown manipulation differs from Activation Speed.
+* Chance values approaching 100% introduce overflow.
+* Exotic anatomy introduces unusual physiology only when it becomes relevant.
+
+Complex rules should be explained when the player first encounters a situation where they matter.
+
+Example when Crit first exceeds 100%:
+
+Crit Chance: 115%
+Guaranteed Crit + 15% chance of an additional Crit.
+
+Do not front-load explanations about hypothetical eight-armed creatures when the player still has two arms.
+
+Because every run begins human again, the same opening that teaches a new player becomes an optimisation runway for an experienced player.
+
+The creature’s increasing complexity should mirror the player’s increasing mastery.
+
+⸻
+
+18. Current High-Level Design Principle
+
+FRANKENTOWER should reward players for finding combinations that initially appear unreasonable.
+
+The desired experience is eventually producing statements such as:
+
+“I have eight rabbit feet, two hands holding dice, and a third holding an enormous Maul that nominally attacks every eight seconds, but my chance engine keeps reducing its remaining cooldown until I’m using it like a 200 BPM drum machine.”
+
+The systems should make that sentence possible without having explicitly authored an Eight-Rabbit-Foot Maul build.
+
+That is the target.
+
+The player should feel that they discovered the build rather than selected it.
