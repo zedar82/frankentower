@@ -17,9 +17,8 @@ const KEY = 'frankentower-save-v1';
 function parseSave(text: string | null): Save {
   if (!text) return defaultSave();
   const save = JSON.parse(text) as Save;
-  if (save.version !== RULESET) throw new Error('This save uses an incompatible ruleset.');
+  if (save.version !== RULESET) return defaultSave();
   if (!Array.isArray(save.legacy) || !Array.isArray(save.records) || !Array.isArray(save.achievements) || !save.settings || typeof save.best !== 'number') throw new Error('Save data could not be read.');
-  if (save.run) save.run.offers = save.run.offers.slice(0, 4);
   for (const build of [save.run?.build, ...save.legacy.map(x => x.build), ...save.records.map(x => x.build)].filter(Boolean)) {
     if (!Array.isArray(build!.parts) || build!.parts.some(p => p.item && !ITEM_MAP[p.item.defId])) throw new Error('A saved build contains unknown content.');
   }

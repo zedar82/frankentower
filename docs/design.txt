@@ -1,5 +1,21 @@
 Anatomy Autobattler
 
+Prototype update — October 2026
+
+Shop stock refreshes for free on every new floor. The player may freeze stock
+to preserve the remaining offers, including empty purchased positions, until
+they unfreeze it. Manual paid refresh and shop upgrades still replace stock.
+Surgery choices refresh every fifth floor even when shop stock is frozen.
+
+Combat quantities use ten times the original units: HP, damage, healing,
+Armour, Shield, Bleed, Poison, Mana, circulation capacity and load. A normal
+human starts with 1000 HP and 200 Mana. Heads recover 10 Mana/s; necrotic
+hearts consume 20 Mana/s. Poison loses 10 per second. These values supersede
+the original numeric examples below. Gold and prices, cooldowns, percentages,
+movement distances, floor numbers, equipment levels and slot counts retain
+their original units. Until public release, incompatible development saves
+reset rather than migrate; backward compatibility is not required.
+
 Consolidated Design Concept — September 2026
 
 1. Concept

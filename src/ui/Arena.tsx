@@ -53,7 +53,7 @@ export function Arena({combat,floor,paused,onInspect}:{combat:Combat;floor:numbe
       const ox=w/2-(left+right)/2*zoom,oy=h/2-(top+bottom)/2*zoom;
       c!.translate(ox,oy);c!.scale(zoom,zoom);
       canvas.current!.parentElement?.querySelectorAll<HTMLButtonElement>('.actor-target').forEach((button,i)=>{const a=alive[i];if(a){const b=puppetLayout(a.build).torso,s=renderScale(a);button.style.left=`${((a.x+(b.x+b.w/2)*s)*zoom+ox)/w*100}%`;button.style.top=`${((a.y+(b.y+b.h/2)*s)*zoom+oy)/h*100}%`;button.style.width=`${b.w*s*zoom/w*100}%`;button.style.height=`${b.h*s*zoom/h*100}%`;}});
-      const hit=[...sim.logs].reverse().find(e=>e.attack==='heavy'&&(e.value??0)>100&&time-e.time<.18);
+      const hit=[...sim.logs].reverse().find(e=>e.attack==='heavy'&&(e.value??0)>1000&&time-e.time<.18);
       if(hit&&!reduced&&!stopped)c!.translate(Math.round(Math.sin(time*80)*2),Math.round(Math.cos(time*75)*1));
       c!.drawImage(backdrop,0,0);roomLights(c!,reduced?0:time);
       const actors=[...sim.actors].sort((a,b)=>a.y-b.y);
@@ -62,7 +62,7 @@ export function Arena({combat,floor,paused,onInspect}:{combat:Combat;floor:numbe
         const dead=a.diedAt===undefined?undefined:time-a.diedAt;
         if(a.side==='player'&&a.hp>0){oval(c!,a.x,a.y+1,a.radius+7,7,'#748867');oval(c!,a.x,a.y,a.radius+5,5,'#222a25');}
         const hurt=!reduced&&time-a.lastHit<.12;
-        const arms=Object.fromEntries(a.items.filter(n=>n.slot==='hand').map(n=>{const motion=armMotion(a,n,time);return [n.item.uid,reduced?{drawback:motion.drawback,facing:motion.facing}:motion];}));
+        const arms=Object.fromEntries(a.abilities.filter(n=>n.slot==='hand').map(n=>{const motion=armMotion(a,n,time);return [n.uid,reduced?{drawback:motion.drawback,facing:motion.facing}:motion];}));
         monster(c!,a.build,a.x,a.y,scale,{time:reduced?0:time,walk:a.walked,moving:!reduced&&!stopped&&a.hp>0&&Math.hypot(a.vx,a.vy)>5,facing:a.facing,enemy:a.side==='enemy',arms,hurt,dead});
         if(a.hp<=0)continue;
         if(a.shield>0){const body=puppetLayout(a.build).torso;for(let i=0;i<20;i++){const t=i*Math.PI/10;rect(c!,a.x+Math.cos(t)*(body.w*scale/2+6),a.y+(body.y+body.h/2)*scale+Math.sin(t)*(body.h*scale/2+8),3,3,'#8dadba');}}

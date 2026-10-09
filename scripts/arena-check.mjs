@@ -6,13 +6,14 @@ try{
   await page.goto(process.env.FRANKENTOWER_LOCAL_URL??'http://127.0.0.1:5173/');
   await page.locator('.main-header').waitFor();
   await page.evaluate(async()=>{
-    const {defaultSave,newRun,startRun,refreshShop}=await import('/src/game/run.ts');
+    const {defaultSave,newRun,startRun}=await import('/src/game/run.ts');
+    const {refreshStock}=await import('/src/game/shop.ts');
     const {ITEM_MAP}=await import('/src/game/content.ts');const {stats}=await import('/src/game/anatomy.ts');
     const save=defaultSave(),run=newRun(7581);startRun(run,'club');run.build.parts.find(p=>p.item).item.defId='maul';run.floor=39;run.highest=38;run.gold=94;run.shopTier=3;run.build.name='Agnes';
     const slots=['hand','hand','hand','hand','head','foot','foot','foot','foot','foot','foot','heart','heart'];
     slots.forEach((slot,i)=>run.build.parts.push({uid:`fixture-${i}`,slot,variant:'living'}));
     ['knife','shield','bonewand','horns','hood','heart','heart','runners','ironboots'].forEach((id,i)=>{const p=run.build.parts.find(p=>p.slot===ITEM_MAP[id].slot&&!p.item);if(p)p.item={uid:`fixture-item-${i}`,defId:id,level:1};});
-    run.build.healthFactor=4;run.hp=stats(run.build).maxHp;refreshShop(run);save.run=run;save.settings.sound=false;save.settings.speed=1;
+    run.build.healthFactor=4;run.hp=stats(run.build).maxHp;refreshStock(run);save.run=run;save.settings.sound=false;save.settings.speed=1;
     localStorage.setItem('frankentower-save-v1',JSON.stringify(save));
   });
   await page.reload();await page.getByRole('button',{name:'Enter floor 39'}).waitFor();

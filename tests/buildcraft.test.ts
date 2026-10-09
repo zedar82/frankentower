@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Combat } from '../src/game/combat';
-import { encounter } from '../src/game/run';
+import { encounter } from '../src/game/encounters';
 import { SHOWCASE,showcase } from './builds';
 import { stats } from '../src/game/anatomy';
 for(const name of Object.keys(SHOWCASE)){
