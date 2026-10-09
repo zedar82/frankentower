@@ -36,7 +36,7 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 
 - Deterministic spatial combat shared by players, authored enemies, and saved guardians: positions, nearest-target acquisition, pursuit, orbiting, soft body separation, and a circular arena boundary.
 - Melee strikes require reach; ready weapons wait while approaching. Ranged and magical attacks have longer reach, and ranged-only fighters retreat from nearby threats. Leg count determines physical movement speed.
-- Pixel-art dungeon arena, modular monsters, visible equipment, gait animation, heavy-weapon anticipation, recoil, death poses, attack arcs/projectiles, damage numbers, Shield breaks, critical feedback, and brief hit-stop on large impacts. Reduced-motion preferences suppress shake and cosmetic gait motion.
+- Pixel-art dungeon arena with an illustrated paper-puppet creature prototype: a growing stitched torso, front-facing heads, visible limbs, and arms that swing across the body. Creatures also show equipped gear, gait, recoil, death poses, attack arcs/projectiles, damage numbers, Shield breaks, critical feedback, and brief hit-stop on large impacts. Reduced-motion preferences suppress shake and cosmetic gait motion.
 - 51 equipment definitions across five rarities, with timers, tags, generic selectors/effects, duplicate upgrades, and Level 3 signatures.
 - Mutable Hand, Head, Foot, Chest, and Heart sockets; anatomy-derived HP, Mana, circulation capacity and load.
 - 14 surgical procedures, including arm/head/foot grafts, amputation, arm-to-head conversion, clockwork arms, Mana-fed necrotic hearts, serpent heads, and headless neural control.
@@ -48,7 +48,7 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 - Creature-centred equipment room with anatomical sockets, a timber supply counter, a clinical surgery view, a compact combat HUD, responsive mobile camera, sound, safe areas, host pause/resume handling, and cloud saves.
 - Custom RUN analytics for purchases, upgrades, rerolls, procedures, equipment choices, fights, retirement, and run outcomes.
 
-The design's later addendum explicitly defers community publishing, Fame, public reactions, and a shared boss repository. Those are not simulated or presented as live features here. The newer visual direction supersedes the original movement deferral. Ordinary floors reuse a circular room; props are decorative and do not block movement or line of sight. Art is an intentionally chunky procedural pixel prototype, not final production art.
+The design's later addendum explicitly defers community publishing, Fame, public reactions, and a shared boss repository. Those are not simulated or presented as live features here. The newer visual direction supersedes the original movement deferral. Ordinary floors reuse a circular room; props are decorative and do not block movement or line of sight. The room and equipment icons retain their procedural pixel style; the creature cutouts are an early illustrated art experiment, not final production art.
 
 ## Architecture
 
@@ -60,9 +60,9 @@ The design's later addendum explicitly defers community publishing, Fame, public
 | `src/game/run.ts` | Seeded shops, economy, grafts, encounter budgets, checkpoints, and retirement |
 | `src/platform.ts` | RUN storage, analytics, safe areas, and lifecycle events |
 | `src/App.tsx` | Build/combat screens, inspection, records, and player controls |
-| `src/ui/Creature.tsx` | Pixel creature portraits |
+| `src/ui/Creature.tsx` | Responsive modular creature portraits |
 | `src/ui/Arena.tsx` | Arena rendering, effects, mobile framing, and dressing room |
-| `src/art/pixel.ts` | Shared pixel-art room, props, anatomy, and equipment drawing |
+| `src/art/pixel.ts` | Canvas room, props, anatomy, equipment, and paper-puppet assembly |
 
 `public/thumbnail.jpg` is the required 512×512 RUN thumbnail. `node scripts/render-thumbnail.mjs` renders it from the game's own pixel dungeon and creature. RUN text generation is explicitly disabled in `rundot/textGen.config.json`; this game makes no inference calls.
 

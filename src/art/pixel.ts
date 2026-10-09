@@ -1,6 +1,10 @@
 import { count } from '../game/anatomy';
 import { ITEM_MAP } from '../game/content';
 import type { Build } from '../game/types';
+import torsoUrl from './assets/torso.webp';
+import headUrl from './assets/head.webp';
+import armUrl from './assets/arm.webp';
+import legUrl from './assets/leg.webp';
 
 export type Pen = CanvasRenderingContext2D;
 const ink = '#15131a';
@@ -50,8 +54,73 @@ export function pixelItem(c: Pen, name: string, x = 0, y = 0, size = 32, variant
   }
   c.restore();
 }
-export interface Pose { time?: number; walk?: number; moving?: boolean; facing?: number; windup?: number; windupItem?: string; activeItems?: string[]; attacking?: boolean; hurt?: boolean; dead?: number; enemy?: boolean }
+export interface Pose { time?: number; walk?: number; moving?: boolean; facing?: number; windup?: number; windupItem?: string; activeItems?: string[]; attacking?: boolean; swing?: number; hurt?: boolean; dead?: number; enemy?: boolean }
+const puppetImages = Object.fromEntries(Object.entries({ torso: torsoUrl, head: headUrl, arm: armUrl, leg: legUrl }).map(([name, src]) => {
+  const img = new Image(); img.src = src; return [name, img];
+})) as Record<'torso'|'head'|'arm'|'leg', HTMLImageElement>;
+export const puppetReady = Promise.all(Object.values(puppetImages).map(img => img.decode().catch(() => undefined)));
+export function puppetHeight(build:Build) {
+  const hands=count(build,'hand'),heads=count(build,'head'),feet=count(build,'foot'),growth=Math.max(0,build.parts.length-7);
+  const torsoH=65+Math.min(24,heads*3.5+hands*1.3+feet*1.25+growth*.55);
+  const headH=Math.min(53,42+heads*1.5), extraHeadRows=Math.max(0,Math.floor((heads-1)/3))*12;
+  return 49+torsoH*.5+19+headH*.5+extraHeadRows+20;
+}
+function puppetPart(c:Pen, img:HTMLImageElement, x:number, y:number, w:number, h:number) {
+  c.drawImage(img, x-w/2, y-h/2, w, h);
+}
+function puppetMonster(c:Pen, build:Build, x:number, y:number, scale:number, pose:Pose) {
+  if (!Object.values(puppetImages).every(img=>img.complete&&img.naturalWidth)) return false;
+  const hands=build.parts.filter(p=>p.slot==='hand'), heads=build.parts.filter(p=>p.slot==='head'), feet=build.parts.filter(p=>p.slot==='foot');
+  const hearts=count(build,'heart'), chest=build.parts.find(p=>p.slot==='chest'&&p.item);
+  c.save(); c.imageSmoothingEnabled=true; c.translate(Math.round(x),Math.round(y)); c.scale(scale,scale);
+  if(pose.dead!==undefined){const p=Math.min(1,pose.dead/.38);c.globalAlpha=.65;c.translate(0,4);c.scale(1,Math.max(.24,1-p));}
+  const bob=pose.moving?Math.sin((pose.walk??0)*.2)*2:Math.sin((pose.time??0)*2)*.6;
+  oval(c,0,0,24+Math.min(12,feet.length),5,'#0c0c11'); c.translate(pose.hurt?-2:0,-bob);
+  const growth=Math.max(0,build.parts.length-7);
+  const torsoW=56+Math.min(34,hands.length*2.5+feet.length*1.25+growth*.55);
+  const torsoH=65+Math.min(24,heads.length*3.5+hands.length*1.3+feet.length*1.25+growth*.55);
+  const torsoY=-49;
+  // Legs fan out below the torso. Each ankle and boot remains visible in the frontal pose.
+  feet.forEach((p,i)=>{
+    const f=(i-(feet.length-1)/2)/Math.max(1,feet.length-1);
+    const stride=pose.moving?Math.sin((pose.walk??0)*.22+i*Math.PI)*3:0;
+    const lx=f*Math.min(34,8+feet.length*3)+stride;
+    puppetPart(c,puppetImages.leg,lx,-16+stride,25,42);
+    if(p.item)pixelItem(c,ITEM_MAP[p.item.defId].icon,lx+5,8+stride,19,p.item.defId);
+  });
+  // Extra arms grow in rows down the torso, with all of them kept in view.
+  const drawArm=(i:number)=>{
+    const p=hands[i]; if(!p)return;
+    const side=i%2===0?-1:1, tier=Math.floor(i/2), rows=Math.max(1,Math.ceil(hands.length/2));
+    const ay=torsoY-torsoH*.31+Math.min(torsoH*.7,tier*Math.min(17,torsoH*.58/Math.max(1,rows-1)));
+    const ax=side*(torsoW*.37);
+    const neutral=-side*.76;
+    const active=!!p.item&&(pose.activeItems?.includes(p.item.uid)||pose.attacking&&!pose.activeItems);
+    let angle=neutral;
+    if(p.item&&pose.windupItem===p.item.uid)angle+=-side*Math.min(1,pose.windup??0)*.9;
+    if(active){const t=Math.max(0,Math.min(1,pose.swing??.5));const eased=t*t*(3-2*t);angle=neutral+(-((pose.facing??1)*1.85)-neutral)*eased;}
+    c.save(); c.translate(ax,ay); c.rotate(angle);
+    puppetPart(c,puppetImages.arm,0,26,24,58);
+    if(p.item){const def=ITEM_MAP[p.item.defId];const size=def.id==='enormous'?34:def.icon==='club'?27:23;c.save();c.translate(-4,49);pixelItem(c,def.icon,0,0,size,p.item.defId);c.restore();}
+    c.restore();
+  };
+  puppetPart(c,puppetImages.torso,0,torsoY,torsoW,torsoH);
+  if(chest?.item)pixelItem(c,ITEM_MAP[chest.item.defId].icon,0,torsoY-5,27,chest.item.defId);
+  for(let i=0;i<Math.min(hearts,5);i++)pixelItem(c,'heart',-10+(i%3)*10,torsoY+3+Math.floor(i/3)*10,12);
+  if(!heads.length){pixelItem(c,'head',-5,-torsoH-32,17);}
+  heads.forEach((p,i)=>{
+    const spread=(i-(heads.length-1)/2)*Math.min(31,60/Math.max(1,heads.length-1));
+    const hw=Math.min(53,42+heads.length*1.5), hh=hw;
+    const hy=torsoY-torsoH*.5-19-(Math.floor(i/3)*12);
+    puppetPart(c,puppetImages.head,spread,hy,hw,hh);
+    if(p.item)pixelItem(c,ITEM_MAP[p.item.defId].icon,spread,hy-hh*.34,23,p.item.defId);
+  });
+  hands.forEach((_,i)=>drawArm(i));
+  if(pose.hurt){c.globalAlpha=.12;rect(c,-torsoW/2,-torsoH-70,torsoW,torsoH+90,'#fff0c4');}
+  c.restore(); return true;
+}
 export function monster(c: Pen, build: Build, x: number, y: number, scale=1, pose: Pose={}) {
+  if(puppetMonster(c,build,x,y,scale,pose))return;
   const hands=build.parts.filter(p=>p.slot==='hand'),heads=build.parts.filter(p=>p.slot==='head'),feet=build.parts.filter(p=>p.slot==='foot');
   const undead=/Skeleton|Bone|Grave|Lich/i.test(build.name), rat=/Rat/i.test(build.name), ogre=/Ogre|Brute/i.test(build.name), ghost=/Wraith/i.test(build.name);
   const flesh=pose.enemy?(undead?'#c3b994':ghost?'#9e9fbb':ogre?'#b28469':'#a79772'):'#91a574', lit=pose.enemy?(undead?'#ece0b9':'#c1ad84'):'#bfd09a', shade=pose.enemy?'#72634f':'#596d52';

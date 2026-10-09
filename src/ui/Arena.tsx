@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ARENA, type Combat, type LogEntry } from '../game/combat';
-import { monster, oval, rect, pixelItem, room, roomLights, type Pen } from '../art/pixel';
+import { monster, oval, rect, pixelItem, puppetHeight, room, roomLights, type Pen } from '../art/pixel';
 import type { Build } from '../game/types';
 
 function text(c:Pen,value:string,x:number,y:number,colour:string,size=10){c.font=`bold ${size}px monospace`;c.textAlign='center';c.fillStyle='#121018';c.fillText(value,Math.round(x)+1,Math.round(y)+1);c.fillStyle=colour;c.fillText(value,Math.round(x),Math.round(y));}
@@ -57,10 +57,10 @@ export function Arena({combat,floor,paused,onInspect}:{combat:Combat;floor:numbe
         const dead=a.diedAt===undefined?undefined:time-a.diedAt;
         if(a.side==='player'&&a.hp>0){oval(c!,a.x,a.y+1,a.radius+7,7,'#748867');oval(c!,a.x,a.y,a.radius+5,5,'#222a25');}
         const hurt=!reduced&&time-a.lastHit<.12;
-        monster(c!,a.build,a.x,a.y,scale,{time:reduced?0:time,walk:a.walked,moving:!reduced&&!stopped&&a.hp>0&&Math.hypot(a.vx,a.vy)>5,facing:a.facing,enemy:a.side==='enemy',windup:a.windup,windupItem:a.windupItem,activeItems:a.items.filter(n=>time-n.lastActivated<.17).map(n=>n.item.uid),attacking:time-a.lastAction<.12,hurt,dead});
+        monster(c!,a.build,a.x,a.y,scale,{time:reduced?0:time,walk:a.walked,moving:!reduced&&!stopped&&a.hp>0&&Math.hypot(a.vx,a.vy)>5,facing:a.facing,enemy:a.side==='enemy',windup:a.windup,windupItem:a.windupItem,activeItems:a.items.filter(n=>time-n.lastActivated<.17).map(n=>n.item.uid),attacking:time-a.lastAction<.12,swing:Math.max(0,Math.min(1,1-(time-a.lastAction)/.17)),hurt,dead});
         if(a.hp<=0)continue;
         if(a.shield>0){for(let i=0;i<20;i++){const t=i*Math.PI/10;rect(c!,a.x+Math.cos(t)*29,a.y-36+Math.sin(t)*36,3,3,'#8dadba');}}
-        const barY=a.y-(a.side==='player'?94:82),bw=a.side==='player'?52:37;
+        const barY=a.y-(a.side==='player'?132:112),bw=a.side==='player'?52:37;
         rect(c!,a.x-bw/2-1,barY-1,bw+2,5,'#14141a');rect(c!,a.x-bw/2,barY,bw*a.hp/a.stats.maxHp,3,a.side==='player'?'#9ea86f':'#b66963');
         if(a.poison>0)text(c!,`● ${Math.ceil(a.poison)}`,a.x-15,barY-5,'#acba69',8);
         if(a.bleed>0)text(c!,`♦ ${Math.ceil(a.bleed)}`,a.x+18,barY-5,'#dc8675',8);
@@ -81,7 +81,7 @@ export function DressingRoom({build,floor,surgery=false}:{build:Build;floor:numb
     for(let i=0;i<6;i++){rect(b,0,263+i*14,320,13,i%2?'#3d3339':'#342d34');for(let j=0;j<7;j++)rect(b,j*55+(i%2)*25,263+i*14,1,14,'#1b1921');}
     oval(b,160,275,99,27,'#1c1b21');oval(b,160,270,92,23,surgery?'#52635b':'#4b3b42');oval(b,160,266,92,22,surgery?'#839080':'#6b5055');oval(b,160,264,83,17,surgery?'#657d70':'#4e3e48');
     if(surgery){rect(b,249,256,45,8,'#a1aba0');rect(b,253,264,4,33,'#555f60');pixelItem(b,'surgery',258,234,22);rect(b,21,177,28,59,'#36343f');for(let i=0;i<3;i++){rect(b,25+i*7,183,4,18,'#90a786');rect(b,25+i*7,204,4,2,'#c8d0b0');}}
-    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let frame=0;function draw(now:number){c!.clearRect(0,0,320,340);c!.drawImage(bg,0,0);torchAt(now);monster(c!,latest.current,160,257,1.7,{time:reduced?0:now/1000});frame=requestAnimationFrame(draw);}function torchAt(now:number){const t=reduced?0:now/1000;importTorch(c!,30,96,t);importTorch(c!,287,96,t);}
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;let frame=0;function draw(now:number){c!.clearRect(0,0,320,340);c!.drawImage(bg,0,0);torchAt(now);monster(c!,latest.current,160,257,Math.min(1.7,250/puppetHeight(latest.current)),{time:reduced?0:now/1000});frame=requestAnimationFrame(draw);}function torchAt(now:number){const t=reduced?0:now/1000;importTorch(c!,30,96,t);importTorch(c!,287,96,t);}
     frame=requestAnimationFrame(draw);return()=>cancelAnimationFrame(frame);
   },[floor,surgery]);
   return <canvas ref={canvas} className="dressing-room" width={320} height={340} role="img" aria-label={`${build.name} in ${surgery?'the surgery':'the equipment room'}`}/>;
