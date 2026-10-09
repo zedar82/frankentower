@@ -77,8 +77,9 @@ export function monster(c: Pen, build: Build, x: number, y: number, scale=1, pos
   });
   hands.forEach((p,i)=>{
     const side=i%2===0?-1:1,tier=Math.floor(i/2), ax=side*(23+tier*8+wide), ay=-32-tier*11;
-    const acting=p.item&&(pose.activeItems?.includes(p.item.uid)||pose.attacking&&!pose.activeItems);
-    const attacking=acting?14:0, lift=p.item&&(!pose.windupItem||pose.windupItem===p.item.uid)?Math.round((pose.windup??0)*19):0;
+    const motion=p.item&&pose.arms?.[p.item.uid];
+    const acting=motion ? motion.strike!==undefined||motion.recovery!==undefined : p.item&&(pose.activeItems?.includes(p.item.uid)||pose.attacking&&!pose.activeItems);
+    const attacking=acting?14:0, lift=motion?Math.round(motion.drawback*19):p.item&&(!pose.windupItem||pose.windupItem===p.item.uid)?Math.round((pose.windup??0)*19):0;
     block(c,side<0?ax:-2,-44-tier*4,Math.abs(ax)+2,7,p.variant==='clockwork'?'#93816a':shade,flesh);
     block(c,ax-3+attacking,ay-7-lift,8,13,p.variant==='clockwork'?'#a6a39a':flesh,lit);
     rect(c,ax-4+attacking,ay+2-lift,10,6,flesh);rect(c,ax-1+attacking,ay-4-lift,2,7,ink);

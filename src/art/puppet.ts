@@ -1,5 +1,6 @@
 import type { Build, Part } from '../game/types';
 import { ITEM_MAP } from '../game/content';
+import type { ArmMotion } from '../game/attack-motion';
 import torsoUrl from './assets/torso-core.webp';
 import socketUrl from './assets/torso.webp';
 import headUrl from './assets/head.webp';
@@ -10,6 +11,7 @@ export interface Pose {
   time?: number; walk?: number; moving?: boolean; facing?: number;
   windup?: number; windupItem?: string; activeItems?: string[]; attacking?: boolean;
   swing?: number; itemSwings?: Record<string, number>; hurt?: boolean; dead?: number; enemy?: boolean;
+  arms?: Record<string, ArmMotion>;
 }
 interface Point { x: number; y: number }
 interface Frame extends Point { w: number; h: number }
@@ -97,7 +99,7 @@ export function puppetLayout(build:Build):PuppetLayout {
       left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
     }
   }
-  for(const j of arms)for(const a of [j.angle,-1.85,1.85,0])include(art.arm,j,a);
+  for(const j of arms)for(const a of [j.angle,j.angle-.9,j.angle+.9,-1.85,1.85,0])include(art.arm,j,a);
   for(const j of legs)for(const a of [-.1,0,.1])include(art.leg,j,a);
   for(const j of necks)include(art.head,j,0);
   const bounds={left:left-7,right:right+7,top:top-7,bottom:bottom+7,width:right-left+14,height:bottom-top+14};
@@ -118,6 +120,15 @@ function tab(c:CanvasRenderingContext2D,j:Joint,angle:number) {
 }
 function smooth(t:number) {t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);}
 export function armAngle(j:Joint,p:Part,pose:Pose) {
+  const motion=p.item&&pose.arms?.[p.item.uid];
+  if(motion){
+    const ready=j.angle+motion.facing*.9;
+    const prepared=j.angle+motion.facing*.9*motion.drawback;
+    const contact=-motion.facing*1.6;
+    if(motion.strike!==undefined)return ready+(contact-ready)*smooth(motion.strike);
+    if(motion.recovery!==undefined)return contact+(prepared-contact)*smooth(motion.recovery);
+    return prepared;
+  }
   let angle=j.angle;
   if(p.item&&pose.windupItem===p.item.uid)angle-=j.side*(pose.windup??0)*.75;
   const activated=p.item&&(pose.activeItems?.includes(p.item.uid)||pose.attacking&&!pose.activeItems);

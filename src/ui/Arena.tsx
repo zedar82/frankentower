@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { ARENA, type Combat, type LogEntry } from '../game/combat';
+import { ARENA, armMotion, type Combat, type LogEntry } from '../game/combat';
 import { monster, oval, rect, pixelItem, puppetBounds, room, roomLights, type Pen } from '../art/pixel';
 import { puppetLayout } from '../art/puppet';
 import { count } from '../game/anatomy';
@@ -62,8 +62,8 @@ export function Arena({combat,floor,paused,onInspect}:{combat:Combat;floor:numbe
         const dead=a.diedAt===undefined?undefined:time-a.diedAt;
         if(a.side==='player'&&a.hp>0){oval(c!,a.x,a.y+1,a.radius+7,7,'#748867');oval(c!,a.x,a.y,a.radius+5,5,'#222a25');}
         const hurt=!reduced&&time-a.lastHit<.12;
-        const recent=a.items.filter(n=>time-n.lastActivated<.28);
-        monster(c!,a.build,a.x,a.y,scale,{time:reduced?0:time,walk:a.walked,moving:!reduced&&!stopped&&a.hp>0&&Math.hypot(a.vx,a.vy)>5,facing:a.facing,enemy:a.side==='enemy',windup:a.windup,windupItem:a.windupItem,activeItems:recent.map(n=>n.item.uid),itemSwings:Object.fromEntries(recent.map(n=>[n.item.uid,reduced?.45:(time-n.lastActivated)/.28])),attacking:time-a.lastAction<.12,hurt,dead});
+        const arms=Object.fromEntries(a.items.filter(n=>n.slot==='hand').map(n=>{const motion=armMotion(a,n,time);return [n.item.uid,reduced?{drawback:motion.drawback,facing:motion.facing}:motion];}));
+        monster(c!,a.build,a.x,a.y,scale,{time:reduced?0:time,walk:a.walked,moving:!reduced&&!stopped&&a.hp>0&&Math.hypot(a.vx,a.vy)>5,facing:a.facing,enemy:a.side==='enemy',arms,hurt,dead});
         if(a.hp<=0)continue;
         if(a.shield>0){const body=puppetLayout(a.build).torso;for(let i=0;i<20;i++){const t=i*Math.PI/10;rect(c!,a.x+Math.cos(t)*(body.w*scale/2+6),a.y+(body.y+body.h/2)*scale+Math.sin(t)*(body.h*scale/2+8),3,3,'#8dadba');}}
         const barY=a.y+puppetBounds(a.build).top*scale-3,bw=a.side==='player'?52:37;

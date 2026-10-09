@@ -1,6 +1,8 @@
 # FRANKENTOWER — private creature-art playtest
 
-Watch your stitched creature fight in a dark pixel-art dungeon. Each graft now connects to its own painted torso socket: arm and hip buttons stay attached during motion, heads seat in the collar, and weapons follow the hands. The torso grows to make room for additional arm rows, heads, and legs. Arms rest out to the sides and sweep across the body when equipped attacks trigger.
+Each arm now draws back over its own weapon's preparation timer, then snaps forward in a consistent 0.12-second strike. A dagger winds back quickly and a club slowly; the arm position shows how close the weapon is to attacking. Ordinary damage and hit effects land at the visible contact point. Trigger chains retain their immediate activations.
+
+Watch your stitched creature fight in a dark pixel-art dungeon. Each graft connects to its own painted torso socket: arm and hip buttons stay attached during motion, heads seat in the collar, and weapons follow the hands. The torso grows to make room for additional arm rows, heads, and legs.
 
 Portraits, the dressing room and the arena camera now fit the whole creature, including wide builds and swinging arms. Creature artwork renders at higher resolution while the dungeon keeps its pixel style.
 

@@ -1,8 +1,10 @@
 import { ITEM_MAP } from './content';
 import { LEVEL_SCALE, equipped, stats, usable, count } from './anatomy';
 import { Random, successes } from './random';
+import { ARM_STRIKE_TIME, ARM_RECOVERY_TIME, clampProgress, drawbackProgress, type ArmMotion } from './attack-motion';
 import { clone, type Build, type Effect, type EventKind, type Item, type ItemDef, type Selector, type Stats } from './types';
-export interface CombatItem { item: Item; def: ItemDef; slot: string; remaining: number; activations: number; damage: number; healing: number; shielding: number; lastActivated: number }
+export interface ArmStrike { startedAt: number; impactAt: number; rate: number; facing: number }
+export interface CombatItem { item: Item; def: ItemDef; slot: string; remaining: number; activations: number; damage: number; healing: number; shielding: number; lastActivated: number; strike?: ArmStrike; lastStrikeFacing?: number }
 export interface Actor { id: string; side: 'player' | 'enemy'; build: Build; stats: Stats; hp: number; mana: number; shield: number; bleed: number; poison: number; poisonOwner?: string; items: CombatItem[]; damage: number; healing: number; lastHit: number; lastAction: number; x: number; y: number; vx: number; vy: number; radius: number; facing: number; walked: number; windup: number; windupItem?: string; diedAt?: number }
 export interface LogEntry { id: number; time: number; kind: 'damage' | 'heal' | 'shield' | 'activation' | 'status' | 'suppressed' | 'resource' | 'death'; actor: string; target?: string; item?: string; value?: number; text: string; chain: string[]; crit?: number; x: number; y: number; tx?: number; ty?: number; shieldBreak?: boolean; attack?: 'slash' | 'heavy' | 'bolt' | 'arrow'; status?: 'bleed' | 'poison' }
 export const ARENA = { width: 640, height: 400, cx: 320, cy: 238, rx: 268, ry: 137 };
@@ -10,6 +12,15 @@ export const distance = (a: Pick<Actor, 'x' | 'y'>, b: Pick<Actor, 'x' | 'y'>) =
 export const attackStyle = (def: ItemDef): LogEntry['attack'] => def.tags.includes('Magical') ? 'bolt' : def.tags.includes('Ranged') ? 'arrow' : def.tags.includes('Blunt') ? 'heavy' : 'slash';
 export function attackRange(actor: Actor, target: Actor, def: ItemDef) { return def.tags.includes('Magical') ? 240 : def.tags.includes('Ranged') ? 205 : actor.radius + target.radius + 23; }
 const offensive = (effects: Effect[]) => effects.some(e => e.kind === 'damage' && e.direct);
+export const usesArmStrike = (node: CombatItem) => node.slot === 'hand' && offensive(node.def.effects ?? []);
+export function armMotion(actor: Actor, node: CombatItem, time: number): ArmMotion {
+  const rate = actor.stats.speed * actor.stats.efficiency;
+  const motion: ArmMotion = { drawback: Number.isFinite(node.def.cooldown) ? drawbackProgress(node.remaining, node.def.cooldown!, rate) : 0, facing: actor.facing };
+  if (node.strike) return { ...motion, facing: node.strike.facing, strike: clampProgress((time - node.strike.startedAt) / ARM_STRIKE_TIME) };
+  const age = time - node.lastActivated;
+  if (age >= 0 && age < ARM_RECOVERY_TIME) return { ...motion, facing: node.lastStrikeFacing ?? actor.facing, recovery: age / ARM_RECOVERY_TIME };
+  return motion;
+}
 interface CombatEvent { kind: EventKind; source?: CombatItem; target?: string; ancestry: string[]; value?: number }
 interface Job { actor: Actor; node: CombatItem; ancestry: string[]; effects?: Effect[]; target?: string; reactionId?: string }
 export class Combat {
@@ -81,6 +92,9 @@ export class Combat {
     const supplemental = !!reactionId && ancestry.includes(key);
     const branch = [...ancestry, ...(supplemental ? [] : [key]), ...(reactionId ? [reactionKey] : [])];
     const actions = effects ?? node.def.effects ?? [];
+    // An explicit trigger still resolves immediately. A normal strike reaches this method at contact.
+    const strike = node.strike;
+    if (!effects) node.strike = undefined;
     const opponent = this.target(actor, target)!;
     // Reactions retain their causal ancestry, but physical attacks still need reach.
     if (offensive(actions) && distance(actor, opponent) > attackRange(actor, opponent, node.def)) return;
@@ -91,7 +105,7 @@ export class Combat {
     }
     actor.mana -= cost;
     if (!effects) node.remaining = node.def.cooldown ?? Infinity;
-    if (!supplemental) { node.activations++; node.lastActivated = this.time; }
+    if (!supplemental) { node.activations++; node.lastActivated = this.time; node.lastStrikeFacing = strike?.facing ?? actor.facing; }
     actor.lastAction = this.time;
     this.log('activation', actor, `${node.def.name} activated${effects ? ' by reaction' : ancestry.length ? ' by trigger' : ''}.`, branch, { item: node.item.uid });
     for (const effect of actions) this.effect(actor, node, effect, branch, target);
@@ -149,8 +163,11 @@ export class Combat {
         case 'cdr':
           for (const other of this.select(actor, node, effect.select)) {
             if (!Number.isFinite(other.remaining)) continue;
-            other.remaining = Math.max(0, effect.percent ? other.remaining * (1 - amount) : other.remaining - amount);
-            if (other.remaining <= 0) this.jobs.push({ actor, node: other, ancestry, target: preferred });
+            const remaining = Math.max(0, effect.percent ? other.remaining * (1 - amount) : other.remaining - amount);
+            other.remaining = remaining;
+            // Direct reductions advance the pose too, preserving immediate CDR/trigger semantics.
+            if (other.strike) { other.strike.impactAt = this.time + remaining / other.strike.rate; other.strike.startedAt = other.strike.impactAt - ARM_STRIKE_TIME; }
+            if (remaining <= 0) this.jobs.push({ actor, node: other, ancestry, target: preferred });
           }
           break;
       }
@@ -239,7 +256,16 @@ export class Combat {
       actor.stats.efficiency = normal.efficiency;
       const rate = actor.stats.efficiency * actor.stats.speed;
       for (const node of actor.items) {
-        node.remaining = Math.max(0, node.remaining - delta * rate);
+        if (!node.strike) {
+          const before = node.remaining;
+          node.remaining = Math.max(0, before - delta * rate);
+          const target = this.target(actor);
+          if (usesArmStrike(node) && rate > 0 && node.remaining <= ARM_STRIKE_TIME * rate && target && distance(actor, target) <= attackRange(actor, target, node.def)) {
+            const startedAt = this.time - delta + Math.max(0, (before - ARM_STRIKE_TIME * rate) / rate);
+            node.strike = { startedAt, impactAt: startedAt + ARM_STRIKE_TIME, rate, facing: actor.facing };
+          }
+        }
+        if (node.strike) node.remaining = Math.max(0, (node.strike.impactAt - this.time) * node.strike.rate);
         if (node.remaining <= 1e-8) this.jobs.push({ actor, node, ancestry: [] });
       }
     }

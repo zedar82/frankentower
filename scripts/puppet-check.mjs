@@ -18,13 +18,15 @@ try {
     const failures=[];
     builds.forEach((build,row)=>{
       const handParts=build.parts.filter(p=>p.slot==='hand');
-      const poses=[{time:0},{time:0,moving:true,walk:9.2},{time:0,activeItems:handParts.map(p=>p.item.uid),itemSwings:Object.fromEntries(handParts.map(p=>[p.item.uid,.23])),facing:1}];
-      poses.forEach((pose,column)=>{
+      const motion=(facing,drawback,strike)=>Object.fromEntries(handParts.map(p=>[p.item.uid,{facing,drawback,...(strike===undefined?{}:{strike})}]));
+      const poses=[1,-1].flatMap(facing=>[{time:0,arms:motion(facing,.85)},{time:0,moving:true,walk:9.2,arms:motion(facing,.25)},{time:0,arms:motion(facing,1,.75)}]);
+      poses.forEach((pose,poseIndex)=>{
+        const column=poseIndex%3;
         const box={x:column*500+20,y:row*380+50,w:460,h:310};
         const fit=fitPuppet(build,box,2.4);
-        c.fillStyle='#28222b';c.fillRect(column*500+8,row*380+8,484,364);
-        c.fillStyle='#e4cba0';c.font='18px Georgia';c.textAlign='center';c.fillText(`${build.name} · ${['idle','walk','strike'][column]}`,column*500+250,row*380+35);
-        drawPuppet(c,build,fit.x,fit.y,fit.scale,pose,()=>{});
+        if(poseIndex<3){c.fillStyle='#28222b';c.fillRect(column*500+8,row*380+8,484,364);
+        c.fillStyle='#e4cba0';c.font='18px Georgia';c.textAlign='center';c.fillText(`${build.name} · ${['draw back','walk','strike'][column]}`,column*500+250,row*380+35);
+        drawPuppet(c,build,fit.x,fit.y,fit.scale,pose,()=>{});}
         // Verify actual painted pixels, independently of the dark gallery background or equipment.
         const test=document.createElement('canvas');test.width=600;test.height=600;const ctx=test.getContext('2d');
         const tf=fitPuppet(build,{x:20,y:20,w:560,h:560},2.7),layout=puppetLayout(build);
@@ -35,7 +37,7 @@ try {
         const seed=pixel({x:0,y:layout.torso.y+layout.torso.h*.5});
         let front=0,back=0;const start=seed.y*600+seed.x;queue[back++]=start;connected[start]=1;
         while(front<back){const n=queue[front++],x=n%600,y=Math.floor(n/600);for(const next of [x? n-1:-1,x<599?n+1:-1,y?n-600:-1,y<599?n+600:-1])if(next>=0&&!connected[next]&&pixels[next*4+3]>=80){connected[next]=1;queue[back++]=next;}}
-        const check=(p,label)=>{const q=pixel(p);if(q.x<0||q.y<0||q.x>=600||q.y>=600||!connected[q.y*600+q.x])failures.push(`${build.name} ${['idle','walk','strike'][column]}: ${label} is disconnected`);};
+        const check=(p,label)=>{const q=pixel(p);if(q.x<0||q.y<0||q.x>=600||q.y>=600||!connected[q.y*600+q.x])failures.push(`${build.name} pose ${poseIndex}: ${label} is disconnected`);};
         for(const j of layout.arms){const a=armAngle(j,handParts[j.index],pose);check(j.pin,`arm ${j.index} pin`);check({x:j.pin.x-Math.sin(a)*j.h*.7,y:j.pin.y+Math.cos(a)*j.h*.7},`arm ${j.index} sleeve`);}
         for(const j of layout.legs){const a=pose.moving?Math.sin(pose.walk*.22+j.index*Math.PI)*.075:0;check(j.pin,`leg ${j.index} pin`);check({x:j.pin.x-Math.sin(a)*j.h*.72,y:j.pin.y+Math.cos(a)*j.h*.72},`leg ${j.index} boot`);}
         for(const j of layout.heads){check(j.pin,`head ${j.index} pin`);check({x:j.pin.x,y:j.pin.y-j.h*.4},`head ${j.index} face`);}
@@ -45,5 +47,5 @@ try {
   });
   await page.screenshot({path:'/private/tmp/frankentower-puppet-composition.png'});
   assert.deepEqual(result.failures,[]);assert.deepEqual(errors,[]);
-  console.log('PASS: all arm, hip and neck buttons, sleeves, boots and faces connect to the torso in six anatomies and three animation poses.');
+  console.log('PASS: all arm, hip and neck buttons, sleeves, boots and faces connect to the torso in six anatomies, three animation poses and both attack directions.');
 } finally { await browser.close(); }

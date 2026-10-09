@@ -8,9 +8,17 @@ The creature uses the original illustrated head, arm and booted leg. `src/art/as
 
 Arms rotate around shoulder pins, legs swing around hip pins, and weapons are positioned at the painted hand grip. Heads always face the audience and their neck buttons meet the collar or a sewn upper seam. Added arm rows increase torso height; added heads and feet increase width. Boots are placed at ground level. Portrait fitting and the arena camera use the same composition bounds.
 
+## Arm timing
+
+Each equipped hand draws back in proportion to its own cooldown progress. Normal attacking hands reserve the final 0.12 seconds of their cycle for a forward stroke, with damage resolving at contact, then recover for 0.16 seconds while the next preparation starts. A dagger prepares quickly; a club prepares slowly. Both use the same forward-stroke duration in simulation seconds, including under Circulation penalties. The simulation owns the strike phase; drawing does not schedule damage.
+
+The strike commits its rate and direction when it starts. Speed changes affect subsequent preparation, rather than stretching a committed stroke. At extreme natural activation speeds the forward stroke sets a 0.12-second minimum cycle. Explicit trigger chains retain their immediate activation rules and jump the hand to contact; direct cooldown reductions advance its preparation or committed pose and retain immediate activation when they reach zero. Hit, Crit and passive effects still resolve with the original branch ancestry. Physical attacks recheck reach at contact.
+
+`src/game/attack-motion.ts` defines the durations and preparation progress. The exported `armMotion` function in `src/game/combat.ts` supplies independent phases to `src/art/puppet.ts`, which rotates each cutout around its existing joint button. Non-attacking held items use a preparation/activation gesture.
+
 ## Verification
 
-Run the offline Vite server, then `node scripts/puppet-check.mjs`. It renders six anatomy combinations in idle, walking and attack poses and checks actual alpha connectivity from the torso to each pin and limb. The cases include a starting body, four and eight arms, twelve arms with six heads, odd limb counts, and a headless body. The output sheet is `/private/tmp/frankentower-puppet-composition.png`.
+Run the offline Vite server, then `node scripts/puppet-check.mjs`. It renders six anatomy combinations in preparation, walking and attack poses, in both directions, and checks actual alpha connectivity from the torso to each pin and limb. The cases include a starting body, four and eight arms, twelve arms with six heads, odd limb counts, and a headless body. The output sheet is `/private/tmp/frankentower-puppet-composition.png`. Set `FRANKENTOWER_LOCAL_URL` to use a server on a different port. `tests/attack-timing.test.ts` checks independent hand clocks, contact timing, constant strokes at different speeds, trigger/CDR behavior, and missed or cancelled attacks.
 
 ## Torso edit provenance
 
