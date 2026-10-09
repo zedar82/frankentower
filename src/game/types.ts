@@ -27,7 +27,7 @@ export interface ItemDef {
 export interface Item { uid: string; defId: string; level: number }
 export interface Part { uid: string; slot: Slot; variant: 'living' | 'clockwork' | 'necrotic' | 'serpent' | 'ganglion'; item?: Item }
 export interface Build { name: string; parts: Part[]; healthFactor?: number; powerFactor?: number }
-export interface Stats { maxHp: number; maxMana: number; capacity: number; load: number; efficiency: number; speed: number; armour: number; crit: number; chance: number; necrotic: number; octopod: number }
+export interface Stats { maxHp: number; maxMana: number; capacity: number; load: number; efficiency: number; speed: number; movementSpeed: number; armour: number; crit: number; chance: number; necrotic: number; octopod: number }
 export interface Procedure { id: string; name: string; text: string; quote: string; price: number; add?: { slot: Slot; variant?: Part['variant']; count: number }[]; remove?: { slot: Slot; count: number }[]; minFloor: number }
 export type Phase = 'start' | 'build' | 'combat' | 'result' | 'checkpoint' | 'dead' | 'retired' | 'complete';
 export interface Run { seed: number; rng: number; serial: number; floor: number; highest: number; gold: number; shopTier: number; build: Build; hp: number; stash: Item[]; offers: (Item | null)[]; procedures: string[]; operated: boolean; phase: Phase; lastEnemies: Build[]; victories: number; purchases: number; rerolls: number; surgeries: number }

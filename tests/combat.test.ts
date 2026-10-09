@@ -10,7 +10,9 @@ function armed(id: string, name = 'Patient'): Build {
   const b = human(name); b.parts.find(p => p.slot === 'hand')!.item = { uid: `${name}-item`, defId: id, level: 1 }; return b;
 }
 function custom(def: Partial<ItemDef> & { id: string }) { ITEM_MAP[def.id] = { name: def.id, slot: 'hand', type: 'Weapon', tags: [], rarity: 1, price: 0, icon: 'dagger', text: '', signature: '', ...def }; }
-function duel(id = 'dagger') { return new Combat(armed(id), [armed('skeletonblade', 'Target')], 1234); }
+function closeRanks(sim: Combat) { sim.enemies[0].x=sim.player.x+40;sim.enemies[0].y=sim.player.y;return sim; }
+// These unit tests exercise effects in reach. Spatial approach is covered separately.
+function duel(id = 'dagger') { return closeRanks(new Combat(armed(id), [armed('skeletonblade', 'Target')], 1234)); }
 test('a normal human starts at 100 HP and circulatory equilibrium', () => {
   const s = stats(human()); assert.equal(s.maxHp, 100); assert.equal(s.capacity, s.load); assert.equal(s.efficiency, 1);
 });
@@ -44,7 +46,7 @@ test('trigger ancestry is per branch, tracks instances, and stops recursive loop
   custom({ id: 'test-heart', slot: 'heart', type: 'Heart', reactions: [{ event: 'activated', type: 'Wand', effects: [{ kind: 'mana', amount: 1 }] }] });
   const build = human(); let i = 0;
   for (const part of build.parts) if (['head', 'heart', 'hand'].includes(part.slot)) part.item = { uid: `chain-${i++}`, defId: part.slot === 'head' ? 'test-hat' : part.slot === 'heart' ? 'test-heart' : 'test-wand', level: 1 };
-  const sim = new Combat(build, [armed('skeletonblade','Target')], 12); sim.player.mana = 0;
+  const sim = closeRanks(new Combat(build, [armed('skeletonblade','Target')], 12)); sim.player.mana = 0;
   const hat = sim.player.items.find(n=>n.def.id==='test-hat')!, heart = sim.player.items.find(n=>n.def.id==='test-heart')!;
   sim.activate(sim.player,hat); sim.step();
   assert.equal(hat.activations,1); assert.equal(heart.activations,2); assert.equal(sim.suppressed,2);
@@ -58,7 +60,7 @@ test('overload slows natural clocks while direct triggers still activate immedia
   const sim = new Combat(build,[armed('skeletonblade','Target')],5);
   assert.ok(sim.player.stats.efficiency<.5);
   for(let i=0;i<20;i++)sim.step(); assert.ok(sim.player.items[0].remaining>2);
-  sim.activate(sim.player,sim.player.items[0],['other-root']); assert.equal(sim.enemies[0].hp,70);
+  closeRanks(sim); sim.activate(sim.player,sim.player.items[0],['other-root']); assert.equal(sim.enemies[0].hp,70);
 });
 test('necrotic heart capacity stops when Mana reaches zero', () => {
   const b=human();b.parts.push({uid:'deadheart',slot:'heart',variant:'necrotic'});

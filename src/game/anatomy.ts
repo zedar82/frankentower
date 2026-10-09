@@ -10,7 +10,7 @@ export function human(name = 'Agnes'): Build {
 export function equipped(build: Build): { part: Part; item: Item }[] { return build.parts.flatMap(part => part.item ? [{ part, item: part.item }] : []); }
 export function usable(build: Build, item: Item) { const r = ITEM_MAP[item.defId]?.requires; return !r || count(build, r.slot) >= r.count; }
 export function stats(build: Build, mana = Infinity): Stats {
-  const result: Stats = { maxHp: 0, maxMana: count(build, 'head') * 20, capacity: 0, load: 0, efficiency: 1, speed: 1, armour: 0, crit: 0, chance: 1, necrotic: 0, octopod: 0 };
+  const result: Stats = { maxHp: 0, maxMana: count(build, 'head') * 20, capacity: 0, load: 0, efficiency: 1, speed: 1, movementSpeed: 0, armour: 0, crit: 0, chance: 1, necrotic: 0, octopod: 0 };
   for (const p of build.parts) {
     result.maxHp += { chest: 40, head: 16, hand: 8, foot: 8, heart: 12 }[p.slot];
     if (p.slot === 'heart') {
@@ -33,6 +33,8 @@ export function stats(build: Build, mana = Infinity): Stats {
   if (result.octopod >= 8) result.speed += .5;
   result.maxHp = Math.round(result.maxHp * (build.healthFactor ?? 1));
   result.efficiency = result.load === 0 ? 1 : Math.min(1, Math.pow(result.capacity / result.load, 1.3));
+  const feet = count(build, 'foot');
+  result.movementSpeed = (feet === 0 ? 14 : feet === 1 ? 30 : 58 + Math.min(10, feet - 2) * 14) * (1 + (result.speed - 1) * .5);
   return result;
 }
 export function archetypes(build: Build): string[] {

@@ -1,9 +1,11 @@
-# FRANKENTOWER — private first playtest
+# FRANKENTOWER — private pixel-arena playtest
 
-Build a monster from an ordinary human body. Equip its anatomy, support its circulation, and watch the resulting engine fight through a 100-floor tower.
+Watch your monster fight in a dark pixel-art dungeon. Creatures pursue targets, circle each other, close to melee range, and recoil from attacks. Legs now determine physical movement speed; heavy weapons wind up before striking.
 
-This first playtest includes 51 items, Level 3 signatures, 14 surgical procedures, seven enemy archetypes, checkpoint retirement, personal Legacy guardians, cloud saves, mobile controls, and combat reports.
+The arena takes centre stage during combat. Damage, critical hits, Poison, Bleed, Shield breaks, projectiles, and deaths appear in the room. Equipment and full statistics are available through inspection.
 
-Prepared Blood, Mana, Shield, and Poison builds have passed the late-game encounter tests. Further human playtesting will guide economy and item balance.
+Between floors, equip anatomical sockets around your creature, buy loose equipment from the supply shelves, and visit Dr. Sutcher for reconstruction. The campaign, 51 items, 14 procedures, personal Legacy guardians, and cloud saves remain available.
 
-Created by Daniel Andersen for the Monster Mash jam. This version remains private/unlisted. Community publishing and shared boss features are reserved for a later release.
+This is a first visual pass with procedural placeholder pixel art. Room props are decorative. Further human playtesting will guide movement, economy, and item balance.
+
+Created by Daniel Andersen for the Monster Mash jam. This version remains private/unlisted.

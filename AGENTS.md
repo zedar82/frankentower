@@ -1,6 +1,6 @@
 # FRANKENTOWER project instructions
 
-- Follow the supplied design in `docs/design.txt`. Later addenda take precedence; community publishing and room geometry are deferred from the first pass.
+- Follow `docs/design.txt` and the newer `docs/visual-direction.txt`. The visual direction requires pixel-art arenas and genuinely spatial combat; it supersedes the original room-geometry deferral. Community publishing remains deferred.
 - **Never make this game public or submit it to a game jam without Daniel's explicit permission.** Private/unlisted development uploads are allowed. Do not use `rundot deploy --public` or `rundot game set-public` without that permission.
 - Git author and committer: `Daniel Andersen <zedar@zedar.org>`. Use `~/.ssh/github.key` with `IdentitiesOnly=yes` when GitHub SSH access is needed. Permission to commit does not imply permission to push.
 - Keep hosted persistence on the RUN SDK. `src/offline-storage.ts` is development-only and must stay excluded from production.

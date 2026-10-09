@@ -1,6 +1,6 @@
 # FRANKENTOWER
 
-A roguelite autobattler for RUN.world's October 2026 **Monster Mash** jam, built from [the design document](docs/design.txt). Created by Daniel Andersen.
+A roguelite autobattler for RUN.world's October 2026 **Monster Mash** jam, built from [the design document](docs/design.txt). Created by Daniel Andersen. The current visual pass follows [the visual direction](docs/visual-direction.txt).
 
 Start human. Equipment creates your combat engine; anatomy creates its sockets; circulation determines how quickly it operates. Climb 100 floors, retire at a checkpoint, and meet your previous successful builds as guardians in later runs.
 
@@ -34,7 +34,9 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 
 ## Implemented first-pass scope
 
-- Deterministic combat shared by players, authored enemies, and saved guardians.
+- Deterministic spatial combat shared by players, authored enemies, and saved guardians: positions, nearest-target acquisition, pursuit, orbiting, soft body separation, and a circular arena boundary.
+- Melee strikes require reach; ready weapons wait while approaching. Ranged and magical attacks have longer reach, and ranged-only fighters retreat from nearby threats. Leg count determines physical movement speed.
+- Pixel-art dungeon arena, modular monsters, visible equipment, gait animation, heavy-weapon anticipation, recoil, death poses, attack arcs/projectiles, damage numbers, Shield breaks, critical feedback, and brief hit-stop on large impacts. Reduced-motion preferences suppress shake and cosmetic gait motion.
 - 51 equipment definitions across five rarities, with timers, tags, generic selectors/effects, duplicate upgrades, and Level 3 signatures.
 - Mutable Hand, Head, Foot, Chest, and Heart sockets; anatomy-derived HP, Mana, circulation capacity and load.
 - 14 surgical procedures, including arm/head/foot grafts, amputation, arm-to-head conversion, clockwork arms, Mana-fed necrotic hearts, serpent heads, and headless neural control.
@@ -43,10 +45,10 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 - Octopod set thresholds and anatomy-derived identities.
 - A 100-floor budget-generated campaign, seven enemy archetypes, five authored checkpoint guardians, and personal Legacy replacements.
 - Hall of Shame, final-build records, four anatomical challenge achievements, equipment contribution reports, and causal-chain transcripts.
-- Modular SVG creature rendering, responsive desktop/mobile controls, sound, safe areas, host pause/resume handling, and cloud saves.
+- Creature-centred equipment room with anatomical sockets, a timber supply counter, a clinical surgery view, a compact combat HUD, responsive mobile camera, sound, safe areas, host pause/resume handling, and cloud saves.
 - Custom RUN analytics for purchases, upgrades, rerolls, procedures, equipment choices, fights, retirement, and run outcomes.
 
-The design's later addendum explicitly defers community publishing, Fame, public reactions, and a shared boss repository. Those are not simulated or presented as live features here. Ranged/Melee/Magical are attack tags; mechanical movement and room geometry are also deferred, as specified for the first pass.
+The design's later addendum explicitly defers community publishing, Fame, public reactions, and a shared boss repository. Those are not simulated or presented as live features here. The newer visual direction supersedes the original movement deferral. Ordinary floors reuse a circular room; props are decorative and do not block movement or line of sight. Art is an intentionally chunky procedural pixel prototype, not final production art.
 
 ## Architecture
 
@@ -58,9 +60,11 @@ The design's later addendum explicitly defers community publishing, Fame, public
 | `src/game/run.ts` | Seeded shops, economy, grafts, encounter budgets, checkpoints, and retirement |
 | `src/platform.ts` | RUN storage, analytics, safe areas, and lifecycle events |
 | `src/App.tsx` | Build/combat screens, inspection, records, and player controls |
-| `src/ui/Creature.tsx` | Modular anatomical rendering |
+| `src/ui/Creature.tsx` | Pixel creature portraits |
+| `src/ui/Arena.tsx` | Arena rendering, effects, mobile framing, and dressing room |
+| `src/art/pixel.ts` | Shared pixel-art room, props, anatomy, and equipment drawing |
 
-`public/thumbnail.jpg` is the required 512×512 RUN thumbnail. `node scripts/render-thumbnail.mjs` renders it from the game's own vector creature. RUN text generation is explicitly disabled in `rundot/textGen.config.json`; this game makes no inference calls.
+`public/thumbnail.jpg` is the required 512×512 RUN thumbnail. `node scripts/render-thumbnail.mjs` renders it from the game's own pixel dungeon and creature. RUN text generation is explicitly disabled in `rundot/textGen.config.json`; this game makes no inference calls.
 
 Each timed or triggered activation carries an immutable branch ancestry containing item-instance IDs. An instance cannot activate again in the same branch; siblings remain independent. Passive effects such as an item's own-hit rule execute within that activation and have their own once-per-branch reaction guard. An emergency event budget reports a simulation failure instead of freezing. Battles enter explicit attrition after 90 simulated seconds.
 
@@ -74,14 +78,15 @@ npm run build
 npm run balance
 ```
 
-Tests cover defence/status semantics, chance overflow, branch-local recursion, duplicate instances, own-hit/own-crit passives, circulation, necrotic capacity, deterministic replay, shops, surgery, retirement snapshots, outcomes, and four different prepared late-game builds.
+Tests cover defence/status semantics, chance overflow, branch-local recursion, duplicate instances, own-hit/own-crit passives, circulation, necrotic capacity, deterministic replay, shops, surgery, retirement snapshots, outcomes, four different prepared late-game builds, melee reach, physical movement, leg-count speed, target selection, ranged spacing, heavy wind-up, and arena bounds.
 
-`npm run balance` runs a deliberately simple shop/surgery bot across sixteen seeds per strategy. It is a diagnostic, not a guarantee that a build is purchasable or that a new player can complete the tower. The initial bot commonly reaches floors 30–50, and prepared Blood, Mana, Shield, and Poison engines pass the late-game encounter tests. Economy, content availability, and human comprehension still need external playtesting before public release.
+`npm run balance` runs a deliberately simple shop/surgery bot across sixteen seeds per strategy. It is a diagnostic, not a guarantee that a build is purchasable or that a new player can complete the tower. Prepared Blood, Mana, Shield, and Poison engines pass the late-game encounter tests. The spatial rules change pacing and encounter balance; the old stationary-combat bot results are no longer a release benchmark. Economy, content availability, and human comprehension still need external playtesting before public release.
 
 Browser checks (start the relevant server first):
 
 ```sh
 node scripts/browser-check.mjs
+node scripts/arena-check.mjs
 node scripts/playground-check.mjs
 ```
 

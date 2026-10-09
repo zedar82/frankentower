@@ -1,0 +1,367 @@
+FRANKENTOWER — Visual Direction
+
+The current prototype should be redesigned away from the appearance of a management application.
+
+FRANKENTOWER is a pixel-art monster-building dungeon autobattler built around watching small arena battles. It should look and feel like a game first. Stats, equipment and economy support the game world rather than becoming the dominant visual language.
+
+Primary Visual Principle
+
+The creature and the arena battle are the centre of the experience.
+
+Each ordinary floor is essentially a small combat arena:
+
+* one roughly circular dungeon room
+* stairs/door providing context for entering and leaving
+* perhaps a few pieces of furniture, rubble, pillars, torches or other decoration
+* the player’s creature
+* the enemies generated for that encounter
+
+We are not trying to make elaborate dungeon exploration.
+
+The room exists primarily to give the creatures a physical space in which to fight.
+
+During combat, the majority of the screen should therefore be the arena.
+
+The player should primarily be watching:
+
+* their creature move around the room
+* enemies move and reposition
+* creatures approach and avoid each other
+* melee attackers close distance
+* creatures dodge or move away from threats
+* attacks visibly connect
+* heavy attacks wind up
+* enemies die
+* the player’s increasingly ridiculous anatomy participate in the fight
+
+This should feel like watching a little arena battle, not watching two stat blocks exchange damage.
+
+Even though combat is automatic, the creatures should appear to be actively fighting.
+
+They should move around each other, acquire targets, approach, retreat where appropriate, attack, react to impacts and reposition.
+
+A creature wielding a Dagger should dart around attacking rapidly.
+
+A creature carrying an enormous Maul should visibly pursue a target, wind up and deliver a huge slow blow.
+
+Eventually, a bizarre high-level build might be racing around the room on eight legs while swinging several weapons and triggering attacks at absurd speed.
+
+Watching that happen is a major part of the reward.
+
+The arena should consume roughly 60–70% of the player’s visual attention during a fight.
+
+The interface should frame the battle rather than compete with it.
+
+Avoid a layout dominated by:
+
+* dashboards
+* grids of rectangular cards
+* large stat panels
+* application-style navigation
+* tables
+* bordered information boxes
+* excessive buttons
+* large quantities of persistent text
+
+If the game could plausibly be mistaken for a project-management tool when the sprites are removed, the UI has become too dominant.
+
+Arena Layout
+
+For the initial game, ordinary floors can reuse essentially the same circular room.
+
+That is intentional.
+
+FRANKENTOWER is not primarily a dungeon-layout game. The interesting variation comes from:
+
+* the player’s current monster
+* enemy composition
+* movement
+* attack cadence
+* equipment interactions
+* anatomy
+* combat effects
+
+The arena can contain a small amount of decorative variation:
+
+* crates
+* tables
+* chairs
+* bones
+* statues
+* bookcases
+* rugs
+* laboratory equipment
+* increasingly elaborate furnishings higher in the tower
+
+Most of this can initially be non-interactive.
+
+Do not spend significant development effort creating unique floor layouts before the core arena combat feels good to watch.
+
+The simple room should instead become a stage on which increasingly absurd fights occur.
+
+Spatial Combat
+
+Combat should be genuinely spatial even though the player does not directly control it.
+
+Creatures have positions and move through the arena.
+
+Melee attacks require creatures to get close enough to attack.
+
+Movement Speed therefore has an observable physical meaning.
+
+A one-legged creature should visibly struggle to move compared with a normal human.
+
+A four-legged creature should be noticeably mobile.
+
+An eight-legged monstrosity should be capable of scuttling around the arena at alarming speed.
+
+This makes anatomy readable through behaviour rather than merely through statistics.
+
+Later Ranged and Magical attacks can make positioning more strategically important:
+
+* ranged creatures can kite slower opponents
+* melee creatures need to close distance
+* fast creatures can pursue
+* obstacles can eventually affect movement or line of sight if worthwhile
+
+Those systems are not necessary for the first playable version.
+
+For now, the important requirement is simply:
+
+Creatures should visibly move around and fight each other rather than standing in assigned positions exchanging attacks.
+
+Movement does not need sophisticated tactical AI.
+
+Simple behaviours are sufficient if they produce lively, readable battles.
+
+Visual Style
+
+Use a deliberately chunky dark fantasy pixel-art presentation.
+
+Target the feel of an old dungeon game rather than a modern web application.
+
+The dungeon should use:
+
+* dark stone
+* pools of warm light
+* heavy shadows
+* arches, stairs, doors and dungeon props
+* restrained colour outside characters/effects
+* simple but atmospheric animation
+
+The game can be grotesque, but it should not be visually miserable. There is humour and energy underneath the horror.
+
+Avoid sleek sci-fi UI, glass panels, gradients, productivity-app styling and modern SaaS aesthetics.
+
+Combat Screen
+
+Combat should be visually dominated by the dungeon room.
+
+The player’s creature should occupy a prominent position and be large enough that its changing silhouette matters.
+
+Enemies physically occupy the arena rather than appearing as rows, cards or opposing stat panels.
+
+Minimal persistent information can sit around the edges:
+
+* HP
+* Mana where relevant
+* Circulation warning where relevant
+* current floor
+* gold where relevant
+* perhaps small equipment activation indicators
+
+Do not permanently display every statistic simply because the simulation contains it.
+
+Combat information should appear in the world where practical:
+
+* damage numbers over targets
+* healing numbers
+* Shield appearing around the creature
+* Armour communicated through impacts/effects
+* Poison/Bleed status icons near the affected creature
+* Crits visually distinct from normal hits
+* item activations briefly identifiable
+
+The player needs to understand why the machine is working, but that information should feel like combat feedback rather than an analytics dashboard.
+
+Creature Presentation
+
+The monster is the game’s visual star.
+
+The player begins as an ordinary human.
+
+As anatomy changes, the silhouette should become progressively less human.
+
+Do not require perfect modular rendering of every anatomical configuration for the first version.
+
+Representative body forms are acceptable:
+
+* human
+* extra-armed
+* multi-headed
+* quadrupedal
+* many-legged
+* headless
+* blob
+* extreme monstrosity
+
+Equipment should be visible where practical, particularly iconic equipment such as:
+
+* enormous weapons
+* shields
+* helmets
+* multiple shoes
+
+The player should occasionally look at the creature and think:
+
+“What the fuck have I done?”
+
+Equipment Screen
+
+Avoid presenting equipment primarily as an RPG spreadsheet.
+
+The creature should remain central.
+
+Equipment slots should be spatially associated with anatomy where practical:
+
+* Hand equipment near arms
+* Head equipment near heads
+* Foot equipment near legs/feet
+* Chest equipment near torso
+
+An extra arm should visually feel like gaining somewhere to put another weapon, rather than merely causing “Hand Slot +1” to appear in a list.
+
+Detailed stats can appear contextually when selecting or inspecting an item.
+
+Shop
+
+The shop should feel like a place where objects are being offered, not an ecommerce page.
+
+Items can be presented visually on:
+
+* shelves
+* a counter
+* hooks
+* stands
+
+Price and essential effect text should be immediately readable.
+
+Full details can appear on selection/inspection.
+
+The creature should preferably remain visible so buying equipment feels like modifying the thing that will shortly fight.
+
+Reroll, shop upgrade and gold are important, but should not visually overwhelm the items.
+
+Surgery / Scientist Screen
+
+This can be more interface-heavy because the medical interface is part of the fiction.
+
+Tone: clinical, calm, helpful.
+
+The scientist is not a cackling mad scientist. He behaves like a competent physician.
+
+Opening line:
+
+“You’ll never make it to the top with your body like that. Here, let me help…”
+
+Procedures should look like medical options rather than magical power selections.
+
+Possible presentation:
+
+* creature/body diagram
+* anatomical highlighting
+* procedure tray
+* clinical labels
+* simple before/after consequences
+
+Language should be reassuringly medical even when the procedure is grotesque.
+
+Example:
+
+Additional Upper Limb
+
+Graft a compatible donor arm.
+
++100 Max HP
++1 Hand Slot
++Circulatory Load
+
+The humour comes from treating this as normal medicine.
+
+Tone
+
+The game takes its absurdity seriously.
+
+Do not fill the interface with jokes explaining that the creature is ridiculous.
+
+The world is practical, clinical and matter-of-fact.
+
+A monster with six arms is not remarkable because six arms are funny.
+
+Six arms mean:
+
+* six Hand slots
+* increased HP
+* increased Circulatory Load
+* potentially inadequate cardiovascular support
+
+The game discusses those consequences professionally.
+
+Achievements and occasional item names can be much more playful.
+
+Animation and Feel
+
+Combat should have physical impact despite simple pixel art.
+
+Prioritise:
+
+* readable anticipation before heavy attacks
+* movement before attacks rather than stationary attack trading
+* small recoil on hits
+* brief hit-stop for enormous impacts
+* screen shake used sparingly for genuinely large attacks
+* clear attack arcs/projectiles
+* satisfying death animations
+* obvious Shield break
+* clear Crit feedback
+* visible status application
+
+A Heavy Maul activating should feel completely different from a Dagger activation.
+
+If a build eventually gets the Heavy Maul activating several times per second, the resulting visual absurdity is desirable.
+
+The ideal combat experience is that the player can watch their build happen.
+
+Numbers tell the player that their build works.
+
+The arena should show them what that build actually looks like when released into a room full of monsters.
+
+Information Hierarchy
+
+At any moment the screen should answer, in roughly this order:
+
+1. What is happening to my monster?
+2. What is it fighting?
+3. Is my build working?
+4. What can I change next?
+5. What are the exact numbers?
+
+The current prototype should prioritise the first three.
+
+Exact numerical detail should remain available through inspection rather than occupying the entire screen continuously.
+
+First Visual-Pass Goal
+
+Do not attempt final art.
+
+The immediate goal is to make the prototype read unmistakably as:
+
+a dark pixel-art dungeon game about watching your increasingly horrible monster fight little arena battles
+
+rather than:
+
+a web application for managing a monster build.
+
+Use placeholders freely where necessary.
+
+Composition, hierarchy, movement, atmosphere and interaction feel matter more at this stage than polished assets.
