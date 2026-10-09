@@ -1,6 +1,8 @@
 # FRANKENTOWER — private creature-art playtest
 
-Watch your stitched creature fight in a dark pixel-art dungeon. The first illustrated paper-puppet parts add a front-facing head, a growing cloth torso, articulated arms, and booted legs. New sewn socket tabs appear between the tunic's original attachment points as extra arm rows are added. Arms rest out to the sides and sweep across the body when equipped attacks trigger; large builds scale to fit the dressing room and inspection views.
+Watch your stitched creature fight in a dark pixel-art dungeon. Each graft now connects to its own painted torso socket: arm and hip buttons stay attached during motion, heads seat in the collar, and weapons follow the hands. The torso grows to make room for additional arm rows, heads, and legs. Arms rest out to the sides and sweep across the body when equipped attacks trigger.
+
+Portraits, the dressing room and the arena camera now fit the whole creature, including wide builds and swinging arms. Creature artwork renders at higher resolution while the dungeon keeps its pixel style.
 
 Creatures pursue targets, circle each other, close to melee range, and recoil from attacks. Legs determine physical movement speed; heavy weapons wind up before striking.
 

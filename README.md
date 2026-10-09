@@ -36,7 +36,7 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 
 - Deterministic spatial combat shared by players, authored enemies, and saved guardians: positions, nearest-target acquisition, pursuit, orbiting, soft body separation, and a circular arena boundary.
 - Melee strikes require reach; ready weapons wait while approaching. Ranged and magical attacks have longer reach, and ranged-only fighters retreat from nearby threats. Leg count determines physical movement speed.
-- Pixel-art dungeon arena with an illustrated paper-puppet creature prototype: a growing stitched torso, extra sewn attachment tabs as arm rows are added, front-facing heads, visible limbs, and arms that swing across the body. Creatures also show equipped gear, gait, recoil, death poses, attack arcs/projectiles, damage numbers, Shield breaks, critical feedback, and brief hit-stop on large impacts. Reduced-motion preferences suppress shake and cosmetic gait motion.
+- Pixel-art dungeon arena with an illustrated paper-puppet creature prototype: a growing stitched torso, a painted socket and matching joint pin for each graft, front-facing heads seated in the collar, visible limbs, and arms that swing across the body. Limb motion pivots on the attachment rather than moving it; equipped weapons follow the hands. Creatures also show gait, recoil, death poses, attack arcs/projectiles, damage numbers, Shield breaks, critical feedback, and brief hit-stop on large impacts. Reduced-motion preferences suppress shake and cosmetic gait motion.
 - 51 equipment definitions across five rarities, with timers, tags, generic selectors/effects, duplicate upgrades, and Level 3 signatures.
 - Mutable Hand, Head, Foot, Chest, and Heart sockets; anatomy-derived HP, Mana, circulation capacity and load.
 - 14 surgical procedures, including arm/head/foot grafts, amputation, arm-to-head conversion, clockwork arms, Mana-fed necrotic hearts, serpent heads, and headless neural control.
@@ -62,7 +62,10 @@ The design's later addendum explicitly defers community publishing, Fame, public
 | `src/App.tsx` | Build/combat screens, inspection, records, and player controls |
 | `src/ui/Creature.tsx` | Responsive modular creature portraits |
 | `src/ui/Arena.tsx` | Arena rendering, effects, mobile framing, and dressing room |
-| `src/art/pixel.ts` | Canvas room, props, anatomy, equipment, and paper-puppet assembly |
+| `src/art/pixel.ts` | Pixel dungeon, props, equipment icons, and creature rendering entry point |
+| `src/art/puppet.ts` | Measured artwork pivots, fabric seams, growing creature layout, fitting, and puppet animation |
+
+[Prototype art notes](docs/art-prototype.md) record the torso edit, sprite connection points, and composition checks.
 
 `public/thumbnail.jpg` is the required 512×512 RUN thumbnail. `node scripts/render-thumbnail.mjs` renders it from the game's own pixel dungeon and creature. RUN text generation is explicitly disabled in `rundot/textGen.config.json`; this game makes no inference calls.
 
@@ -87,10 +90,13 @@ Browser checks (start the relevant server first):
 ```sh
 node scripts/browser-check.mjs
 node scripts/arena-check.mjs
+node scripts/puppet-check.mjs
 node scripts/playground-check.mjs
 ```
 
 They use installed Google Chrome on macOS, exercise actual controls and cloud persistence, and write screenshots to `/private/tmp`.
+
+The puppet check verifies actual canvas pixel connectivity from the torso to arm, hip and neck pins, sleeves, boots and faces across six anatomies and idle, walking and attack poses. It writes a comparison sheet to `/private/tmp/frankentower-puppet-composition.png`. The offline browser, arena and puppet scripts accept `FRANKENTOWER_LOCAL_URL` for a local server running on a different port.
 
 `scripts/hosted-check.mjs` tests a deployed private version when `FRANKENTOWER_PREVIEW_URL` is supplied. It waits for RUN's visible game frame, exercises a purchase and combat, and checks cloud persistence after reload. For browser testing, use the private catalog URL with its `tag=private` and `k` share-key parameters to avoid the mobile deep-link handoff. Keep the share link out of source control.
 

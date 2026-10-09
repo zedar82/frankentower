@@ -5,7 +5,7 @@ const context = await browser.newContext({ viewport: { width: 1440, height: 1080
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', error => errors.push(error.message));
-await page.goto('http://127.0.0.1:5173/');
+await page.goto(process.env.FRANKENTOWER_LOCAL_URL??'http://127.0.0.1:5173/');
 await page.getByRole('dialog').waitFor();
 await page.evaluate(async () => {
   const { defaultSave, newRun } = await import('/src/game/run.ts');
@@ -52,7 +52,7 @@ await page.screenshot({path:'/private/tmp/frankentower-grafted.png',fullPage:tru
 const mobile = await context.newPage({ viewport: { width: 390, height: 844 } });
 await mobile.setViewportSize({width:390,height:844});
 mobile.on('pageerror',error=>errors.push(error.message));
-await mobile.goto('http://127.0.0.1:5173/');
+await mobile.goto(process.env.FRANKENTOWER_LOCAL_URL??'http://127.0.0.1:5173/');
 await mobile.getByRole('button',{name:'Enter floor 25'}).waitFor();
 assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
 await mobile.screenshot({path:'/private/tmp/frankentower-mobile.png',fullPage:true});

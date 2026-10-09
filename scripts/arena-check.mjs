@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:1080}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try{
-  await page.goto('http://127.0.0.1:5173/');
+  await page.goto(process.env.FRANKENTOWER_LOCAL_URL??'http://127.0.0.1:5173/');
   await page.locator('.main-header').waitFor();
   await page.evaluate(async()=>{
     const {defaultSave,newRun,startRun,refreshShop}=await import('/src/game/run.ts');
