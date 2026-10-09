@@ -52,18 +52,21 @@ The design's later addendum explicitly defers community publishing, Fame, public
 
 ## Architecture
 
-| File | Responsibility |
-| --- | --- |
-| `src/game/content.ts` | Declarative equipment, effects, reactions, and procedures |
-| `src/game/combat.ts` | Fixed-step simulation, event queue, branch ancestry, damage and resources |
-| `src/game/anatomy.ts` | Anatomy, sockets, derived stats, and identities |
-| `src/game/run.ts` | Seeded shops, economy, grafts, encounter budgets, checkpoints, and retirement |
-| `src/platform.ts` | RUN storage, analytics, safe areas, and lifecycle events |
-| `src/App.tsx` | Build/combat screens, inspection, records, and player controls |
-| `src/ui/Creature.tsx` | Responsive modular creature portraits |
-| `src/ui/Arena.tsx` | Arena rendering, effects, mobile framing, and dressing room |
-| `src/art/pixel.ts` | Pixel dungeon, props, equipment icons, and creature rendering entry point |
-| `src/art/puppet.ts` | Measured artwork pivots, fabric seams, growing creature layout, fitting, and puppet animation |
+| File                                                              | Responsibility                                                                                |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `src/game/content.ts`                                             | Declarative equipment, effects, reactions, and procedures                                     |
+| `src/game/combat.ts`                                              | Fixed-step simulation, event queue, branch ancestry, damage and resources                     |
+| `src/game/anatomy.ts`                                             | Anatomy, sockets, derived stats, and identities                                               |
+| `src/game/run.ts`                                                 | Starting, advancing, outcomes, checkpoints, and retirement                                    |
+| `src/game/shop.ts`, `inventory.ts`, `surgery.ts`, `encounters.ts` | Pure build actions, stock, surgery, and enemy generation                                      |
+| `src/game/abilities.ts`, `anatomy-content.ts`, `sets.ts`          | Shared equipment, intrinsic limb, and set abilities                                           |
+| `src/save-validation.ts`, `save-writer.ts`                        | Boundary validation and serialized retry/coalescing                                           |
+| `src/platform.ts`                                                 | RUN storage, analytics, safe areas, and lifecycle events                                      |
+| `src/App.tsx`                                                     | Build/combat screens, inspection, records, and player controls                                |
+| `src/ui/Creature.tsx`                                             | Responsive modular creature portraits                                                         |
+| `src/ui/Arena.tsx`                                                | Arena rendering, effects, mobile framing, and dressing room                                   |
+| `src/art/pixel.ts`                                                | Pixel dungeon, props, equipment icons, and creature rendering entry point                     |
+| `src/art/puppet.ts`                                               | Measured artwork pivots, fabric seams, growing creature layout, fitting, and puppet animation |
 
 [Prototype art notes](docs/art-prototype.md) record the torso edit, sprite connection points, and composition checks.
 
@@ -71,7 +74,7 @@ The design's later addendum explicitly defers community publishing, Fame, public
 
 Each timed or triggered activation carries an immutable branch ancestry containing item-instance IDs. An instance cannot activate again in the same branch; siblings remain independent. Passive effects such as an item's own-hit rule execute within that activation and have their own once-per-branch reaction guard. An emergency event budget reports a simulation failure instead of freezing. Battles enter explicit attrition after 90 simulated seconds.
 
-If a session closes during combat, the save resumes at that floor's build phase with its pre-fight HP and the same encounter seed. Completed fight outcomes and purchases are persisted through RUN storage. Content snapshots include the ruleset version.
+If a session closes during combat, the save resumes at that floor's build phase with its pre-fight HP and the same encounter seed. Completed fight outcomes and purchases are persisted through RUN storage. Failed writes retain the latest snapshot and retry automatically with capped exponential backoff; Retry save and host resume can also flush pending progress. Unsaved progress is indicated explicitly. Content snapshots include the ruleset version.
 
 ## Validation
 
@@ -85,20 +88,18 @@ Tests cover defence/status semantics, chance overflow, branch-local recursion, d
 
 `npm run balance` runs a deliberately simple shop/surgery bot across sixteen seeds per strategy. It is a diagnostic, not a guarantee that a build is purchasable or that a new player can complete the tower. Prepared Blood, Mana, Shield, and Poison engines pass the late-game encounter tests. The spatial rules change pacing and encounter balance; the old stationary-combat bot results are no longer a release benchmark. Economy, content availability, and human comprehension still need external playtesting before public release.
 
-Browser checks (start the relevant server first):
+Install the test browser once, then run the offline browser gates with automatic Vite startup and cleanup:
 
 ```sh
-node scripts/browser-check.mjs
-node scripts/arena-check.mjs
-node scripts/puppet-check.mjs
-node scripts/playground-check.mjs
+npx playwright install chromium
+npm run test:browser
 ```
 
-They use installed Google Chrome on macOS, exercise actual controls and cloud persistence, and write screenshots to `/private/tmp`.
+The suite checks real controls, arena movement, puppet connectivity, malformed-record recovery, failed-write retries, and combat/runtime crash recovery. Screenshots go to ignored `test-results/`. It uses Playwright's bundled Chromium by default; set `FRANKENTOWER_BROWSER_CHANNEL=chrome` or `FRANKENTOWER_BROWSER_EXECUTABLE` to use another installed Chromium browser. `FRANKENTOWER_ARTIFACT_DIR` selects another screenshot directory. Individual checks accept `FRANKENTOWER_LOCAL_URL` when you start an offline server yourself.
 
-The puppet check verifies actual canvas pixel connectivity from the torso to arm, hip and neck pins, sleeves, boots and faces across six anatomies and idle, walking and attack poses. It writes a comparison sheet to `/private/tmp/frankentower-puppet-composition.png`. The offline browser, arena and puppet scripts accept `FRANKENTOWER_LOCAL_URL` for a local server running on a different port.
+GitHub Actions runs a clean install, unit tests, production build, and the offline browser suite. A separate manual hosted workflow uses a private preview link stored as an environment secret. See [release checks and recovery behavior](docs/release-checks.md).
 
-`scripts/hosted-check.mjs` tests a deployed private version when `FRANKENTOWER_PREVIEW_URL` is supplied. It waits for RUN's visible game frame, exercises a purchase and combat, and checks cloud persistence after reload. For browser testing, use the private catalog URL with its `tag=private` and `k` share-key parameters to avoid the mobile deep-link handoff. Keep the share link out of source control.
+`scripts/playground-check.mjs` requires a running authenticated Playground server, uses `FRANKENTOWER_PLAYGROUND_URL`, and expects its dedicated Heavy Club test profile. `npm run test:hosted` requires `FRANKENTOWER_PREVIEW_URL` or `FRANKENTOWER_PREVIEW_URL_FILE`; it opens a fresh disposable browser context and refuses to replace an existing run. It verifies a purchased item and floor progression survive cloud reloads. Private share links must stay out of source control.
 
 ## Private deployment and jam submission
 

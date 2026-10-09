@@ -10,7 +10,9 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "tsx --test tests/*.test.ts",
     "balance": "tsx scripts/balance.ts",
-    "format": "prettier --write"
+    "format": "prettier --write",
+    "test:browser": "node scripts/run-browser-checks.mjs",
+    "test:hosted": "node scripts/hosted-check.mjs"
   },
   "dependencies": {
     "@series-inc/rundot-game-sdk": "5.29.1",

@@ -9,7 +9,15 @@ import { encounter } from './game/encounters';
 import { type Build, type Item, type Save, type Slot } from './game/types';
 import { hasOffensiveAbility } from './game/abilities';
 import { Combat } from './game/combat';
-import { hostPaused, persist, platformStatus, subscribePlatform, telemetry } from './platform';
+import {
+  hostPaused,
+  persist,
+  platformStatus,
+  subscribePlatform,
+  telemetry,
+  retrySave,
+  savePending,
+} from './platform';
 import { sound } from './audio';
 import { useItemDrag } from './ui/hooks/useItemDrag';
 import { ItemDetails } from './ui/ItemDetails';
@@ -42,6 +50,7 @@ export function App({ initialSave }: { initialSave: Save }) {
   const [inspected, setInspected] = useState<Build | null>(null);
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState('');
+  const [fightError, setFightError] = useState<string | null>(null);
   const [catalogueTag, setCatalogueTag] = useState('All');
   const combatRef = useRef<Combat | null>(null);
   const pauseRef = useRef(paused);
@@ -91,6 +100,7 @@ export function App({ initialSave }: { initialSave: Save }) {
       notify('Equip an offensive item before entering the room.');
       return;
     }
+    setFightError(null);
     current.lastEnemies = encounter(current.floor, current.seed, saveRef.current.legacy);
     combatRef.current = new Combat(
       current.build,
@@ -173,6 +183,24 @@ export function App({ initialSave }: { initialSave: Save }) {
       lastFreeze = 0;
     let observed: Combat | null = null;
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const recoverFight = (message: string) => {
+      const current = saveRef.current.run!;
+      telemetry('simulation_failed', {
+        seed: current.seed,
+        floor: current.floor,
+        message: message.slice(0, 256),
+      });
+      // The run still contains the pre-fight HP, inventory, and currency.
+      current.phase = 'build';
+      combatRef.current = null;
+      previewRef.current = null;
+      accumulator = 0;
+      setPaused(false);
+      setFlowStep('shop');
+      setFightError(message);
+      void persist(saveRef.current);
+      redraw((v) => v + 1);
+    };
     const tick = (now: number) => {
       const delta = Math.min((now - last) / 1000, 0.15);
       last = now;
@@ -194,7 +222,13 @@ export function App({ initialSave }: { initialSave: Save }) {
       ) {
         if (now >= freezeUntil) accumulator += delta * saveRef.current.settings.speed;
         while (accumulator >= 0.05 && !combat.done) {
-          combat.step(0.05);
+          try {
+            combat.step(0.05);
+          } catch (error) {
+            recoverFight(error instanceof Error ? error.message : 'Combat could not continue.');
+            frame = requestAnimationFrame(tick);
+            return;
+          }
           accumulator -= 0.05;
         }
         const hits = combat.logs
@@ -216,6 +250,11 @@ export function App({ initialSave }: { initialSave: Save }) {
             accumulator = 0;
           }
           lastImpact = hits[hits.length - 1].id;
+        }
+        if (combat.failure) {
+          recoverFight(combat.failure);
+          frame = requestAnimationFrame(tick);
+          return;
         }
         if (combat.done) {
           accumulator = 0;
@@ -262,6 +301,7 @@ export function App({ initialSave }: { initialSave: Save }) {
         e.code === 'Space' &&
         !(e.target instanceof HTMLInputElement) &&
         !modal &&
+        !fightError &&
         !selected &&
         !selectedPart &&
         !inspected &&
@@ -374,7 +414,18 @@ export function App({ initialSave }: { initialSave: Save }) {
           <button className="icon-button" onClick={() => setModal('help')} aria-label="How to play">
             ?
           </button>
-          <span className="save-status">{platformStatus()}</span>
+          <span className="save-status" role="status">
+            {platformStatus()}
+          </span>
+          {savePending() && (
+            <button
+              onClick={() => {
+                void retrySave();
+              }}
+            >
+              Retry save
+            </button>
+          )}
         </div>
       </header>
       {battleView && (
@@ -752,6 +803,16 @@ export function App({ initialSave }: { initialSave: Save }) {
       {inspected && (
         <Modal title="Build inspection" onClose={() => setInspected(null)} wide>
           {<PatientSummary build={inspected} />}
+        </Modal>
+      )}
+      {fightError && (
+        <Modal title="Combat interrupted" onClose={() => setFightError(null)}>
+          <p>
+            The fight could not be resolved. Your pre-fight health, equipment, and gold are
+            preserved. This does not count as a defeat.
+          </p>
+          <p>{fightError}</p>
+          <button onClick={() => setFightError(null)}>Return to the shop</button>
         </Modal>
       )}
       {modal === 'help' && (

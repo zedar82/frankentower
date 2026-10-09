@@ -1,60 +1,121 @@
 import { defaultSave } from './game/run';
 import { RULESET, type Save } from './game/types';
-import { ITEM_MAP } from './game/content';
+import { parseSave } from './save-validation';
+import { SaveWriter } from './save-writer';
+export { InvalidSaveError } from './save-validation';
 type API = typeof import('@series-inc/rundot-game-sdk/api').default;
 let api: API | undefined;
 let offline: typeof import('./offline-storage') | undefined;
-let queue = Promise.resolve();
-let writeRevision = 0;
+let writer: SaveWriter | undefined;
+let initialization: Promise<void> | undefined;
 let status = 'Connecting';
 let paused = false;
 const listeners = new Set<() => void>();
 export const platformStatus = () => status;
 export const hostPaused = () => paused;
-export const subscribePlatform = (callback: () => void) => { listeners.add(callback); return () => { listeners.delete(callback); }; };
-function update(value: string) { status = value; listeners.forEach(fn => fn()); }
+export const savePending = () => writer?.hasPending ?? false;
+export const subscribePlatform = (callback: () => void) => {
+  listeners.add(callback);
+  return () => {
+    listeners.delete(callback);
+  };
+};
+function update(value: string) {
+  status = value;
+  listeners.forEach((fn) => fn());
+}
 const KEY = 'frankentower-save-v1';
-function parseSave(text: string | null): Save {
-  if (!text) return defaultSave();
-  const save = JSON.parse(text) as Save;
-  if (save.version !== RULESET) return defaultSave();
-  if (!Array.isArray(save.legacy) || !Array.isArray(save.records) || !Array.isArray(save.achievements) || !save.settings || typeof save.best !== 'number') throw new Error('Save data could not be read.');
-  for (const build of [save.run?.build, ...save.legacy.map(x => x.build), ...save.records.map(x => x.build)].filter(Boolean)) {
-    if (!Array.isArray(build!.parts) || build!.parts.some(p => p.item && !ITEM_MAP[p.item.defId])) throw new Error('A saved build contains unknown content.');
-  }
-  if (save.run?.phase === 'combat') save.run.phase = 'build';
-  return save;
+async function initialize() {
+  if (!initialization)
+    initialization = (async () => {
+      if (import.meta.env.MODE === 'offline') offline = await import('./offline-storage');
+      else {
+        api = (await import('@series-inc/rundot-game-sdk/api')).default;
+        const safeArea = () => {
+          const area = api!.system.getSafeArea();
+          for (const [side, value] of Object.entries(area))
+            document.documentElement.style.setProperty(`--safe-${side}`, `${value}px`);
+        };
+        safeArea();
+        api.lifecycles.onSafeAreaChanged(safeArea);
+        const pause = () => {
+          paused = true;
+          void retrySave();
+          listeners.forEach((fn) => fn());
+        };
+        const resume = () => {
+          paused = false;
+          void retrySave();
+          listeners.forEach((fn) => fn());
+        };
+        api.lifecycles.onPause(pause);
+        api.lifecycles.onSleep(pause);
+        api.lifecycles.onResume(resume);
+        api.lifecycles.onAwake(resume);
+      }
+      writer = new SaveWriter({
+        write: async (text) => {
+          if (offline) offline.write(KEY, text);
+          else await api!.appStorage.setItem(KEY, text);
+        },
+        status: (pending, failed) =>
+          update(
+            failed
+              ? 'Unsaved progress · retrying'
+              : pending
+                ? 'Saving…'
+                : offline
+                  ? 'Local save'
+                  : 'Cloud save',
+          ),
+        failed: () => telemetry('save_failed', { ruleset: RULESET }),
+      });
+      window.addEventListener('online', () => {
+        void retrySave();
+      });
+      document.addEventListener('visibilitychange', () => {
+        void retrySave();
+      });
+      window.addEventListener('pagehide', () => {
+        void retrySave();
+      });
+      window.addEventListener('beforeunload', (event) => {
+        if (!savePending()) return;
+        void retrySave();
+        event.preventDefault();
+        event.returnValue = '';
+      });
+    })().catch((error) => {
+      initialization = undefined;
+      throw error;
+    });
+  await initialization;
 }
 export async function loadSave(): Promise<Save> {
-  if (import.meta.env.MODE === 'offline') {
-    offline = await import('./offline-storage'); update('Local save'); return parseSave(offline.read(KEY));
-  }
-  api = (await import('@series-inc/rundot-game-sdk/api')).default;
-  const safeArea = () => {
-    const area = api!.system.getSafeArea();
-    for (const [side, value] of Object.entries(area)) document.documentElement.style.setProperty(`--safe-${side}`, `${value}px`);
-  };
-  safeArea(); api.lifecycles.onSafeAreaChanged(safeArea);
-  api.lifecycles.onPause(() => { paused = true; listeners.forEach(fn => fn()); });
-  api.lifecycles.onSleep(() => { paused = true; listeners.forEach(fn => fn()); });
-  api.lifecycles.onResume(() => { paused = false; listeners.forEach(fn => fn()); });
-  api.lifecycles.onAwake(() => { paused = false; listeners.forEach(fn => fn()); });
-  const save = parseSave(await api.appStorage.getItem(KEY));
-  update('Cloud save'); return save;
+  await initialize();
+  const save = parseSave(offline ? offline.read(KEY) : await api!.appStorage.getItem(KEY));
+  update(offline ? 'Local save' : 'Cloud save');
+  return save;
 }
-export function persist(save: Save) {
-  const text = JSON.stringify(save);
-  const revision = ++writeRevision;
-  update('Saving…');
-  queue = queue.catch(() => {}).then(async () => {
-    try {
-      if (offline) offline.write(KEY, text);
-      else if (api) await api.appStorage.setItem(KEY, text);
-      if (revision === writeRevision) update(offline ? 'Local save' : 'Cloud save');
-    } catch { if (revision === writeRevision) update('Save pending · retry on next action'); }
-  });
-  return queue;
+export async function resetSave(): Promise<Save> {
+  await initialize();
+  const save = defaultSave();
+  await persist(save);
+  if (savePending())
+    throw new Error(
+      'The reset could not be saved. The reset is pending and will retry while this page stays open. Please retry the connection.',
+    );
+  return save;
 }
+export function persist(save: Save): Promise<void> {
+  if (!writer) return Promise.reject(new Error('Patient storage is not connected.'));
+  return writer.enqueue(JSON.stringify(save));
+}
+export const retrySave = () => writer?.flush() ?? Promise.resolve();
 export function telemetry(event: string, data: Record<string, string | number | boolean>) {
-  try { void api?.analytics.recordCustomEvent(event, data).catch(() => {}); } catch { /* Telemetry never interrupts a run. */ }
+  try {
+    void api?.analytics.recordCustomEvent(event, data).catch(() => {});
+  } catch {
+    /* Telemetry never interrupts a run. */
+  }
 }

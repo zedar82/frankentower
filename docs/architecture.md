@@ -28,6 +28,7 @@ not import React, browser APIs, audio, persistence, or telemetry.
 | `game/run.ts`                                          | Starting, advancing, finishing, retiring, and run records          |
 | `ui/hooks/useItemDrag.ts`                              | Pointer/native drag lifecycle and listener cleanup                 |
 | `ui/Shop.tsx`, `ItemDetails.tsx`, `PatientSummary.tsx` | Presentation and inspection                                        |
+| `save-validation.ts`, `save-writer.ts`                 | Save boundary validation and serialized retry/coalescing           |
 | `platform.ts`                                          | RUN persistence and host integration                               |
 
 `anatomy.ts` exposes the common body queries as part of its public build API.

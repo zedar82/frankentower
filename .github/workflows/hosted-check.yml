@@ -1,0 +1,27 @@
+name: Private hosted check
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-host:
+    environment: private-playtest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FRANKENTOWER_PREVIEW_URL: ${{ secrets.FRANKENTOWER_PREVIEW_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:hosted
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: private-hosted-check
+          path: test-results/*.png
+          if-no-files-found: ignore
