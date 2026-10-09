@@ -28,8 +28,8 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 - Select equipped items to unequip or combine them. Two identical items at the same level make one item at the next level. Level 3 adds a signature effect.
 - Select a tray item to equip, swap, combine, or sell it.
 - Surgery opens every five floors: choose one procedure per visit. Amputation returns equipment to the tray.
-- Enter a room to fight automatically. Pause and inspect opponents, or change speed to 1×, 2×, or 4×.
-- Space enters a room or toggles combat pause. Auto-climb stops at surgery visits and checkpoint results.
+- The arena stays on screen between fights. After combat, open the battle log if you want; the doctor appears on appointment floors, then the supply cabinet opens over the room.
+- Finish shopping to return directly to combat. There is no separate floor-climb step. Space starts the next fight or toggles combat pause.
 - At floors 20, 40, 60, and 80, retire to replace the checkpoint guardian or risk continuing. Floor 100 preserves its champion automatically.
 
 ## Implemented first-pass scope
@@ -39,7 +39,7 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 - Pixel-art dungeon arena with an illustrated paper-puppet creature prototype: a growing stitched torso, a painted socket and matching joint pin for each graft, front-facing heads seated in the collar, visible limbs, and arms that swing across the body. Limb motion pivots on the attachment rather than moving it; equipped weapons follow the hands. Creatures also show gait, recoil, death poses, attack arcs/projectiles, damage numbers, Shield breaks, critical feedback, and brief hit-stop on large impacts. Reduced-motion preferences suppress shake and cosmetic gait motion.
 - 51 equipment definitions across five rarities, with timers, tags, generic selectors/effects, duplicate upgrades, and Level 3 signatures.
 - Mutable Hand, Head, Foot, Chest, and Heart sockets; anatomy-derived HP, Mana, circulation capacity and load.
-- 14 surgical procedures, including arm/head/foot grafts, amputation, arm-to-head conversion, clockwork arms, Mana-fed necrotic hearts, serpent heads, and headless neural control.
+- 16 surgical procedures, including rat and bone donor grafts, arm/head/foot grafts, amputation, arm-to-head conversion, clockwork arms, Mana-fed necrotic hearts, serpent heads, and headless neural control.
 - Continuous circulation penalties; triggers and direct remaining-cooldown changes bypass slow natural clocks.
 - One-attack Shield, flat Armour, penetration-triggered Bleed, decaying Poison, uncapped chance and additive critical tiers.
 - Octopod set thresholds and anatomy-derived identities.

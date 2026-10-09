@@ -21,14 +21,14 @@ export function startRun(run: Run, weapon: string) {
 export function refreshShop(run: Run) {
   const rng = new Random(run.rng);
   const owned = [...run.stash, ...equipped(run.build).map(x => x.item)];
-  run.offers = Array.from({ length: 6 }, (_, i) => {
+  run.offers = Array.from({ length: 4 }, (_, i) => {
     const roll = rng.next();
     const maxRarity = Math.min(5, run.shopTier);
     let rarity = Math.min(maxRarity, roll < .35 ? 1 : roll < .65 ? 2 : roll < .84 ? 3 : roll < .95 ? 4 : 5);
     if (i === 0) rarity = maxRarity;
     const pool = ITEMS.filter(d => d.rarity === rarity && (run.floor !== 1 || i !== 0 || d.effects?.some(e => ['damage','poison'].includes(e.kind))));
     const duplicate = owned.filter(d => ITEM_MAP[d.defId].rarity <= maxRarity);
-    const def = i === 5 && duplicate.length && rng.next() < .6 ? ITEM_MAP[rng.pick(duplicate).defId] : rng.pick(pool);
+    const def = i === 3 && duplicate.length && rng.next() < .6 ? ITEM_MAP[rng.pick(duplicate).defId] : rng.pick(pool);
     return { uid: uid(run), defId: def.id, level: 1 };
   });
   const procedures = PROCEDURES.filter(p => p.minFloor <= run.floor && procedureReason(run, p, true) === null);
@@ -143,7 +143,22 @@ export function retire(save: Save, run: Run, end = true) {
   record(save, run, 'Retired'); if (end) run.phase = 'retired'; return true;
 }
 function enemy(name: string, item: string, hp: number, power: number, armour = 0): Build {
-  const b = human(name); b.healthFactor = hp / 100; b.powerFactor = power;
+  const anatomy: Record<string, { slots: Slot[]; material: 'living' | 'clockwork' | 'necrotic' | 'rat' | 'bone' }> = {
+    'Grave rat': { slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot', 'foot', 'foot'], material: 'rat' },
+    Skeleton: { slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'], material: 'bone' },
+    Ogre: { slots: ['head', 'head', 'chest', 'chest', 'heart', 'heart', 'hand', 'hand', 'hand', 'hand', 'foot', 'foot'], material: 'living' },
+    'Grave mage': { slots: ['head', 'head', 'chest', 'heart', 'heart', 'hand', 'hand', 'foot', 'foot'], material: 'necrotic' },
+    'Bone archer': { slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'], material: 'bone' },
+    'Iron knight': { slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'], material: 'clockwork' },
+    Golem: { slots: ['head', 'chest', 'chest', 'heart', 'heart', 'heart', 'hand', 'hand', 'hand', 'hand', 'foot', 'foot', 'foot', 'foot'], material: 'clockwork' },
+  };
+  const profile = anatomy[name];
+  const b = human(name);
+  if (profile) {
+    b.parts = profile.slots.map((slot, i) => ({ uid: `${name.toLowerCase().replace(/\s+/g, '-')}-${i}`, slot, variant: profile.material }));
+  }
+  // Keep each prototype's authored HP while letting its new anatomy determine the silhouette.
+  b.healthFactor = hp / stats(b).maxHp; b.powerFactor = power;
   b.parts.find(p => p.slot === 'hand')!.item = { uid: `${name}-weapon`, defId: item, level: 1 };
   if (armour) b.parts.find(p => p.slot === 'chest')!.item = { uid: `${name}-armour`, defId: armour >= 5 ? 'golemplate' : 'plate', level: Math.min(3, armour) };
   return b;

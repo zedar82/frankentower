@@ -10,8 +10,8 @@ try {
   const result=await page.evaluate(async()=>{
     const {puppetReady,puppetLayout,fitPuppet,drawPuppet,armAngle}=await import('/src/art/puppet.ts');
     await puppetReady;
-    const fixtures=[['Starting puppet',2,2,1],['Four arms / four legs',4,4,2],['Eight arms / eight legs',8,8,3],['Twelve arms / six heads',12,8,6],['Three arms / one leg',3,1,1],['Headless / armless body',0,4,0]];
-    const builds=fixtures.map(([name,hands,feet,heads])=>({name,parts:['chest','heart',...Array(hands).fill('hand'),...Array(feet).fill('foot'),...Array(heads).fill('head')].map((slot,i)=>({uid:`${name}-${i}`,slot,variant:'living',...(slot==='hand'?{item:{uid:`weapon-${i}`,defId:'knife',level:1}}:{})}))}));
+    const fixtures=[['Starting puppet',2,2,1,'living'],['Four arms / four legs',4,4,2,'living'],['Eight arms / eight legs',8,8,3,'living'],['Twelve arms / six heads',12,8,6,'living'],['Three arms / one leg',3,1,1,'living'],['Headless / armless body',0,4,0,'living'],['Rat graft',2,4,1,'rat'],['Bone graft',2,2,1,'bone']];
+    const builds=fixtures.map(([name,hands,feet,heads,variant])=>({name,parts:['chest','heart',...Array(hands).fill('hand'),...Array(feet).fill('foot'),...Array(heads).fill('head')].map((slot,i)=>({uid:`${name}-${i}`,slot,variant,...(slot==='hand'?{item:{uid:`weapon-${i}`,defId:'knife',level:1}}:{})}))}));
     const canvas=document.createElement('canvas');canvas.width=1500;canvas.height=2300;canvas.style.cssText='display:block;width:1500px;height:2300px;image-rendering:auto';
     document.body.replaceChildren(canvas);document.body.style.cssText='margin:0;background:#18161c';
     const c=canvas.getContext('2d');c.fillStyle='#18161c';c.fillRect(0,0,1500,2300);

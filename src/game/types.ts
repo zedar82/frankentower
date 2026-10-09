@@ -25,7 +25,7 @@ export interface ItemDef {
   stats?: Partial<Record<Stat, number>>; signature: string; lv3?: Reaction[]; requires?: { slot: Slot; count: number };
 }
 export interface Item { uid: string; defId: string; level: number }
-export interface Part { uid: string; slot: Slot; variant: 'living' | 'clockwork' | 'necrotic' | 'serpent' | 'ganglion'; item?: Item }
+export interface Part { uid: string; slot: Slot; variant: 'living' | 'clockwork' | 'necrotic' | 'serpent' | 'ganglion' | 'rat' | 'bone'; item?: Item }
 export interface Build { name: string; parts: Part[]; healthFactor?: number; powerFactor?: number }
 export interface Stats { maxHp: number; maxMana: number; capacity: number; load: number; efficiency: number; speed: number; movementSpeed: number; armour: number; crit: number; chance: number; necrotic: number; octopod: number }
 export interface Procedure { id: string; name: string; text: string; quote: string; price: number; add?: { slot: Slot; variant?: Part['variant']; count: number }[]; remove?: { slot: Slot; count: number }[]; minFloor: number }
