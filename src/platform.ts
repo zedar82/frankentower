@@ -5,6 +5,7 @@ type API = typeof import('@series-inc/rundot-game-sdk/api').default;
 let api: API | undefined;
 let offline: typeof import('./offline-storage') | undefined;
 let queue = Promise.resolve();
+let writeRevision = 0;
 let status = 'Connecting';
 let paused = false;
 const listeners = new Set<() => void>();
@@ -43,11 +44,14 @@ export async function loadSave(): Promise<Save> {
 }
 export function persist(save: Save) {
   const text = JSON.stringify(save);
+  const revision = ++writeRevision;
+  update('Saving…');
   queue = queue.catch(() => {}).then(async () => {
     try {
-      if (offline) { offline.write(KEY, text); update('Local save'); }
-      else if (api) { await api.appStorage.setItem(KEY, text); update('Cloud save'); }
-    } catch { update('Save pending · retry on next action'); }
+      if (offline) offline.write(KEY, text);
+      else if (api) await api.appStorage.setItem(KEY, text);
+      if (revision === writeRevision) update(offline ? 'Local save' : 'Cloud save');
+    } catch { if (revision === writeRevision) update('Save pending · retry on next action'); }
   });
   return queue;
 }

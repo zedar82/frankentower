@@ -87,7 +87,7 @@ node scripts/playground-check.mjs
 
 They use installed Google Chrome on macOS, exercise actual controls and cloud persistence, and write screenshots to `/private/tmp`.
 
-`scripts/hosted-check.mjs` tests a deployed private version when `FRANKENTOWER_PREVIEW_URL` is supplied. Keep the share link out of source control.
+`scripts/hosted-check.mjs` tests a deployed private version when `FRANKENTOWER_PREVIEW_URL` is supplied. It waits for RUN's visible game frame, exercises a purchase and combat, and checks cloud persistence after reload. For browser testing, use the private catalog URL with its `tag=private` and `k` share-key parameters to avoid the mobile deep-link handoff. Keep the share link out of source control.
 
 ## Private deployment and jam submission
 
