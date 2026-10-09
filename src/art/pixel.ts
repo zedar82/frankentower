@@ -68,6 +68,15 @@ export function puppetHeight(build:Build) {
 function puppetPart(c:Pen, img:HTMLImageElement, x:number, y:number, w:number, h:number) {
   c.drawImage(img, x-w/2, y-h/2, w, h);
 }
+function addedSocket(c:Pen,x:number,y:number) {
+  c.save();c.translate(x,y);
+  c.fillStyle='#211d23';c.beginPath();c.ellipse(0,0,8,7,0,0,Math.PI*2);c.fill();
+  c.fillStyle='#b5a078';c.strokeStyle='#211d23';c.lineWidth=1;c.beginPath();c.roundRect(-6,-5.5,12,11,3);c.fill();c.stroke();
+  c.fillStyle='#574453';c.beginPath();c.ellipse(0,0,3.3,3,0,0,Math.PI*2);c.fill();
+  c.strokeStyle='#e0c18a';c.lineWidth=1;c.beginPath();c.moveTo(-1.7,-1.7);c.lineTo(1.7,1.7);c.moveTo(1.7,-1.7);c.lineTo(-1.7,1.7);c.stroke();
+  c.strokeStyle='#3b2d30';c.lineWidth=.8;for(const sx of [-4,4]){c.beginPath();c.moveTo(sx,-4);c.lineTo(sx+1, -2.7);c.moveTo(sx,-4);c.lineTo(sx-1,-2.7);c.stroke();c.beginPath();c.moveTo(sx,4);c.lineTo(sx+1,2.7);c.moveTo(sx,4);c.lineTo(sx-1,2.7);c.stroke();}
+  c.restore();
+}
 function puppetMonster(c:Pen, build:Build, x:number, y:number, scale:number, pose:Pose) {
   if (!Object.values(puppetImages).every(img=>img.complete&&img.naturalWidth)) return false;
   const hands=build.parts.filter(p=>p.slot==='hand'), heads=build.parts.filter(p=>p.slot==='head'), feet=build.parts.filter(p=>p.slot==='foot');
@@ -89,11 +98,20 @@ function puppetMonster(c:Pen, build:Build, x:number, y:number, scale:number, pos
     if(p.item)pixelItem(c,ITEM_MAP[p.item.defId].icon,lx+5,8+stride,19,p.item.defId);
   });
   // Extra arms grow in rows down the torso, with all of them kept in view.
+  const rows=Math.max(1,Math.ceil(hands.length/2));
+  const armJoint=(i:number)=>{
+    const side=i%2===0?-1:1,tier=Math.floor(i/2),progress=rows<=1?0:tier/(rows-1);
+    const ay=torsoY-torsoH*.33+progress*torsoH*.66;
+    return {side,tier,ay,ax:side*(torsoW*.37)};
+  };
+  // The source tunic has sewn upper and lower tabs. Add matching tabs between them as new arm rows appear.
+  hands.forEach((_,i)=>{
+    const {ax,ay}=armJoint(i),along=(ay-(torsoY-torsoH*.5))/torsoH;
+    if(Math.min(Math.abs(along-.17),Math.abs(along-.83))>.075)addedSocket(c,ax,ay);
+  });
   const drawArm=(i:number)=>{
     const p=hands[i]; if(!p)return;
-    const side=i%2===0?-1:1, tier=Math.floor(i/2), rows=Math.max(1,Math.ceil(hands.length/2));
-    const ay=torsoY-torsoH*.31+Math.min(torsoH*.7,tier*Math.min(17,torsoH*.58/Math.max(1,rows-1)));
-    const ax=side*(torsoW*.37);
+    const {side,ay,ax}=armJoint(i);
     const neutral=-side*.76;
     const active=!!p.item&&(pose.activeItems?.includes(p.item.uid)||pose.attacking&&!pose.activeItems);
     let angle=neutral;
