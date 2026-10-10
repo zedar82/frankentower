@@ -1,0 +1,9 @@
+{
+ "skeleton-head":{"attachment":[585,1280],"headgear":[580,100],"diameter":360,"target":32},
+ "tentacle-arm":{"attachment":[555,160],"grip":[735,1190],"diameter":220,"target":32},
+ "human-arm":{"attachment":[585,195],"grip":[455,1380],"diameter":240,"target":32},
+ "dog-leg":{"attachment":[300,160],"footwear":[590,1200],"diameter":230,"target":32},
+ "torso":{"attachment":[575,130],"chest":[575,510],"diameter":1050,"target":160,"receiving":{"neck":[[225,145],[920,145]],"shoulderLeft":[[180,270],[270,860]],"shoulderRight":[[990,270],[880,860]],"hip":[[320,1230],[850,1230]]}},
+ "maul":{"attachment":[480,1330],"grip":[480,1330],"diameter":110,"target":20},
+ "boot":{"attachment":[460,460],"footwear":[460,460],"diameter":590,"target":48}
+}

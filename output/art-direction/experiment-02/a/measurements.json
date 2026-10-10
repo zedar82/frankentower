@@ -1,0 +1,206 @@
+{
+  "skeleton-head": {
+    "attachment": [
+      575,
+      1250
+    ],
+    "headgear": [
+      590,
+      85
+    ],
+    "diameter": 300,
+    "target": 32
+  },
+  "human-arm": {
+    "attachment": [
+      450,
+      145
+    ],
+    "grip": [
+      530,
+      1350
+    ],
+    "diameter": 230,
+    "target": 32
+  },
+  "tentacle-arm": {
+    "attachment": [
+      590,
+      145
+    ],
+    "grip": [
+      548,
+      1170
+    ],
+    "diameter": 300,
+    "target": 32
+  },
+  "dog-leg": {
+    "attachment": [
+      520,
+      110
+    ],
+    "footwear": [
+      575,
+      1250
+    ],
+    "diameter": 205,
+    "target": 32
+  },
+  "torso": {
+    "attachment": [
+      570,
+      130
+    ],
+    "chest": [
+      570,
+      520
+    ],
+    "diameter": 1105,
+    "target": 160,
+    "receiving": {
+      "neck": [
+        [
+          210,
+          160
+        ],
+        [
+          940,
+          160
+        ]
+      ],
+      "shoulderLeft": [
+        [
+          160,
+          285
+        ],
+        [
+          305,
+          870
+        ]
+      ],
+      "shoulderRight": [
+        [
+          995,
+          285
+        ],
+        [
+          850,
+          870
+        ]
+      ],
+      "hip": [
+        [
+          345,
+          1190
+        ],
+        [
+          800,
+          1190
+        ]
+      ]
+    }
+  },
+  "maul": {
+    "attachment": [
+      480,
+      1310
+    ],
+    "grip": [
+      480,
+      1310
+    ],
+    "diameter": 96,
+    "target": 20
+  },
+  "boot": {
+    "attachment": [
+      450,
+      450
+    ],
+    "footwear": [
+      450,
+      450
+    ],
+    "diameter": 550,
+    "target": 48
+  },
+  "skeleton-head-02": {
+    "diameter": 310,
+    "attachment": [
+      580,
+      1260
+    ],
+    "headgear": [
+      580,
+      110
+    ],
+    "target": 32
+  },
+  "skeletal-arm": {
+    "target": 32,
+    "diameter": 240,
+    "attachment": [
+      490,
+      190
+    ],
+    "grip": [
+      720,
+      1110
+    ]
+  },
+  "torso-02": {
+    "receiving": {
+      "hip": [
+        [
+          300,
+          1225
+        ],
+        [
+          830,
+          1225
+        ]
+      ],
+      "neck": [
+        [
+          330,
+          230
+        ],
+        [
+          800,
+          230
+        ]
+      ],
+      "shoulderRight": [
+        [
+          925,
+          325
+        ],
+        [
+          970,
+          760
+        ]
+      ],
+      "shoulderLeft": [
+        [
+          215,
+          325
+        ],
+        [
+          195,
+          760
+        ]
+      ]
+    },
+    "diameter": 1015,
+    "attachment": [
+      570,
+      195
+    ],
+    "chest": [
+      570,
+      540
+    ],
+    "target": 160
+  }
+}

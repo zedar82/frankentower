@@ -1,0 +1,284 @@
+[
+  {
+    "id": "skeleton-head",
+    "category": "head",
+    "image": "prepared/skeleton-head.png",
+    "width": 124,
+    "height": 145,
+    "anchors": {
+      "attachment": [
+        61.867,
+        124.622
+      ],
+      "headgear": [
+        61.422,
+        19.733
+      ]
+    },
+    "preparation": {
+      "crop": [
+        24,
+        13,
+        1117,
+        1352
+      ],
+      "uniformScale": 0.08888888888888889,
+      "padding": 12
+    },
+    "interface": "neck_standard_v1",
+    "interfaceSize": 32,
+    "equipment": [
+      "head"
+    ],
+    "layer": "head",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/skeleton-head.png"
+  },
+  {
+    "id": "tentacle-arm",
+    "category": "arm",
+    "image": "prepared/tentacle-arm.png",
+    "width": 119,
+    "height": 226,
+    "anchors": {
+      "attachment": [
+        52.582,
+        34.255
+      ],
+      "grip": [
+        78.764,
+        184.073
+      ]
+    },
+    "preparation": {
+      "crop": [
+        276,
+        7,
+        651,
+        1385
+      ],
+      "uniformScale": 0.14545454545454545,
+      "padding": 12
+    },
+    "interface": "shoulder_standard_v1",
+    "interfaceSize": 32,
+    "equipment": [
+      "hand"
+    ],
+    "layer": "arm",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/tentacle-arm.png"
+  },
+  {
+    "id": "human-arm",
+    "category": "arm",
+    "image": "prepared/human-arm.png",
+    "width": 94,
+    "height": 226,
+    "anchors": {
+      "attachment": [
+        51.6,
+        36.4
+      ],
+      "grip": [
+        34.267,
+        194.4
+      ]
+    },
+    "preparation": {
+      "crop": [
+        288,
+        12,
+        524,
+        1509
+      ],
+      "uniformScale": 0.13333333333333333,
+      "padding": 12
+    },
+    "interface": "shoulder_standard_v1",
+    "interfaceSize": 32,
+    "equipment": [
+      "hand"
+    ],
+    "layer": "arm",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/human-arm.png"
+  },
+  {
+    "id": "dog-leg",
+    "category": "leg",
+    "image": "prepared/dog-leg.png",
+    "width": 159,
+    "height": 223,
+    "anchors": {
+      "attachment": [
+        42.33,
+        33.148
+      ],
+      "footwear": [
+        82.678,
+        177.843
+      ]
+    },
+    "preparation": {
+      "crop": [
+        82,
+        8,
+        967,
+        1429
+      ],
+      "uniformScale": 0.1391304347826087,
+      "padding": 12
+    },
+    "interface": "hip_standard_v1",
+    "interfaceSize": 32,
+    "equipment": [
+      "foot"
+    ],
+    "layer": "leg",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/dog-leg.png"
+  },
+  {
+    "id": "torso",
+    "category": "torso",
+    "image": "prepared/torso.png",
+    "width": 185,
+    "height": 219,
+    "anchors": {
+      "attachment": [
+        92.152,
+        22.667
+      ],
+      "chest": [
+        92.152,
+        80.571
+      ]
+    },
+    "receiving": {
+      "neck": [
+        [
+          38.819,
+          24.952
+        ],
+        [
+          144.724,
+          24.952
+        ]
+      ],
+      "shoulderLeft": [
+        [
+          31.962,
+          44
+        ],
+        [
+          45.676,
+          133.905
+        ]
+      ],
+      "shoulderRight": [
+        [
+          155.39,
+          44
+        ],
+        [
+          138.629,
+          133.905
+        ]
+      ],
+      "hip": [
+        [
+          53.295,
+          190.286
+        ],
+        [
+          134.057,
+          190.286
+        ]
+      ]
+    },
+    "preparation": {
+      "crop": [
+        49,
+        60,
+        1053,
+        1274
+      ],
+      "uniformScale": 0.1523809523809524,
+      "padding": 12
+    },
+    "equipment": [
+      "chest"
+    ],
+    "layer": "torso",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/torso.png"
+  },
+  {
+    "id": "maul",
+    "category": "weapon",
+    "image": "prepared/maul.png",
+    "width": 196,
+    "height": 325,
+    "anchors": {
+      "attachment": [
+        98.545,
+        253.091
+      ],
+      "grip": [
+        98.545,
+        253.091
+      ]
+    },
+    "preparation": {
+      "crop": [
+        4,
+        4,
+        941,
+        1652
+      ],
+      "uniformScale": 0.18181818181818182,
+      "padding": 12
+    },
+    "interface": "grip_standard_v1",
+    "interfaceSize": 20,
+    "equipment": [],
+    "equipmentRotation": 1.5707963267948966,
+    "layer": "weapon",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/maul.png"
+  },
+  {
+    "id": "boot",
+    "category": "footwear",
+    "image": "prepared/boot.png",
+    "width": 141,
+    "height": 101,
+    "anchors": {
+      "attachment": [
+        45.437,
+        44.868
+      ],
+      "footwear": [
+        45.437,
+        44.868
+      ]
+    },
+    "preparation": {
+      "crop": [
+        49,
+        56,
+        1431,
+        940
+      ],
+      "uniformScale": 0.08135593220338982,
+      "padding": 12
+    },
+    "interface": "footwear_standard_v1",
+    "interfaceSize": 48,
+    "equipment": [],
+    "layer": "footwear",
+    "status": "renderer-count-and-anchor-verified; visual-review-limited",
+    "source": "originals/boot.png"
+  }
+]

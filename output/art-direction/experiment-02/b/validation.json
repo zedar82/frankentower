@@ -1,0 +1,26 @@
+{
+  "counts": {
+    "tentacle-arm": 1,
+    "dog-leg": 4,
+    "boot": 1,
+    "torso": 1,
+    "maul": 1,
+    "human-arm": 2,
+    "skeleton-head": 2
+  },
+  "neutralBounds": {
+    "left": -357,
+    "right": 203,
+    "top": -307,
+    "bottom": 139,
+    "width": 561,
+    "height": 447
+  },
+  "renderer": "src/art/puppet.ts drawPuppet -> metadata skin",
+  "status": "captured; visual acceptance pending",
+  "anchorChecks": {
+    "samples": 192,
+    "worstErrorPixels": 0.0000036683347974142597
+  },
+  "errors": []
+}
