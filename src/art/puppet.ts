@@ -1,4 +1,3 @@
-import { drawModularPuppet, type ModularSkin } from './modular';
 import type { Build, Part } from '../game/types';
 import { ITEM_MAP } from '../game/content';
 import type { ArmMotion } from '../game/attack-motion';
@@ -9,7 +8,6 @@ import armUrl from './assets/arm.webp';
 import legUrl from './assets/leg.webp';
 
 export interface Pose {
-  skin?: ModularSkin;
   time?: number;
   walk?: number;
   moving?: boolean;
@@ -354,7 +352,6 @@ export function drawPuppet(
   pose: Pose,
   gear: GearPainter,
 ) {
-  if (pose.skin) return drawModularPuppet(c, build, x, y, scale, pose, pose.skin, armAngle);
   if (
     !silhouette ||
     ![...Object.values(art), ...Object.values(ratArt), ...Object.values(boneArt)].every(

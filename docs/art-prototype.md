@@ -1,5 +1,7 @@
 # Puppet composition prototype
 
+This documents the puppet renderer currently used by the game. The next component design is defined in the [paper-doll design manifest](paper-doll-design-manifest.md), with [construction templates](../output/art-direction/paper-doll-templates-v1/README.md) for visual review. Those templates are not yet integrated into the runtime renderer.
+
 The creature uses the original illustrated head, arm and booted leg. `src/art/assets/torso-core.webp` is a sibling edit of the original tunic with its four fixed protruding tabs removed. The original `torso.webp` remains the source of the painted socket tab, cropped by the compositor and reused for every graft.
 
 ## Assembly
