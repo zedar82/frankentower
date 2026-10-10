@@ -1,6 +1,7 @@
 import type { Build, Part } from '../game/types';
 import { ITEM_MAP } from '../game/content';
 import type { ArmMotion } from '../game/attack-motion';
+import { drawGrotesqueItemAt } from './item-assets';
 
 export interface Pose {
   time?: number;
@@ -51,8 +52,6 @@ export interface Bounds {
 }
 export interface PuppetLayout {
   torso: Frame;
-  torsoColumns: number;
-  torsoRows: number;
   arms: Joint[];
   legs: Joint[];
   heads: Joint[];
@@ -119,7 +118,7 @@ function sprite(src: string, crop: Frame, pin: Point): Sprite {
   return { image, ready, crop, pivot: { x: (pin.x - crop.x) / crop.w, y: (pin.y - crop.y) / crop.h } };
 }
 const art = {
-  torso: sprite(`${import.meta.env.BASE_URL}grotesque/components/torso-core.svg`, { x: 192, y: 166, w: 128, h: 180 }, { x: 256, y: 256 }),
+  torso: sprite(`${import.meta.env.BASE_URL}grotesque/components/torso-core.svg`, { x: 0, y: 0, w: 512, h: 512 }, { x: 256, y: 256 }),
   tab: sprite(`${import.meta.env.BASE_URL}grotesque/components/shoulder-adapter.svg`, { x: 0, y: 0, w: 512, h: 512 }, { x: 256, y: 256 }),
   head: sprite(`${import.meta.env.BASE_URL}grotesque/components/head-sack.svg`, { x: 0, y: 0, w: 512, h: 512 }, { x: 256, y: 256 }),
   arm: sprite(`${import.meta.env.BASE_URL}grotesque/components/arm-human.svg`, { x: 0, y: 0, w: 512, h: 512 }, { x: 256, y: 256 }),
@@ -164,7 +163,7 @@ export const puppetReady = Promise.all(
 )
   .then(() => {
     const detailParts = [art.head, art.arm, art.leg, variants.headUnicorn, variants.headRat, variants.headBone, variants.headSerpent, variants.armTalons, variants.armSucker, variants.armRat, variants.armBone, variants.legRat, variants.legInsect, variants.legBone];
-    for (const s of [art.tab, ...detailParts, ...Object.values(interfaces)]) {
+    for (const s of [art.torso, art.tab, ...detailParts, ...Object.values(interfaces)]) {
       const c = document.createElement('canvas');
       c.width = c.height = 512;
       const ctx = c.getContext('2d')!;
@@ -242,11 +241,11 @@ export function puppetLayout(build: Build): PuppetLayout {
   const rows = Math.max(1, Math.ceil(hands / 2));
   const columns = Math.max(2, Math.ceil(heads * 1.25), feet);
   const cellWidth = 128 / 3,
-    cellHeight = 60,
+    cellHeight = 84,
     cellStepX = 88 / 3,
-    cellStepY = 100 / 3;
+    cellStepY = 62;
   const headW = heads === 1 ? 42 : heads === 2 ? 38 : heads === 3 ? 36 : 34,
-    headGap = headW * 0.78;
+    headGap = headW * 1.32;
   const width = Math.max(cellWidth + (columns - 1) * cellStepX, rat ? 70 : 52, (Math.max(0, heads - 1) * headGap) / 0.66);
   const height = cellHeight + (rows - 1) * cellStepY;
   const torso: Frame = {
@@ -258,7 +257,7 @@ export function puppetLayout(build: Build): PuppetLayout {
   const arms: Joint[] = Array.from({ length: hands }, (_, i) => {
     const side = i % 2 === 0 ? -1 : 1,
       tier = Math.floor(i / 2);
-    const v = Math.min(0.82, (19 + tier * cellStepY) / cellHeight);
+    const v = Math.min(0.92, (19 + tier * cellStepY) / height);
     const root = {
       x: torso.x + edge(bodyArt, 'x', v, side === 1) * width,
       y: torso.y + 19 + tier * cellStepY,
@@ -325,7 +324,7 @@ export function puppetLayout(build: Build): PuppetLayout {
     width: right - left + 14,
     height: bottom - top + 14,
   };
-  const layout = { torso, torsoColumns: columns, torsoRows: rows, arms, legs, heads: necks, bounds };
+  const layout = { torso, arms, legs, heads: necks, bounds };
   layouts.set(build, { key, layout });
   return layout;
 }
@@ -425,35 +424,12 @@ function sourcePoint(s: Sprite, j: Joint, point: Point): Point {
 }
 function drawTrunk(c: CanvasRenderingContext2D, layout: PuppetLayout, variant: Part['variant'], enemy: boolean) {
   const s = partArt('chest', variant),
-    scale = 1 / 3,
-    cellX = 88 / 3,
-    cellY = 100 / 3;
+    f = s.crop,
+    b = layout.torso;
   c.save();
   c.filter = trunkFilter(variant, enemy);
   c.imageSmoothingEnabled = false;
-  for (let row = 0; row < layout.torsoRows; row++) {
-    const cropTop = row === 0 ? 0 : 40,
-      cropBottom = row === layout.torsoRows - 1 ? 0 : 40,
-      sourceHeight = 180 - cropTop - cropBottom;
-    for (let col = 0; col < layout.torsoColumns; col++) {
-      const cropLeft = col === 0 ? 0 : 20,
-        cropRight = col === layout.torsoColumns - 1 ? 0 : 20,
-        sourceWidth = 128 - cropLeft - cropRight,
-        dx = layout.torso.x + col * cellX + cropLeft * scale,
-        dy = layout.torso.y + row * cellY + cropTop * scale;
-      c.drawImage(
-        s.image,
-        s.crop.x + cropLeft,
-        s.crop.y + cropTop,
-        sourceWidth,
-        sourceHeight,
-        dx,
-        dy,
-        sourceWidth * scale,
-        sourceHeight * scale,
-      );
-    }
-  }
+  c.drawImage(s.image, f.x, f.y, f.w, f.h, b.x, b.y, b.w, b.h);
   c.restore();
 }
 export function drawPuppet(
@@ -495,8 +471,7 @@ export function drawPuppet(
     : Math.sin((pose.time ?? 0) * 2) * 0.4;
   c.translate(pose.hurt ? -1 : 0, -bob);
 
-  // Limbs sit behind the fixed-scale trunk modules. Hip adapters overlap their roots;
-  // the trunk cells cover the upper half of each seam.
+  // Limbs sit behind one continuous torso silhouette; the body covers their roots.
   for (const j of layout.legs) {
     const p = feet[j.index],
       s = partArt('foot', p.variant);
@@ -538,7 +513,15 @@ export function drawPuppet(
   for (const j of layout.heads) componentAt(c, interfaces.neck, j.root, 0.25);
   const chestItem = build.parts.find((p) => p.slot === 'chest' && p.item);
   if (chestItem?.item)
-    gear(c, ITEM_MAP[chestItem.item.defId].icon, -15, layout.torso.y + 14, 30, chestItem.item.defId);
+    drawGrotesqueItemAt(
+      c,
+      ITEM_MAP[chestItem.item.defId].icon,
+      layout.torso.x + layout.torso.w * 0.1,
+      layout.torso.y + layout.torso.h * 0.08,
+      layout.torso.w * 0.8,
+      layout.torso.h * 0.84,
+      chestItem.item.defId,
+    );
   for (let i = 0; i < Math.min(heartParts.length, 6); i++) {
     const heart = heartParts[i],
       size = 12,
@@ -547,16 +530,23 @@ export function drawPuppet(
     gear(c, 'heart', xPos, yPos, size, heart.variant);
   }
   for (const j of layout.heads) {
+    const p = heads[j.index];
+    if (p.item?.defId === 'hood') {
+      const size = j.w * 1.55;
+      gear(c, ITEM_MAP[p.item.defId].icon, j.pin.x - size / 2, j.pin.y - size / 2, size, p.item.defId);
+    }
+  }
+  for (const j of layout.heads) {
     const p = heads[j.index],
       s = partArt('head', p.variant);
     drawAt(c, s, j, 0, p.variant, !!pose.enemy);
-    if (p.item) {
+    if (p.item && p.item.defId !== 'hood') {
       const crown = sourcePoint(
           s,
           j,
           { x: 256, y: 174 },
         ),
-        size = j.w * 0.53;
+        size = j.w * 0.82;
       gear(
         c,
         ITEM_MAP[p.item.defId].icon,
@@ -579,7 +569,7 @@ export function drawPuppet(
       localGrip = sourcePoint(s, j, sourceGrip),
       grip = localGrip,
       def = ITEM_MAP[p.item.defId],
-      size = def.id === 'enormous' ? 36 : def.icon === 'club' ? 28 : 24,
+      size = def.id === 'enormous' ? 64 : def.icon === 'club' ? 56 : def.icon === 'shield' ? 44 : 48,
       flipX = j.side === -1;
     c.save();
     c.translate(j.pin.x, j.pin.y);

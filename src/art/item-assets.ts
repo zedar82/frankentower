@@ -72,6 +72,26 @@ export function drawGrotesqueItem(
   return true;
 }
 
+export function drawGrotesqueItemAt(
+  c: CanvasRenderingContext2D,
+  name: string,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  variant = '',
+) {
+  const image = itemImages[name as ItemIconName];
+  if (!image?.complete || !image.naturalWidth) return false;
+
+  c.save();
+  c.imageSmoothingEnabled = false;
+  c.filter = filterFor(variant);
+  c.drawImage(image, x, y, width, height);
+  c.restore();
+  return true;
+}
+
 export function isGrotesqueItemIcon(name: string): name is ItemIconName {
   return name in itemFiles;
 }

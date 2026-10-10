@@ -4,4 +4,6 @@ This private build introduces modular creature anatomy with distinct pixel-art h
 
 Weapon and item illustrations now appear in equipment views and on the creature. Held items are drawn at the hand grip with a visible hand overlay.
 
+The creature renderer now draws one continuous torso, spaces multiple heads apart, fits chest armour across the body, layers hoods around the face, and scales held weapons to read clearly in combat.
+
 This build remains private/unlisted. It is not a public release or jam submission.
