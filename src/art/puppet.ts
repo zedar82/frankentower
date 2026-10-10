@@ -28,6 +28,7 @@ interface Frame extends Point {
 }
 interface Sprite {
   image: HTMLImageElement;
+  ready: Promise<void>;
   crop: Frame;
   pivot: Point;
 }
@@ -67,10 +68,55 @@ type GearPainter = (
 ) => void;
 
 // Coordinates refer to the painted joint buttons, not the centre of each PNG's transparent canvas.
+const imageDataUrls = new Map<string, Promise<string>>();
+async function imageDataUrl(url: string) {
+  let pending = imageDataUrls.get(url);
+  if (!pending) {
+    pending = (async () => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Could not load puppet image ${url}: ${response.status}`);
+      const type = response.headers.get('content-type')?.split(';')[0] || 'image/png';
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+      }
+      return `data:${type};base64,${btoa(binary)}`;
+    })();
+    imageDataUrls.set(url, pending);
+  }
+  return pending;
+}
+async function selfContainedSvg(url: string) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Could not load puppet component ${url}: ${response.status}`);
+  const markup = await response.text();
+  if (!/<image\b/i.test(markup)) return markup;
+  const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+  if (doc.querySelector('parsererror')) throw new Error(`Invalid puppet component SVG: ${url}`);
+  for (const node of Array.from(doc.getElementsByTagName('image'))) {
+    const href = node.getAttribute('href') || node.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+    if (!href || /^(?:data:|blob:|https?:)/i.test(href)) continue;
+    node.setAttribute('href', await imageDataUrl(new URL(href, url).href));
+    node.removeAttributeNS('http://www.w3.org/1999/xlink', 'href');
+  }
+  return new XMLSerializer().serializeToString(doc);
+}
 function sprite(src: string, crop: Frame, pin: Point): Sprite {
   const image = new Image();
-  image.src = src;
-  return { image, crop, pivot: { x: (pin.x - crop.x) / crop.w, y: (pin.y - crop.y) / crop.h } };
+  const url = new URL(src, document.baseURI).href;
+  const ready = (async () => {
+    const markup = await selfContainedSvg(url);
+    const blobUrl = URL.createObjectURL(new Blob([markup], { type: 'image/svg+xml' }));
+    try {
+      image.src = blobUrl;
+      await image.decode();
+    } finally {
+      URL.revokeObjectURL(blobUrl);
+    }
+  })();
+  return { image, ready, crop, pivot: { x: (pin.x - crop.x) / crop.w, y: (pin.y - crop.y) / crop.h } };
 }
 const art = {
   torso: sprite(`${import.meta.env.BASE_URL}grotesque/components/torso-core.svg`, { x: 192, y: 166, w: 128, h: 180 }, { x: 256, y: 256 }),
@@ -114,9 +160,7 @@ export const puppetReady = Promise.all(
     ...Object.values(art),
     ...Object.values(variants),
     ...Object.values(interfaces),
-  ].map((s) =>
-    s.image.decode(),
-  ),
+  ].map((s) => s.ready),
 )
   .then(() => {
     const detailParts = [art.head, art.arm, art.leg, variants.headUnicorn, variants.headRat, variants.headBone, variants.headSerpent, variants.armTalons, variants.armSucker, variants.armRat, variants.armBone, variants.legRat, variants.legInsect, variants.legBone];
@@ -145,7 +189,16 @@ export const puppetReady = Promise.all(
       c.height = f.h;
       const ctx = c.getContext('2d')!;
       ctx.drawImage(sprite.image, f.x, f.y, f.w, f.h, 0, 0, f.w, f.h);
-      silhouettes.set(sprite, ctx.getImageData(0, 0, f.w, f.h).data);
+      const data = ctx.getImageData(0, 0, f.w, f.h).data;
+      let hasVisiblePixel = false;
+      for (let alpha = 3; alpha < data.length; alpha += 4) {
+        if (data[alpha] >= 96) {
+          hasVisiblePixel = true;
+          break;
+        }
+      }
+      if (!hasVisiblePixel) throw new Error('Torso component decoded without visible pixels');
+      silhouettes.set(sprite, data);
     }
     silhouette = silhouettes.get(art.torso);
     revision++;
