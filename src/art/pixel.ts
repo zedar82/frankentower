@@ -1,8 +1,10 @@
 import { count } from '../game/anatomy';
 import { ITEM_MAP } from '../game/content';
 import type { Build } from '../game/types';
-import { drawPuppet, type Pose } from './puppet';
-export { puppetReady, puppetBounds, fitPuppet } from './puppet';
+import { drawPuppet, puppetReady as anatomyReady, type Pose } from './puppet';
+import { drawGrotesqueItem, itemArtReady } from './item-assets';
+export const puppetReady = Promise.all([anatomyReady, itemArtReady]);
+export { puppetBounds, fitPuppet } from './puppet';
 export type { Pose } from './puppet';
 
 export type Pen = CanvasRenderingContext2D;
@@ -13,6 +15,7 @@ export function oval(c: Pen, x: number, y: number, rx: number, ry: number, colou
 }
 function block(c: Pen, x: number, y: number, w: number, h: number, fill: string, light?: string) { rect(c,x-1,y-1,w+2,h+2,ink);rect(c,x,y,w,h,fill);if(light)rect(c,x,y,w,2,light); }
 export function pixelItem(c: Pen, name: string, x = 0, y = 0, size = 32, variant = '') {
+  if (drawGrotesqueItem(c, name, x, y, size, variant)) return;
   c.save(); c.translate(Math.round(x),Math.round(y)); c.scale(size/32,size/32);
   const steel='#b5bec0', shine='#e3ddbc', wood='#885b3a', dark='#51474b', gold='#cba65d';
   const tint=variant.includes('blood')||variant.includes('vamp')?'#b64a50':variant.includes('necro')||variant.includes('plague')||variant.includes('venom')?'#95b865':variant.includes('storm')||variant.includes('wizard')?'#8d96d9':gold;

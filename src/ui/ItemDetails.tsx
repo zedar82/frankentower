@@ -21,7 +21,7 @@ export function ItemDetails({ run, selected, onClose, onPurchase, onEquip, onCha
   return (
     <Modal title={def.name} onClose={() => onClose()}>
       <div className="item-detail-art">
-        <Icon name={def.icon} size={76} />
+        <Icon name={def.icon} size={76} variant={def.id} />
         <div>
           <span className="stars">{'★'.repeat(def.rarity)}</span>
           <p>

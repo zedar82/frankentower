@@ -110,7 +110,7 @@ export function Shop({
                   aria-label={'Inspect ' + ITEM_MAP[offer.defId].name}
                 >
                   <div className="item-art">
-                    <Icon name={ITEM_MAP[offer.defId].icon} size={58} />
+                    <Icon name={ITEM_MAP[offer.defId].icon} size={58} variant={offer.defId} />
                   </div>
                   <h3>{ITEM_MAP[offer.defId].name}</h3>
                   <span className="offer-type">

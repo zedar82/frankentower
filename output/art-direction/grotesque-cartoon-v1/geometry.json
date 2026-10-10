@@ -1,0 +1,1262 @@
+{
+  "version": "grotesque-cartoon-interface-study-01",
+  "status": "style-and-mix-match-review; runtime-integrated",
+  "style": "original chunky grotesque pixel-art cartoon, inspired by classic indie dungeon body-horror comedy",
+  "authoringFrame": {
+    "sizePx": [
+      512,
+      512
+    ],
+    "viewBox": [
+      -128,
+      -128,
+      256,
+      256
+    ],
+    "originPx": [
+      256,
+      256
+    ],
+    "pixelsPerUnit": 2,
+    "camera": "front orthographic"
+  },
+  "sharedAnchors": {
+    "arm": {
+      "shoulder": [
+        0,
+        0
+      ],
+      "elbow": [
+        33,
+        52
+      ],
+      "grip": [
+        77,
+        103
+      ]
+    },
+    "head": {
+      "neck": [
+        0,
+        0
+      ],
+      "headwear": [
+        0,
+        -82
+      ]
+    },
+    "leg": {
+      "hip": [
+        0,
+        0
+      ],
+      "knee": [
+        0,
+        57
+      ],
+      "footwear": [
+        0,
+        99
+      ],
+      "sole": [
+        0,
+        114
+      ]
+    },
+    "boot": {
+      "footwear": [
+        0,
+        0
+      ],
+      "sole": [
+        0,
+        15
+      ]
+    }
+  },
+  "torso": {
+    "cellUnits": [
+      64,
+      80
+    ],
+    "imageOpaqueFramePx": [
+      128,
+      180
+    ],
+    "rows": 1,
+    "columns": "max(2,ceil(headCount*80/64),legCount)",
+    "cellStepPx": [
+      88,
+      180
+    ],
+    "cellHorizontalOverlapUnits": 20,
+    "cellVerticalOverlapUnits": 0,
+    "bodyHeightPx": "180 + max(0,ceil(armCount/2)-1)*104",
+    "containsLimbSockets": false,
+    "extraArmRoots": "each additional arm pair adds 52 units of continuous torso height; roots remain 62 units above the hem"
+  },
+  "interfaceArt": {
+    "shoulder-adapter": {
+      "anchor": "arm.shoulder",
+      "scale": 1,
+      "layer": "over torso and arm root",
+      "overlap": "root-centered flesh cuff; used once per actual arm",
+      "mirror": "mirrors with left arm"
+    },
+    "neck-adapter": {
+      "anchor": "head.neck",
+      "scale": 0.72,
+      "layer": "between head and torso",
+      "overlap": "collar covers neck root; used once per head"
+    },
+    "hip-adapter": {
+      "anchor": "leg.hip",
+      "scale": 0.9,
+      "layer": "behind torso hem and in front of leg root",
+      "overlap": "torso tissue covers the upper half of the hip seam; used once per actual leg"
+    },
+    "ankle-adapter": {
+      "anchor": "leg.footwear",
+      "scale": 0.7,
+      "layer": "between leg and shoe",
+      "overlap": "ankle cuff under common shoe"
+    },
+    "boot-universal": {
+      "anchor": "leg.footwear",
+      "scale": 1,
+      "layer": "footwear, in front of leg",
+      "sole": "15 units below footwear",
+      "reuse": "exact same SVG on every leg variant"
+    },
+    "grip-hand-adapter": {
+      "anchor": "arm.grip",
+      "scale": 1,
+      "layer": "in front of held equipment",
+      "overlap": "finger ridges cross over the item shaft",
+      "reuse": "shown only for an equipped hand"
+    },
+    "unusedSockets": "no adapter without a corresponding part"
+  },
+  "assets": {
+    "torso-core": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "top": [
+          0,
+          0
+        ],
+        "bottom": [
+          0,
+          80
+        ],
+        "left": [
+          -32,
+          40
+        ],
+        "right": [
+          32,
+          40
+        ],
+        "cellOverlap": 10
+      },
+      "scaleClass": "64 x 80 unit trunk cell",
+      "camera": "front orthographic",
+      "layer": "torso tissue",
+      "attachmentPoint": {
+        "interface": "torso.cell-repeat",
+        "anchor": "center",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "10 unit overlap on adjoining cell edges; internal outlines are cropped away; no limb socket is baked in",
+      "compatibleInterfaces": [
+        "torso.cell-repeat"
+      ],
+      "mirroring": "may mirror on alternating cell positions",
+      "sourceAlphaBounds": [
+        196,
+        188,
+        728,
+        1020
+      ],
+      "uniformScale": 0.17582417582417584,
+      "fittedOpaqueFramePx": [
+        128,
+        179.34
+      ],
+      "role": "Plain trunk cell; no permanent limbs"
+    },
+    "torso-rat": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "top": [
+          0,
+          0
+        ],
+        "bottom": [
+          0,
+          80
+        ],
+        "left": [
+          -32,
+          40
+        ],
+        "right": [
+          32,
+          40
+        ],
+        "cellOverlap": 10
+      },
+      "scaleClass": "64 x 80 unit trunk cell",
+      "camera": "front orthographic",
+      "layer": "torso tissue",
+      "attachmentPoint": {
+        "interface": "torso.cell-repeat",
+        "anchor": "center",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "10 unit overlap on adjoining cell edges; internal outlines are cropped away; no limb socket is baked in",
+      "compatibleInterfaces": [
+        "torso.cell-repeat"
+      ],
+      "mirroring": "may mirror on alternating cell positions",
+      "sourceCellBounds": [
+        168,
+        65,
+        726,
+        1360
+      ],
+      "uniformScale": 0.1763085399449036,
+      "fittedOpaqueFramePx": [
+        128,
+        180
+      ],
+      "role": "Repeatable tawny fur trunk swatch"
+    },
+    "torso-bone": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "top": [
+          0,
+          0
+        ],
+        "bottom": [
+          0,
+          80
+        ],
+        "left": [
+          -32,
+          40
+        ],
+        "right": [
+          32,
+          40
+        ],
+        "cellOverlap": 10
+      },
+      "scaleClass": "64 x 80 unit trunk cell",
+      "camera": "front orthographic",
+      "layer": "torso tissue",
+      "attachmentPoint": {
+        "interface": "torso.cell-repeat",
+        "anchor": "center",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "10 unit overlap on adjoining cell edges; internal outlines are cropped away; no limb socket is baked in",
+      "compatibleInterfaces": [
+        "torso.cell-repeat"
+      ],
+      "mirroring": "may mirror on alternating cell positions",
+      "sourceCellBounds": [
+        156,
+        49,
+        750,
+        1394
+      ],
+      "uniformScale": 0.17066666666666666,
+      "fittedOpaqueFramePx": [
+        128,
+        180
+      ],
+      "role": "Stitched tissue tile with small ivory fragments"
+    },
+    "head-sack": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "neck": [
+          0,
+          0
+        ],
+        "headwear": [
+          0,
+          -82
+        ]
+      },
+      "scaleClass": "shared head frame",
+      "camera": "front orthographic",
+      "layer": "head, in front of torso",
+      "attachmentPoint": {
+        "interface": "torso.neck-adapter",
+        "anchor": "neck",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "neck adapter overlays the neck root by 8 px",
+      "compatibleInterfaces": [
+        "torso.neck-adapter",
+        "headgear.mount"
+      ],
+      "mirroring": "not mirrored in this study",
+      "sourceRoot": [
+        640,
+        1130
+      ],
+      "sourceCrown": [
+        640,
+        80
+      ],
+      "observedCrownPx": [
+        256,
+        92
+      ],
+      "uniformScale": 0.15619047619047619,
+      "rotationDeg": 0,
+      "role": "One-eyed stitched head"
+    },
+    "head-unicorn": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "neck": [
+          0,
+          0
+        ],
+        "headwear": [
+          0,
+          -82
+        ]
+      },
+      "scaleClass": "shared head frame",
+      "camera": "front orthographic",
+      "layer": "head, in front of torso",
+      "attachmentPoint": {
+        "interface": "torso.neck-adapter",
+        "anchor": "neck",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "neck adapter overlays the neck root by 8 px",
+      "compatibleInterfaces": [
+        "torso.neck-adapter",
+        "headgear.mount"
+      ],
+      "mirroring": "not mirrored in this study",
+      "sourceRoot": [
+        650,
+        1150
+      ],
+      "sourceCrown": [
+        640,
+        60
+      ],
+      "observedCrownPx": [
+        256,
+        92
+      ],
+      "uniformScale": 0.15045238409147355,
+      "rotationDeg": 0.5256346064576292,
+      "role": "Horned horse head"
+    },
+    "head-rat": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "neck": [
+          0,
+          0
+        ],
+        "headwear": [
+          0,
+          -82
+        ]
+      },
+      "scaleClass": "shared head frame",
+      "camera": "front orthographic",
+      "layer": "head, in front of torso",
+      "attachmentPoint": {
+        "interface": "torso.neck-adapter",
+        "anchor": "neck",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "neck adapter overlays the neck root by 8 px",
+      "compatibleInterfaces": [
+        "torso.neck-adapter",
+        "headgear.mount"
+      ],
+      "mirroring": "not mirrored in this study",
+      "sourceRoot": [
+        627,
+        1190
+      ],
+      "sourceCrown": [
+        627,
+        145
+      ],
+      "observedCrownPx": [
+        256,
+        92
+      ],
+      "uniformScale": 0.1569377990430622,
+      "rotationDeg": 0,
+      "role": "Two-eyed furry rat head"
+    },
+    "head-bone": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "neck": [
+          0,
+          0
+        ],
+        "headwear": [
+          0,
+          -82
+        ]
+      },
+      "scaleClass": "shared head frame",
+      "camera": "front orthographic",
+      "layer": "head, in front of torso",
+      "attachmentPoint": {
+        "interface": "torso.neck-adapter",
+        "anchor": "neck",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "neck adapter overlays the neck root by 8 px",
+      "compatibleInterfaces": [
+        "torso.neck-adapter",
+        "headgear.mount"
+      ],
+      "mirroring": "not mirrored in this study",
+      "sourceRoot": [
+        656,
+        1168
+      ],
+      "sourceCrown": [
+        656,
+        18
+      ],
+      "observedCrownPx": [
+        256,
+        92
+      ],
+      "uniformScale": 0.1426086956521739,
+      "rotationDeg": 0,
+      "role": "One-eyed stitched skull"
+    },
+    "head-serpent": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "neck": [
+          0,
+          0
+        ],
+        "headwear": [
+          0,
+          -82
+        ]
+      },
+      "scaleClass": "shared head frame",
+      "camera": "front orthographic",
+      "layer": "head, in front of torso",
+      "attachmentPoint": {
+        "interface": "torso.neck-adapter",
+        "anchor": "neck",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "neck adapter overlays the neck root by 8 px",
+      "compatibleInterfaces": [
+        "torso.neck-adapter",
+        "headgear.mount"
+      ],
+      "mirroring": "not mirrored in this study",
+      "sourceRoot": [
+        656,
+        1150
+      ],
+      "sourceCrown": [
+        656,
+        56
+      ],
+      "observedCrownPx": [
+        256,
+        92
+      ],
+      "uniformScale": 0.14990859232175502,
+      "rotationDeg": 0,
+      "role": "Two-eyed teal serpent head"
+    },
+    "arm-human": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "shoulder": [
+          0,
+          0
+        ],
+        "elbow": [
+          33,
+          52
+        ],
+        "grip": [
+          77,
+          103
+        ]
+      },
+      "scaleClass": "shared arm frame",
+      "camera": "front orthographic",
+      "layer": "arm, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.shoulder-adapter",
+        "anchor": "shoulder",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "shoulder adapter covers the root; torso cell overlays 8 px of the proximal art",
+      "compatibleInterfaces": [
+        "torso.shoulder-adapter",
+        "hand.grip"
+      ],
+      "mirroring": "mirrored with its adapter for the left side",
+      "sourceRoot": [
+        500,
+        330
+      ],
+      "sourceElbow": [
+        665,
+        650
+      ],
+      "sourceGrip": [
+        1010,
+        1055
+      ],
+      "observedElbowPx": [
+        306.5401380890261,
+        347.42823506952175
+      ],
+      "uniformScale": 0.29015910543794443,
+      "rotationDeg": -1.6563868243673667,
+      "role": "Human arm and hand"
+    },
+    "arm-talons": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "shoulder": [
+          0,
+          0
+        ],
+        "elbow": [
+          33,
+          52
+        ],
+        "grip": [
+          77,
+          103
+        ]
+      },
+      "scaleClass": "shared arm frame",
+      "camera": "front orthographic",
+      "layer": "arm, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.shoulder-adapter",
+        "anchor": "shoulder",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "shoulder adapter covers the root; torso cell overlays 8 px of the proximal art",
+      "compatibleInterfaces": [
+        "torso.shoulder-adapter",
+        "hand.grip"
+      ],
+      "mirroring": "mirrored with its adapter for the left side",
+      "sourceRoot": [
+        280,
+        280
+      ],
+      "sourceElbow": [
+        640,
+        620
+      ],
+      "sourceGrip": [
+        1000,
+        1020
+      ],
+      "observedElbowPx": [
+        333.9669793621013,
+        351.5894934333959
+      ],
+      "uniformScale": 0.2491109896777667,
+      "rotationDeg": 7.434384645907173,
+      "role": "Multi-clawed arm"
+    },
+    "arm-many-sucker": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "shoulder": [
+          0,
+          0
+        ],
+        "elbow": [
+          33,
+          52
+        ],
+        "grip": [
+          77,
+          103
+        ]
+      },
+      "scaleClass": "shared arm frame",
+      "camera": "front orthographic",
+      "layer": "arm, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.shoulder-adapter",
+        "anchor": "shoulder",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "shoulder adapter covers the root; torso cell overlays 8 px of the proximal art",
+      "compatibleInterfaces": [
+        "torso.shoulder-adapter",
+        "hand.grip"
+      ],
+      "mirroring": "mirrored with its adapter for the left side",
+      "sourceRoot": [
+        620,
+        90
+      ],
+      "sourceElbow": [
+        625,
+        610
+      ],
+      "sourceGrip": [
+        650,
+        1110
+      ],
+      "observedElbowPx": [
+        332.38692019590894,
+        362.511380005762
+      ],
+      "uniformScale": 0.2520481738780272,
+      "rotationDeg": -35.09610643320465,
+      "role": "Coiled sucker limb"
+    },
+    "arm-rat": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "shoulder": [
+          0,
+          0
+        ],
+        "elbow": [
+          33,
+          52
+        ],
+        "grip": [
+          77,
+          103
+        ]
+      },
+      "scaleClass": "shared arm frame",
+      "camera": "front orthographic",
+      "layer": "arm, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.shoulder-adapter",
+        "anchor": "shoulder",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "shoulder adapter covers the root; torso cell overlays 8 px of the proximal art",
+      "compatibleInterfaces": [
+        "torso.shoulder-adapter",
+        "hand.grip"
+      ],
+      "mirroring": "mirrored with its adapter for the left side",
+      "sourceRoot": [
+        240,
+        225
+      ],
+      "sourceElbow": [
+        700,
+        610
+      ],
+      "sourceGrip": [
+        1140,
+        1060
+      ],
+      "observedElbowPx": [
+        336.28579011096554,
+        352.679294730382
+      ],
+      "uniformScale": 0.2094992366804297,
+      "rotationDeg": 10.364733603796061,
+      "role": "Rat-flesh arm and gripping paw"
+    },
+    "arm-bone": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "shoulder": [
+          0,
+          0
+        ],
+        "elbow": [
+          33,
+          52
+        ],
+        "grip": [
+          77,
+          103
+        ]
+      },
+      "scaleClass": "shared arm frame",
+      "camera": "front orthographic",
+      "layer": "arm, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.shoulder-adapter",
+        "anchor": "shoulder",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "shoulder adapter covers the root; torso cell overlays 8 px of the proximal art",
+      "compatibleInterfaces": [
+        "torso.shoulder-adapter",
+        "hand.grip"
+      ],
+      "mirroring": "mirrored with its adapter for the left side",
+      "sourceRoot": [
+        235,
+        175
+      ],
+      "sourceElbow": [
+        650,
+        630
+      ],
+      "sourceGrip": [
+        1080,
+        1060
+      ],
+      "observedElbowPx": [
+        331.11951911838366,
+        361.41920187009515
+      ],
+      "uniformScale": 0.21019594258575125,
+      "rotationDeg": 6.894687336607866,
+      "role": "Skeletal arm and gripping claw"
+    },
+    "leg-flesh": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "hip": [
+          0,
+          0
+        ],
+        "knee": [
+          0,
+          57
+        ],
+        "footwear": [
+          0,
+          99
+        ],
+        "sole": [
+          0,
+          114
+        ]
+      },
+      "scaleClass": "shared leg frame",
+      "camera": "front orthographic",
+      "layer": "leg, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.hip-adapter",
+        "anchor": "hip",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "hip adapter covers the root; leg continues through shared footwear mount to sole",
+      "compatibleInterfaces": [
+        "torso.hip-adapter",
+        "footwear.mount"
+      ],
+      "mirroring": "not mirrored in this neutral frontal study",
+      "sourceRoot": [
+        640,
+        110
+      ],
+      "sourceKnee": [
+        640,
+        650
+      ],
+      "sourceFootwear": [
+        640,
+        1005
+      ],
+      "sourceSole": [
+        640,
+        1150
+      ],
+      "observedKneePx": [
+        256,
+        374.38461538461536
+      ],
+      "observedFootwearPx": [
+        256,
+        452.21153846153845
+      ],
+      "uniformScale": 0.21923076923076923,
+      "rotationDeg": 0,
+      "role": "Soft two-joint leg"
+    },
+    "leg-insect": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "hip": [
+          0,
+          0
+        ],
+        "knee": [
+          0,
+          57
+        ],
+        "footwear": [
+          0,
+          99
+        ],
+        "sole": [
+          0,
+          114
+        ]
+      },
+      "scaleClass": "shared leg frame",
+      "camera": "front orthographic",
+      "layer": "leg, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.hip-adapter",
+        "anchor": "hip",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "hip adapter covers the root; leg continues through shared footwear mount to sole",
+      "compatibleInterfaces": [
+        "torso.hip-adapter",
+        "footwear.mount"
+      ],
+      "mirroring": "not mirrored in this neutral frontal study",
+      "sourceRoot": [
+        628,
+        170
+      ],
+      "sourceKnee": [
+        628,
+        635
+      ],
+      "sourceFootwear": [
+        628,
+        958
+      ],
+      "sourceSole": [
+        628,
+        1120
+      ],
+      "observedKneePx": [
+        256,
+        367.6
+      ],
+      "observedFootwearPx": [
+        256,
+        445.12
+      ],
+      "uniformScale": 0.24,
+      "rotationDeg": 0,
+      "role": "Chitin-plated, spined leg"
+    },
+    "leg-bone": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "hip": [
+          0,
+          0
+        ],
+        "knee": [
+          0,
+          57
+        ],
+        "footwear": [
+          0,
+          99
+        ],
+        "sole": [
+          0,
+          114
+        ]
+      },
+      "scaleClass": "shared leg frame",
+      "camera": "front orthographic",
+      "layer": "leg, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.hip-adapter",
+        "anchor": "hip",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "hip adapter covers the root; leg continues through shared footwear mount to sole",
+      "compatibleInterfaces": [
+        "torso.hip-adapter",
+        "footwear.mount"
+      ],
+      "mirroring": "not mirrored in this neutral frontal study",
+      "sourceRoot": [
+        640,
+        80
+      ],
+      "sourceKnee": [
+        640,
+        625
+      ],
+      "sourceFootwear": [
+        640,
+        960
+      ],
+      "sourceSole": [
+        640,
+        1150
+      ],
+      "observedKneePx": [
+        256,
+        372.13084112149534
+      ],
+      "observedFootwearPx": [
+        256,
+        443.5140186915888
+      ],
+      "uniformScale": 0.2130841121495327,
+      "rotationDeg": 0,
+      "role": "Skeletal claw-foot leg"
+    },
+    "leg-rat": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "hip": [
+          0,
+          0
+        ],
+        "knee": [
+          0,
+          57
+        ],
+        "footwear": [
+          0,
+          99
+        ],
+        "sole": [
+          0,
+          114
+        ]
+      },
+      "scaleClass": "shared leg frame",
+      "camera": "front orthographic",
+      "layer": "leg, behind torso",
+      "attachmentPoint": {
+        "interface": "torso.hip-adapter",
+        "anchor": "hip",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "hip adapter covers the root; leg continues through shared footwear mount to sole",
+      "compatibleInterfaces": [
+        "torso.hip-adapter",
+        "footwear.mount"
+      ],
+      "mirroring": "not mirrored in this neutral frontal study",
+      "sourceRoot": [
+        512,
+        140
+      ],
+      "sourceKnee": [
+        600,
+        750
+      ],
+      "sourceFootwear": [
+        520,
+        1290
+      ],
+      "sourceSole": [
+        512,
+        1445
+      ],
+      "observedKneePx": [
+        271.37471264367815,
+        362.57471264367814
+      ],
+      "observedFootwearPx": [
+        257.3977011494253,
+        456.91954022988506
+      ],
+      "uniformScale": 0.17471264367816092,
+      "rotationDeg": 0,
+      "role": "Rat-flesh bent leg and claw paw"
+    },
+    "weapon-bone-club": {
+      "boundsPx": [
+        512,
+        512
+      ],
+      "anchors": {
+        "grip": [
+          0,
+          0
+        ],
+        "head": [
+          0,
+          -64
+        ]
+      },
+      "scaleClass": "shared equipment frame",
+      "camera": "front orthographic",
+      "layer": "held equipment, in front",
+      "attachmentPoint": {
+        "interface": "hand.grip",
+        "anchor": "grip",
+        "position": [
+          0,
+          0
+        ]
+      },
+      "overlapSeamRegion": "grip anchor is centered at the hand mount",
+      "compatibleInterfaces": [
+        "hand.grip"
+      ],
+      "mirroring": "may mirror for opposite hand",
+      "sourceRoot": [
+        512,
+        980
+      ],
+      "sourceGrip": [
+        512,
+        980
+      ],
+      "sourceHead": [
+        512,
+        280
+      ],
+      "uniformScale": 0.18285714285714286,
+      "rotationDeg": 0,
+      "registeredHeadPx": [
+        256,
+        128
+      ],
+      "role": "Revised bone club, isolated art"
+    }
+  },
+  "equipment": {
+    "weapon-bone-club": {
+      "host": "arm.grip",
+      "orientation": "broad blunt bone head above the wrapped hand grip",
+      "silhouette": "revised pixel-art cutout replaces the source limb-like shape",
+      "headAnchor": [
+        0,
+        -64
+      ],
+      "gripAnchor": [
+        0,
+        0
+      ],
+      "gripAnchorPx": [
+        256,
+        256
+      ]
+    },
+    "boot-universal": {
+      "host": "leg.footwear",
+      "soleOffsetPx": [
+        0,
+        30
+      ],
+      "mirror": "shared exact component, no per-leg resizing"
+    }
+  },
+  "combinations": [
+    {
+      "id": "baseline-human",
+      "heads": [
+        "head-sack"
+      ],
+      "arms": [
+        "arm-human",
+        "arm-human"
+      ],
+      "legs": [
+        "leg-flesh",
+        "leg-flesh"
+      ],
+      "weaponHands": []
+    },
+    {
+      "id": "mixed-unicorn",
+      "heads": [
+        "head-unicorn"
+      ],
+      "arms": [
+        "arm-human",
+        "arm-talons"
+      ],
+      "legs": [
+        "leg-insect",
+        "leg-insect"
+      ],
+      "weaponHands": [
+        0
+      ]
+    },
+    {
+      "id": "expanded-count",
+      "heads": [
+        "head-sack",
+        "head-unicorn"
+      ],
+      "arms": [
+        "arm-human",
+        "arm-talons",
+        "arm-many-sucker"
+      ],
+      "legs": [
+        "leg-flesh",
+        "leg-insect",
+        "leg-bone",
+        "leg-insect"
+      ],
+      "weaponHands": []
+    },
+    {
+      "id": "single-arm-odd-legs",
+      "heads": [
+        "head-sack"
+      ],
+      "arms": [
+        "arm-human"
+      ],
+      "legs": [
+        "leg-flesh",
+        "leg-insect",
+        "leg-bone"
+      ],
+      "weaponHands": []
+    },
+    {
+      "id": "rat-bone-serpent",
+      "heads": [
+        "head-rat",
+        "head-bone",
+        "head-serpent"
+      ],
+      "arms": [
+        "arm-rat",
+        "arm-bone"
+      ],
+      "legs": [
+        "leg-rat",
+        "leg-bone",
+        "leg-insect"
+      ],
+      "weaponHands": []
+    }
+  ],
+  "limits": [
+    "Generated source landmarks are registered by a uniform rotation/scale and translation. Shared interface coordinates are declared for the study; visible elbow and knee landmarks are recorded from the transformed source and still need visual review.",
+    "Footwear fit uses one shared shape at every leg footwear anchor; its silhouette remains for review.",
+    "No animation or arena-size tests are included."
+  ]
+}

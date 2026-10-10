@@ -1,9 +1,7 @@
-# FRANKENTOWER — private reliability playtest
+# FRANKENTOWER — grotesque anatomy art pass
 
-Patient records are validated before the game starts. Damaged records offer an explicit reset confirmation, while incompatible development rulesets still reset without migration.
+This private build introduces modular creature anatomy with distinct pixel-art heads, arms, legs, torso details, and attachment adapters. Multi-limbed creatures use spaced sockets, torso modules, and visible joins so the parts read as one assembled body. Body parts can keep their own materials and colors, with asymmetry used selectively.
 
-Failed saves retain the newest pending progress and retry automatically with bounded backoff. Manual retry and host resume also retry pending writes. Engine failures return to the shop without recording a defeat; runtime crashes offer reconnection to saved records.
-
-Browser checks now run across platforms and include corrupted saves, write failures, interrupted combat, and rendering/asynchronous crashes. Donor grafts use their own torso silhouettes, and arena drawing safely stops when its canvas is removed.
+Weapon and item illustrations now appear in equipment views and on the creature. Held items are drawn at the hand grip with a visible hand overlay.
 
 This build remains private/unlisted. It is not a public release or jam submission.

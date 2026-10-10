@@ -27,7 +27,7 @@ export function PatientSummary({ build }: { build: Build }) {
       <div className="inspect-equipment">
         {equipped(build).map(({ part, item }) => (
           <div className="inspect-item" key={part.uid}>
-            <Icon name={ITEM_MAP[item.defId].icon} />
+            <Icon name={ITEM_MAP[item.defId].icon} variant={item.defId} />
             <div>
               <strong>
                 {ITEM_MAP[item.defId].name} <small>Lv{item.level}</small>
