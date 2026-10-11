@@ -1,7 +1,7 @@
 import type { Build, Part } from '../game/types';
 import { ITEM_MAP } from '../game/content';
 import type { ArmMotion } from '../game/attack-motion';
-import { drawGrotesqueItemAt } from './item-assets';
+import { drawGrotesqueItemAt, headwearAttachment } from './item-assets';
 
 export interface Pose {
   time?: number;
@@ -466,9 +466,9 @@ export function drawPuppet(
     c.globalAlpha *= 0.65;
     c.scale(1, Math.max(0.2, 1 - Math.min(1, pose.dead / 0.38)));
   }
-  const bob = pose.moving
-    ? Math.sin((pose.walk ?? 0) * 0.22) * 1.1
-    : Math.sin((pose.time ?? 0) * 2) * 0.4;
+  // Keep idle pixel art stationary. Fractional bobbing makes nearest-neighbour item
+  // edges crawl from frame to frame, especially at the dressing-room display scale.
+  const bob = pose.moving ? Math.round(Math.sin((pose.walk ?? 0) * 0.22) * 1.1) : 0;
   c.translate(pose.hurt ? -1 : 0, -bob);
 
   // Limbs sit behind one continuous torso silhouette; the body covers their roots.
@@ -529,33 +529,32 @@ export function drawPuppet(
       yPos = layout.torso.y + layout.torso.h * 0.65 - size / 2;
     gear(c, 'heart', xPos, yPos, size, heart.variant);
   }
-  for (const j of layout.heads) {
+  const headwear = layout.heads.flatMap((j) => {
     const p = heads[j.index];
-    if (p.item?.defId === 'hood') {
-      const size = j.w * 1.55;
-      gear(c, ITEM_MAP[p.item.defId].icon, j.pin.x - size / 2, j.pin.y - size / 2, size, p.item.defId);
-    }
+    if (!p.item) return [];
+    const icon = ITEM_MAP[p.item.defId].icon,
+      fit = headwearAttachment(icon),
+      s = partArt('head', p.variant),
+      face = sourcePoint(s, j, { x: 256, y: 174 }),
+      crown = sourcePoint(s, j, { x: 256, y: 86 }),
+      target = fit.target === 'face' ? face : crown,
+      size = j.w * fit.sizeInHeads;
+    return [{ j, item: p.item, icon, fit, x: j.pin.x + target.x - size * fit.assetAnchor.x, y: j.pin.y + target.y - size * fit.assetAnchor.y, size }];
+  });
+  for (const h of headwear) {
+    if (h.fit.layer !== 'behind') continue;
+    if (!drawGrotesqueItemAt(c, h.icon, h.x, h.y, h.size, h.size, h.item.defId))
+      gear(c, h.icon, h.x, h.y, h.size, h.item.defId);
   }
   for (const j of layout.heads) {
     const p = heads[j.index],
       s = partArt('head', p.variant);
     drawAt(c, s, j, 0, p.variant, !!pose.enemy);
-    if (p.item && p.item.defId !== 'hood') {
-      const crown = sourcePoint(
-          s,
-          j,
-          { x: 256, y: 174 },
-        ),
-        size = j.w * 0.82;
-      gear(
-        c,
-        ITEM_MAP[p.item.defId].icon,
-        j.pin.x + crown.x - size * 0.5,
-        j.pin.y + crown.y - size * 0.5,
-        size,
-        p.item.defId,
-      );
-    }
+  }
+  for (const h of headwear) {
+    if (h.fit.layer !== 'front') continue;
+    if (!drawGrotesqueItemAt(c, h.icon, h.x, h.y, h.size, h.size, h.item.defId))
+      gear(c, h.icon, h.x, h.y, h.size, h.item.defId);
   }
 
   // Equipment is in front of the paper doll. The hand overlay crosses each handle

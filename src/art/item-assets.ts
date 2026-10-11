@@ -14,6 +14,31 @@ const itemFiles = {
 } as const;
 
 type ItemIconName = keyof typeof itemFiles;
+type HeadwearAttachment = {
+  target: 'face' | 'crown';
+  assetAnchor: { x: number; y: number };
+  sizeInHeads: number;
+  layer: 'behind' | 'front';
+};
+
+// Item art declares where it attaches to a standardized head landmark. New headwear
+// only needs an icon profile; the puppet renderer stays independent of item IDs.
+const headwearAttachments: Partial<Record<ItemIconName, HeadwearAttachment>> = {
+  hood: { target: 'face', assetAnchor: { x: 0.5, y: 0.48 }, sizeInHeads: 1.7, layer: 'behind' },
+  helmet: { target: 'crown', assetAnchor: { x: 0.5, y: 0.82 }, sizeInHeads: 0.92, layer: 'front' },
+};
+
+export function headwearAttachment(name: string): HeadwearAttachment {
+  return (
+    headwearAttachments[name as ItemIconName] ?? {
+      target: 'crown',
+      assetAnchor: { x: 0.5, y: 0.82 },
+      sizeInHeads: 1,
+      layer: 'front',
+    }
+  );
+}
+
 const base = `${import.meta.env.BASE_URL}grotesque/items/`;
 const itemImages = Object.fromEntries(
   Object.entries(itemFiles).map(([name, file]) => {

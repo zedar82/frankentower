@@ -6,4 +6,6 @@ Weapon and item illustrations now appear in equipment views and on the creature.
 
 The creature renderer now draws one continuous torso, spaces multiple heads apart, fits chest armour across the body, layers hoods around the face, and scales held weapons to read clearly in combat.
 
+Head-slot items now use reusable face and crown attachment profiles, so new headwear fits through art anchors instead of item-specific renderer branches. Idle creatures stay on fixed pixel rows to keep equipment edges steady.
+
 This build remains private/unlisted. It is not a public release or jam submission.
