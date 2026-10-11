@@ -1,6 +1,8 @@
 import { chromium } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
 const directory = 'output/art-direction/modular-v2/review';
+const weaponOnly = process.argv.includes('--weapons-only');
+const suffix = process.env.FRANKENTOWER_CAPTURE_SUFFIX ?? '';
 await mkdir(directory, { recursive: true });
 const base = process.env.FRANKENTOWER_LOCAL_URL ?? 'http://127.0.0.1:5174/';
 const browser = await chromium.launch({
@@ -121,13 +123,97 @@ try {
       drawPuppet(m, build, f.x, f.y, f.scale, { arms }, pixelItem);
     });
     output['motion-board.png'] = motion.toDataURL().split(',')[1];
+    const weaponIds = ['dagger', 'club', 'knife', 'bonewand', 'crossbow', 'shield', 'dice'];
+    const weaponSheet = document.createElement('canvas');
+    weaponSheet.width = weaponIds.length * 360;
+    weaponSheet.height = 2220;
+    const wc = weaponSheet.getContext('2d');
+    wc.fillStyle = '#17181e';
+    wc.fillRect(0, 0, weaponSheet.width, weaponSheet.height);
+    ['living', 'rat', 'bone', 'clockwork', 'serpent', 'ganglion'].forEach((variant, row) => {
+      weaponIds.forEach((id, column) => {
+        const b = {
+          name: id,
+          parts: ['chest', 'hand', 'hand'].map((slot, n) => ({
+            uid: `grip-${n}`,
+            slot,
+            variant,
+            ...(slot === 'hand' ? { item: { uid: `weapon-${n}`, defId: id, level: 1 } } : {}),
+          })),
+        };
+        const x = column * 360,
+          y = row * 370;
+        wc.save();
+        wc.beginPath();
+        wc.rect(x + 2, y + 2, 356, 366);
+        wc.clip();
+        drawPuppet(wc, b, x - 45, y + 296, 3, {}, pixelItem);
+        wc.restore();
+        wc.fillStyle = '#e5cca5';
+        wc.font = '18px Georgia';
+        wc.fillText(`${variant} / ${id}`, x + 15, y + 28);
+      });
+    });
+    output['weapon-grips.png'] = weaponSheet.toDataURL().split(',')[1];
+    const swings = document.createElement('canvas');
+    swings.width = weaponIds.length * 360;
+    swings.height = 1280;
+    const sc = swings.getContext('2d');
+    sc.fillStyle = '#17181e';
+    sc.fillRect(0, 0, swings.width, swings.height);
+    const poses = [
+      [1, 0],
+      [1, 0.7],
+      [-1, 0],
+      [-1, 0.7],
+    ];
+    poses.forEach(([facing, strike], row) => {
+      weaponIds.forEach((id, column) => {
+        const b = studyBuild(id, {
+          heads: 1,
+          arms: 2,
+          legs: 2,
+          fur: false,
+          gear: false,
+          alternate: false,
+        });
+        b.parts
+          .filter((p) => p.slot === 'hand')
+          .forEach((p, n) => (p.item = { uid: `weapon-${n}`, defId: id, level: 1 }));
+        const x = column * 360,
+          y = row * 320;
+        const f = fitPuppet(b, { x: x + 8, y: y + 35, w: 344, h: 277 }, 2.2);
+        const arms = Object.fromEntries(
+          b.parts
+            .filter((p) => p.slot === 'hand')
+            .map((p) => [p.item.uid, { facing, drawback: 1, strike }]),
+        );
+        drawPuppet(sc, b, f.x, f.y, f.scale, { arms }, pixelItem);
+        sc.fillStyle = '#e5cca5';
+        sc.font = '18px Georgia';
+        sc.fillText(
+          `${id} / ${facing === 1 ? 'right' : 'left'} / ${strike ? 'strike' : 'ready'}`,
+          x + 12,
+          y + 26,
+        );
+      });
+    });
+    output['weapon-swings.png'] = swings.toDataURL().split(',')[1];
     return output;
   });
-  for (const [name, data] of Object.entries(results))
-    await writeFile(`${directory}/${name}`, Buffer.from(data, 'base64'));
-  await page.screenshot({ path: `${directory}/review-page.png`, fullPage: true });
+  for (const [name, data] of Object.entries(results)) {
+    if (weaponOnly && !name.startsWith('weapon-')) continue;
+    await writeFile(
+      `${directory}/${name.replace('.png', `${suffix}.png`)}`,
+      Buffer.from(data, 'base64'),
+    );
+  }
+  if (!weaponOnly) await page.screenshot({ path: `${directory}/review-page.png`, fullPage: true });
   if (errors.length) throw new Error(errors.join('\n'));
-  console.log(`Captured ${Object.keys(results).length} actual renderer images in ${directory}`);
+  const count = Object.keys(results).filter(
+    (name) => !weaponOnly || name.startsWith('weapon-'),
+  ).length;
+  console.log(`Captured ${count} actual renderer images in ${directory}`);
 } finally {
   await browser.close();
 }

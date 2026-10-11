@@ -1,11 +1,10 @@
-# FRANKENTOWER — modular creature assembly
+# FRANKENTOWER — held-item attachment and attack layers
 
-The accepted modular assembly is now the default for player and enemy creatures. A continuous torso interior, fixed boundary pieces and individual sockets replace the old stretched body artwork. Additional arm rows reserve vertical space; separate head and leg capacity creates shoulder/hip taper capped at two steps.
+Every current hand-item archetype now has its own measured grip, shaft orientation, size and hand layer. Weapons attach at their handles; the bone wand aligns at its wrapped shaft, and the crossbow mounts at its grip instead of floating beside the fist.
 
-Living, rat, serpent, skeletal, clockwork, ganglion and necrotic anatomy all use the new library. Each graft keeps its own material and colour. Symmetry is welcome; mismatched materials give the creature its character.
+Shield faces cover the hand, while weapon handles sit beneath the fingers. Arms and held items render together in front of the torso, keeping forearms visible when attacks cross the chest. Camera bounds use those same attachment transforms.
 
-Heads have reserved spacing and measured crown mounts. Head equipment currently shares crown artwork. Cleavers use a substantial new sprite, with the host hand drawn over the handle. Other weapons and footwear retain their equipment artwork. Chest equipment and organs keep their gameplay effects and inventory presentation; body overlays await a later art pass.
+The attachment review includes seven held-item archetypes on six hand materials, plus ready and strike poses in both directions. The modular body construction and combat timing remain in place.
 
-Legacy body sprites, adapters, stretched-torso rendering and animation fallbacks have been removed. Combat's per-weapon preparation, contact and recovery timing continues to drive the new limb pivots. Static bodies stay on fixed pixel rows. The repeatable generation workflow, prompts and actual in-game review captures are saved with the project.
 
 This build remains private/unlisted. It is not a public release or jam submission.

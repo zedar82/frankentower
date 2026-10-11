@@ -1,6 +1,7 @@
 import type { Build, Part } from '../game/types';
 import { ITEM_MAP } from '../game/content';
 import type { Joint, Pose, PuppetLayout } from './puppet';
+import { drawHeldItem, heldHandLayer, heldItemCorners, itemArtReady } from './item-assets';
 
 type Point = { x: number; y: number };
 type Contract = { width: number; height: number; root: Point; end?: Point; crown?: Point };
@@ -24,7 +25,6 @@ const names = [
   'leg-bone',
   'leg-lizard',
   'leg-flesh',
-  'weapon-cleaver',
   'gear-crown',
   'head-flesh',
   'head-bone',
@@ -56,6 +56,7 @@ for (const material of ['flesh', 'fur', 'bone', 'metal', 'scales']) {
     for (const direction of ['in', 'out']) names.push(`taper-${n}-${direction}-${material}`);
 }
 export const modularReady = Promise.all([
+  itemArtReady,
   fetch(`${base}geometry.json`)
     .then((r) => {
       if (!r.ok) throw new Error('Missing modular geometry');
@@ -190,7 +191,7 @@ export function modularLayout(build: Build): PuppetLayout {
       };
       for (const x of [-24, 72])
         for (const y of [-20, 94]) {
-          const px = j.pin.x + j.side * (x * Math.cos(angle) - y * Math.sin(angle));
+          const px = j.pin.x + j.side * x * Math.cos(angle) - y * Math.sin(angle);
           const py = j.pin.y + j.side * x * Math.sin(angle) + y * Math.cos(angle);
           left = Math.min(left, px);
           right = Math.max(right, px);
@@ -199,15 +200,17 @@ export function modularLayout(build: Build): PuppetLayout {
         }
       if (hands[j.index].item) {
         const grip = g.end ?? { x: 64, y: 78 };
-        for (const x of [grip.x - g.root.x - 25, grip.x - g.root.x + 25])
-          for (const y of [grip.y - g.root.y - 68, grip.y - g.root.y + 14]) {
-            const px = j.pin.x + j.side * (x * Math.cos(angle) - y * Math.sin(angle));
-            const py = j.pin.y + j.side * x * Math.sin(angle) + y * Math.cos(angle);
-            left = Math.min(left, px);
-            right = Math.max(right, px);
-            top = Math.min(top, py);
-            bottom = Math.max(bottom, py);
-          }
+        const corners = heldItemCorners(ITEM_MAP[hands[j.index].item!.defId].icon);
+        for (const point of corners) {
+          const x = grip.x - g.root.x + point.x,
+            y = grip.y - g.root.y + point.y;
+          const px = j.pin.x + j.side * x * Math.cos(angle) - y * Math.sin(angle);
+          const py = j.pin.y + j.side * x * Math.sin(angle) + y * Math.cos(angle);
+          left = Math.min(left, px);
+          right = Math.max(right, px);
+          top = Math.min(top, py);
+          bottom = Math.max(bottom, py);
+        }
       }
     }
   const bounds = {
@@ -373,11 +376,9 @@ export function drawModularPuppet(
   const legAngle = (j: Joint) =>
     pose.moving ? Math.sin((pose.walk ?? 0) * 0.22 + j.index * Math.PI) * 0.075 : 0;
   for (const j of layout.legs) limb(c, feet[j.index], j, legAngle(j));
-  for (const j of layout.arms) limb(c, hands[j.index], j, angleFor(j, hands[j.index], pose));
   trunk(c, build, layout);
   c.save();
   c.filter = materialFilter(chestVariant(build), true);
-  for (const j of layout.arms) sprite(c, `socket-arm-${material}`, j.pin.x - 11, j.pin.y - 12);
   for (const j of layout.legs) sprite(c, `socket-leg-${material}`, j.pin.x - 10, j.pin.y - 6);
   for (const j of layout.heads) sprite(c, `socket-neck-${material}`, j.pin.x - 10, j.pin.y - 6);
   c.restore();
@@ -415,33 +416,27 @@ export function drawModularPuppet(
   }
   for (const j of layout.arms) {
     const p = hands[j.index];
+    const angle = angleFor(j, p, pose);
+    // Arm and equipment share the foreground pass, so a strike across the torso
+    // keeps the actual limb visible instead of leaving a floating weapon.
+    limb(c, p, j, angle);
+    c.save();
+    c.filter = materialFilter(chestVariant(build), true);
+    sprite(c, `socket-arm-${material}`, j.pin.x - 11, j.pin.y - 12);
+    c.restore();
     if (!p.item) continue;
     const g = geometry[asset(p)],
       end = g.end!,
-      def = ITEM_MAP[p.item.defId],
-      angle = angleFor(j, p, pose);
+      def = ITEM_MAP[p.item.defId];
     c.save();
     c.translate(j.pin.x, j.pin.y);
     c.rotate(angle);
     if (j.side === -1) c.scale(-1, 1);
     const gx = end.x - g.root.x,
       gy = end.y - g.root.y;
-    if (def.icon === 'knife') {
-      const mount = geometry['weapon-cleaver'].root;
-      sprite(c, 'weapon-cleaver', gx - mount.x, gy - mount.y);
-    } else {
-      const size = def.icon === 'shield' ? 44 : 64;
-      gear(
-        c,
-        def.icon,
-        gx - size / 2,
-        gy - size * (def.icon === 'shield' ? 0.5 : 0.88),
-        size,
-        p.item.defId,
-      );
-    }
+    drawHeldItem(c, def.icon, gx, gy, p.item.defId);
     c.restore();
-    limb(c, p, j, angle, true);
+    if (heldHandLayer(def.icon) === 'front') limb(c, p, j, angle, true);
   }
   c.restore();
   return true;

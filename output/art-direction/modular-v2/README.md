@@ -66,6 +66,8 @@ Taper is distributed evenly between both sides. The interior is one continuous t
 - [Assembly board](review/assembly-board.png): the six approved construction examples.
 - [Catalogue board](review/catalogue-board.png): every anatomy family.
 - [Motion board](review/motion-board.png): equipped idle, drawback and strike.
+- [Weapon grips](review/weapon-grips.png): measured handle/shaft anchors for all seven held-item archetypes on six hand types, with shields covering hands.
+- [Weapon swings](review/weapon-swings.png): arms and attached equipment in front of the torso, facing both directions. The corresponding `-before` captures record the earlier generic icon placement and hidden arms.
 - [Review page](review/review-page.png): the browser page and controls.
 
 Head spacing, separate arm rows, hip connections, substantial weapons and host-hand occlusion solve the former structural problems. Remaining polish includes flat broad torsos, schematic sockets, visible material repetition, noisy legacy boots and varying outline/pixel density. Acceptance of construction does not imply completion of every equipment or texture pass.
@@ -73,3 +75,5 @@ Head spacing, separate arm rows, hip connections, substantial weapons and host-h
 The previous SVG and whole-body libraries and their obsolete generators have been removed. Git history retains them. Equipment source cutouts remain separately in `output/art-direction/equipment-v1/sources/`.
 
 Adoption checks: registration emitted 95 sprites; the existing puppet composition check passed eight anatomies, three poses and both attack directions. Eleven actual renderer images captured without browser errors. TypeScript and the production build passed after legacy cleanup. Gameplay definitions and combat rules were not changed.
+
+Held-item follow-up: `src/art/item-assets.ts` now owns a declarative source frame, normalized grip/shaft landmarks, logical size and hand layer for each hand-item icon. Generic inventory icon centring no longer determines where handles sit. Shaft landmarks normalize the bone wand and crossbow orientation; shields draw over the hand while weapon fingers draw over handles. Arms and equipment share a foreground pass, including strikes across the chest. Bounds use the same item transform. Run `node scripts/capture-modular-study.mjs --weapons-only` to refresh the two attachment boards; `FRANKENTOWER_CAPTURE_SUFFIX=-before` preserves a comparison snapshot.

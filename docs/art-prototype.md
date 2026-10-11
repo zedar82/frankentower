@@ -12,6 +12,10 @@ Every existing anatomy variant resolves to new art. Living, rat, serpent, bone, 
 
 Head equipment uses the crown interface and shared crown art. Cleavers use registered grip anchors; other weapons and footwear retain their equipment icons at declared host mounts. Each host's actual hand pixels are drawn over the handle. Chest equipment and internal organs retain their gameplay effects and inventory UI; visible torso equipment is still an open art pass.
 
+Held-item profiles in `src/art/item-assets.ts` declare the source frame, normalized grip, a second shaft/aim landmark, logical size and hand layer for every current hand-item archetype. That second landmark aligns the held axis before the parent arm rotates or mirrors it. Shields draw their front face over the hand; handles draw beneath the host fingers. Inventory icon centring is separate from worn/held placement. New hand-item archetypes require an attachment profile and a visual review on the supported hands.
+
+Arms and held items render together in front of the torso, so crossing strikes retain visible forearms. Camera bounds use the same item transforms and mirroring order as drawing. The grip and swing boards capture all seven hand-item archetypes, six hand materials, and both attack directions through the actual renderer.
+
 ## Motion
 
 `src/game/attack-motion.ts` and the deterministic combat engine own preparation, contact and recovery phases. The new renderer consumes `Pose.arms` per weapon instance and rotates limbs around registered shoulders. Removing old art does not change activation clocks, damage timing, own-hit effects or branch ancestry.
