@@ -1,10 +1,10 @@
-# FRANKENTOWER — held-item attachment and attack layers
+# FRANKENTOWER — rendering quality and display density
 
-Every current hand-item archetype now has its own measured grip, shaft orientation, size and hand layer. Weapons attach at their handles; the bone wand aligns at its wrapped shaft, and the crossbow mounts at its grip instead of floating beside the fist.
+Creature cutouts, materials and torso boundaries now retain four bitmap pixels per assembly unit. This preserves facial lines, hand shapes and limb detail inside the existing frames and attachment envelopes.
 
-Shield faces cover the hand, while weapon handles sit beneath the fingers. Arms and held items render together in front of the torso, keeping forearms visible when attacks cross the chest. Camera bounds use those same attachment transforms.
+Room, arena and portrait canvases draw at their actual display size and device pixel ratio. Pixelated CSS scaling replaces smooth enlargement of a fixed small canvas. Portraits redraw when resized.
 
-The attachment review includes seven held-item archetypes on six hand materials, plus ready and strike poses in both directions. The modular body construction and combat timing remain in place.
+The accepted body proportions, taper, grips and foreground attack-arm layers are preserved. Before/after quality captures use the actual DressingRoom at standard and high display density. The existing attachment check and production build pass; gameplay and combat timing are unchanged.
 
 
 This build remains private/unlisted. It is not a public release or jam submission.

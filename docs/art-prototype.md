@@ -16,6 +16,14 @@ Held-item profiles in `src/art/item-assets.ts` declare the source frame, normali
 
 Arms and held items render together in front of the torso, so crossing strikes retain visible forearms. Camera bounds use the same item transforms and mirroring order as drawing. The grip and swing boards capture all seven hand-item archetypes, six hand materials, and both attack directions through the actual renderer.
 
+## Bitmap and display resolution
+
+Assembly coordinates are logical units; they are separate from bitmap pixels. The registration generator now emits four bitmap pixels per logical unit, preserving source detail inside the accepted frames. For example, a 64 × 64 logical head frame is a 256 × 256 PNG. Every asset's geometry records `rasterScale`, logical dimensions and anchors. Drawing explicitly uses those logical dimensions, and texture patterns divide out the bitmap density, so torso proportions and taper do not change.
+
+`src/art/canvas.ts` sizes room, arena and portrait backing stores to their displayed width and device pixel ratio. `Creature` redraws on resize; animated views update naturally. CSS uses pixelated display scaling and the renderer keeps nearest-neighbour sampling. A fixed small backing store no longer discards detail before CSS magnifies it.
+
+The quality baseline mounts the real DressingRoom with living anatomy, a cleaver and a dagger. `node scripts/capture-modular-study.mjs --quality-only` records standard/2× display captures using production CSS and a cropped before/after comparison. The previous registered head held about 52 painted pixels across; the current bitmap can retain about 208 across inside the same envelope. This addresses rendering loss without changing the accepted structural design or regenerating source artwork.
+
 ## Motion
 
 `src/game/attack-motion.ts` and the deterministic combat engine own preparation, contact and recovery phases. The new renderer consumes `Pose.arms` per weapon instance and rotates limbs around registered shoulders. Removing old art does not change activation clocks, damage timing, own-hit effects or branch ancestry.

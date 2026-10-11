@@ -32,6 +32,8 @@ The current [geometry.json](../public/grotesque/modular-v2/geometry.json) record
 
 Every asset declares its local bounds, scale class, camera/view, layer, attachment point, overlap/seam region, and compatible interfaces. Every equipment asset additionally declares its host anchor and intended orientation. Components may occupy different positions when assembled, but their authored view, scale, and local interfaces stay consistent.
 
+Frame dimensions and anchors are logical assembly units, independent of PNG pixel density. Current exports use four bitmap pixels per unit and declare that density in geometry.json. Preserve detail in the bitmap without enlarging a part's envelope, moving anchors or changing torso capacity. Render room/arena/portrait canvases at actual display density with pixelated scaling.
+
 Define maximum width, height and directional overhang for each interface or supported size class. The torso reserves those envelopes, including relevant headgear, footwear and arm movement clearance. Artists may vary silhouettes inside them; the shared canvas is not itself a sufficient spacing rule.
 
 ## Anatomical assembly model

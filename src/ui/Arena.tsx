@@ -13,6 +13,7 @@ import {
 import { puppetLayout } from '../art/puppet';
 import { count } from '../game/anatomy';
 import type { Build } from '../game/types';
+import { prepareCanvas } from '../art/canvas';
 
 function text(c: Pen, value: string, x: number, y: number, colour: string, size = 10) {
   c.font = `bold ${size}px monospace`;
@@ -150,12 +151,7 @@ export function Arena({
       const small = canvas.current!.clientWidth < 680,
         w = small ? 400 : 640,
         h = small ? 440 : 400;
-      if (canvas.current!.width !== w * 2) {
-        canvas.current!.width = w * 2;
-        canvas.current!.height = h * 2;
-      }
-      c!.setTransform(2, 0, 0, 2, 0, 0);
-      c!.imageSmoothingEnabled = false;
+      prepareCanvas(c!, w, h);
       c!.clearRect(0, 0, w, h);
       c!.save();
       const alive = sim.actors.filter((a) => a.hp > 0),
@@ -354,7 +350,7 @@ export function DressingRoom({
     let frame = 0;
     function draw(now: number) {
       if (!canvas.current) return;
-      c!.setTransform(2, 0, 0, 2, 0, 0);
+      prepareCanvas(c!, 320, 340);
       c!.clearRect(0, 0, 320, 340);
       c!.imageSmoothingEnabled = false;
       c!.drawImage(bg, 0, 0);

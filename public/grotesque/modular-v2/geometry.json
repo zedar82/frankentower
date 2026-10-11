@@ -2,13 +2,14 @@
   "head-rat": {
     "width": 64,
     "height": 64,
+    "rasterScale": 4,
     "root": {
       "x": 32,
       "y": 56
     },
     "bounds": {
       "left": 6,
-      "top": 13,
+      "top": 13.25,
       "right": 58,
       "bottom": 59
     },
@@ -23,15 +24,16 @@
   "head-lizard": {
     "width": 64,
     "height": 64,
+    "rasterScale": 4,
     "root": {
       "x": 32,
       "y": 56
     },
     "bounds": {
       "left": 6,
-      "top": 11,
+      "top": 10.75,
       "right": 58,
-      "bottom": 59
+      "bottom": 58.75
     },
     "source": "head-lizard",
     "sourceScale": 0.04585537918871252,
@@ -44,15 +46,16 @@
   "head-flesh": {
     "width": 64,
     "height": 64,
+    "rasterScale": 4,
     "root": {
       "x": 32,
       "y": 56
     },
     "bounds": {
-      "left": 7,
+      "left": 6.5,
       "top": 8,
-      "right": 57,
-      "bottom": 57
+      "right": 57.5,
+      "bottom": 57.5
     },
     "source": "head-flesh",
     "sourceScale": 0.04747117115335166,
@@ -65,6 +68,7 @@
   "head-bone": {
     "width": 64,
     "height": 64,
+    "rasterScale": 4,
     "root": {
       "x": 32,
       "y": 56
@@ -73,7 +77,7 @@
       "left": 11,
       "top": 8,
       "right": 53,
-      "bottom": 58
+      "bottom": 57.75
     },
     "source": "head-bone",
     "sourceScale": 0.04443539279035752,
@@ -86,13 +90,14 @@
   "head-clockwork": {
     "width": 64,
     "height": 64,
+    "rasterScale": 4,
     "root": {
       "x": 32,
       "y": 56
     },
     "bounds": {
       "left": 6,
-      "top": 11,
+      "top": 10.75,
       "right": 58,
       "bottom": 58
     },
@@ -107,15 +112,16 @@
   "head-ganglion": {
     "width": 64,
     "height": 64,
+    "rasterScale": 4,
     "root": {
       "x": 32,
       "y": 56
     },
     "bounds": {
-      "left": 8,
+      "left": 8.25,
       "top": 8,
-      "right": 56,
-      "bottom": 58
+      "right": 55.75,
+      "bottom": 57.5
     },
     "source": "head-ganglion",
     "sourceScale": 0.04489253848599914,
@@ -128,15 +134,16 @@
   "arm-flesh": {
     "width": 96,
     "height": 112,
+    "rasterScale": 4,
     "root": {
       "x": 24,
       "y": 20
     },
     "bounds": {
-      "left": 10,
-      "top": 9,
-      "right": 74,
-      "bottom": 93
+      "left": 9.5,
+      "top": 8.5,
+      "right": 74.5,
+      "bottom": 92.75
     },
     "source": "arm-flesh",
     "sourceScale": 0.07024738702964459,
@@ -149,14 +156,15 @@
   "arm-fur": {
     "width": 96,
     "height": 112,
+    "rasterScale": 4,
     "root": {
       "x": 24,
       "y": 20
     },
     "bounds": {
-      "left": 12,
-      "top": 9,
-      "right": 74,
+      "left": 12.25,
+      "top": 9.5,
+      "right": 74.25,
       "bottom": 92
     },
     "source": "arm-fur",
@@ -170,14 +178,15 @@
   "arm-bone": {
     "width": 96,
     "height": 112,
+    "rasterScale": 4,
     "root": {
       "x": 24,
       "y": 20
     },
     "bounds": {
-      "left": 6,
-      "top": 7,
-      "right": 80,
+      "left": 5.5,
+      "top": 7.25,
+      "right": 79.75,
       "bottom": 95
     },
     "source": "arm-bone",
@@ -191,15 +200,16 @@
   "arm-clockwork": {
     "width": 96,
     "height": 112,
+    "rasterScale": 4,
     "root": {
       "x": 24,
       "y": 20
     },
     "bounds": {
-      "left": 4,
-      "top": 7,
-      "right": 81,
-      "bottom": 95
+      "left": 3.5,
+      "top": 7.5,
+      "right": 81.25,
+      "bottom": 95.25
     },
     "source": "arm-clockwork",
     "sourceScale": 0.07024738702964459,
@@ -212,15 +222,16 @@
   "arm-lizard": {
     "width": 96,
     "height": 112,
+    "rasterScale": 4,
     "root": {
       "x": 24,
       "y": 20
     },
     "bounds": {
-      "left": 7,
-      "top": 10,
-      "right": 78,
-      "bottom": 93
+      "left": 6.75,
+      "top": 9.75,
+      "right": 78.5,
+      "bottom": 92.75
     },
     "source": "arm-lizard",
     "sourceScale": 0.07024738702964459,
@@ -233,14 +244,15 @@
   "arm-ganglion": {
     "width": 96,
     "height": 112,
+    "rasterScale": 4,
     "root": {
       "x": 24,
       "y": 20
     },
     "bounds": {
-      "left": 10,
-      "top": 12,
-      "right": 73,
+      "left": 9.75,
+      "top": 11.5,
+      "right": 73.25,
       "bottom": 91
     },
     "source": "arm-ganglion",
@@ -254,15 +266,16 @@
   "leg-bone": {
     "width": 32,
     "height": 72,
+    "rasterScale": 4,
     "root": {
       "x": 16,
       "y": 10
     },
     "bounds": {
-      "left": 7,
-      "top": 4,
+      "left": 7.25,
+      "top": 3.75,
       "right": 26,
-      "bottom": 66
+      "bottom": 65.5
     },
     "source": "leg-bone-v2",
     "sourceScale": 0.05335723737567764,
@@ -275,14 +288,15 @@
   "leg-lizard": {
     "width": 32,
     "height": 72,
+    "rasterScale": 4,
     "root": {
       "x": 16,
       "y": 10
     },
     "bounds": {
-      "left": 8,
-      "top": 7,
-      "right": 25,
+      "left": 7.75,
+      "top": 7.25,
+      "right": 24.75,
       "bottom": 65
     },
     "source": "leg-lizard",
@@ -296,15 +310,16 @@
   "leg-flesh": {
     "width": 32,
     "height": 72,
+    "rasterScale": 4,
     "root": {
       "x": 16,
       "y": 10
     },
     "bounds": {
-      "left": 4,
+      "left": 4.5,
       "top": 3,
-      "right": 28,
-      "bottom": 65
+      "right": 27.5,
+      "bottom": 65.25
     },
     "source": "leg-flesh",
     "sourceScale": 0.053292404766472685,
@@ -317,15 +332,16 @@
   "leg-fur": {
     "width": 32,
     "height": 72,
+    "rasterScale": 4,
     "root": {
       "x": 16,
       "y": 10
     },
     "bounds": {
-      "left": 7,
-      "top": 4,
+      "left": 6.75,
+      "top": 4.25,
       "right": 25,
-      "bottom": 65
+      "bottom": 64.75
     },
     "source": "leg-fur",
     "sourceScale": 0.05348737697903295,
@@ -338,14 +354,15 @@
   "leg-clockwork": {
     "width": 32,
     "height": 72,
+    "rasterScale": 4,
     "root": {
       "x": 16,
       "y": 10
     },
     "bounds": {
-      "left": 6,
-      "top": 2,
-      "right": 26,
+      "left": 6.5,
+      "top": 2.25,
+      "right": 25.5,
       "bottom": 66
     },
     "source": "leg-clockwork",
@@ -359,15 +376,16 @@
   "leg-ganglion": {
     "width": 32,
     "height": 72,
+    "rasterScale": 4,
     "root": {
       "x": 16,
       "y": 10
     },
     "bounds": {
-      "left": 6,
-      "top": 5,
-      "right": 26,
-      "bottom": 66
+      "left": 5.5,
+      "top": 5.25,
+      "right": 26.5,
+      "bottom": 65.75
     },
     "source": "leg-ganglion",
     "sourceScale": 0.054824561403508776,
@@ -380,6 +398,7 @@
   "weapon-cleaver": {
     "width": 30,
     "height": 70,
+    "rasterScale": 4,
     "root": {
       "x": 19.42946502057614,
       "y": 56.93333333333334
@@ -388,9 +407,685 @@
   "gear-crown": {
     "width": 44,
     "height": 25,
+    "rasterScale": 4,
     "root": {
       "x": 22,
       "y": 23
     }
+  },
+  "fill-flesh": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "top-flesh": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "bottom-flesh": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "shoulder-flesh": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "hip-flesh": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-neck-flesh": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-arm-flesh": {
+    "width": 22,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-leg-flesh": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-in-flesh": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-out-flesh": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-in-flesh": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-out-flesh": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-in-flesh": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-out-flesh": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "side-flesh": {
+    "width": 20,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "fill-fur": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "top-fur": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "bottom-fur": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "shoulder-fur": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "hip-fur": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-neck-fur": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-arm-fur": {
+    "width": 22,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-leg-fur": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-in-fur": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-out-fur": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-in-fur": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-out-fur": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-in-fur": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-out-fur": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "side-fur": {
+    "width": 20,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "fill-bone": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "top-bone": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "bottom-bone": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "shoulder-bone": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "hip-bone": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-neck-bone": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-arm-bone": {
+    "width": 22,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-leg-bone": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-in-bone": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-out-bone": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-in-bone": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-out-bone": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-in-bone": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-out-bone": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "side-bone": {
+    "width": 20,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "fill-metal": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "top-metal": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "bottom-metal": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "shoulder-metal": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "hip-metal": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-neck-metal": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-arm-metal": {
+    "width": 22,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-leg-metal": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-in-metal": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-out-metal": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-in-metal": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-out-metal": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-in-metal": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-out-metal": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "side-metal": {
+    "width": 20,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "fill-scales": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "top-scales": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "bottom-scales": {
+    "width": 24,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "shoulder-scales": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "hip-scales": {
+    "width": 16,
+    "height": 16,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-neck-scales": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-arm-scales": {
+    "width": 22,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "socket-leg-scales": {
+    "width": 20,
+    "height": 12,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-in-scales": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-0-out-scales": {
+    "width": 20,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-in-scales": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-1-out-scales": {
+    "width": 28,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-in-scales": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "taper-2-out-scales": {
+    "width": 36,
+    "height": 48,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
+  },
+  "side-scales": {
+    "width": 20,
+    "height": 24,
+    "root": {
+      "x": 0,
+      "y": 0
+    },
+    "rasterScale": 4
   }
 }

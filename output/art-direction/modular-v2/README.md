@@ -47,9 +47,9 @@ Head equipment currently shares crown artwork. Cleavers use the new registered w
 
 ## Accepted construction dimensions
 
-One registered pixel is one logical body unit.
+Assembly measurements use logical units. Runtime PNGs have four bitmap pixels per logical unit; `rasterScale` and the logical dimensions are declared in geometry.json. A 64 × 64 head frame therefore occupies a 256 × 256 PNG while keeping the same neck mount, painted envelope and spacing.
 
-| Interface | Frame / landmarks | Reserved space |
+| Interface | Logical frame / landmarks | Reserved space |
 | --- | --- | --- |
 | Head | 64 × 64; neck (32,56); individually measured crown | 52 px painted width; 56 px pitch; crown clearance |
 | Arm | 96 × 112; shoulder (24,20); grip (64,78) | 68 px between rows; movement and equipment bounds included in fitting |
@@ -69,6 +69,7 @@ Taper is distributed evenly between both sides. The interior is one continuous t
 - [Weapon grips](review/weapon-grips.png): measured handle/shaft anchors for all seven held-item archetypes on six hand types, with shields covering hands.
 - [Weapon swings](review/weapon-swings.png): arms and attached equipment in front of the torso, facing both directions. The corresponding `-before` captures record the earlier generic icon placement and hidden arms.
 - [Review page](review/review-page.png): the browser page and controls.
+- [Rendering quality comparison](review/quality-comparison.png): actual DressingRoom before/after at the same display size and density. Standard and 2× full-room captures are also preserved.
 
 Head spacing, separate arm rows, hip connections, substantial weapons and host-hand occlusion solve the former structural problems. Remaining polish includes flat broad torsos, schematic sockets, visible material repetition, noisy legacy boots and varying outline/pixel density. Acceptance of construction does not imply completion of every equipment or texture pass.
 
@@ -77,3 +78,5 @@ The previous SVG and whole-body libraries and their obsolete generators have bee
 Adoption checks: registration emitted 95 sprites; the existing puppet composition check passed eight anatomies, three poses and both attack directions. Eleven actual renderer images captured without browser errors. TypeScript and the production build passed after legacy cleanup. Gameplay definitions and combat rules were not changed.
 
 Held-item follow-up: `src/art/item-assets.ts` now owns a declarative source frame, normalized grip/shaft landmarks, logical size and hand layer for each hand-item icon. Generic inventory icon centring no longer determines where handles sit. Shaft landmarks normalize the bone wand and crossbow orientation; shields draw over the hand while weapon fingers draw over handles. Arms and equipment share a foreground pass, including strikes across the chest. Bounds use the same item transform. Run `node scripts/capture-modular-study.mjs --weapons-only` to refresh the two attachment boards; `FRANKENTOWER_CAPTURE_SUFFIX=-before` preserves a comparison snapshot.
+
+Rendering-quality follow-up: source registration now preserves 4× bitmap density for every cutout, material and boundary piece. Runtime drawing maps those images back into the existing logical geometry. Room, arena and portrait backing stores follow actual display size and device pixel ratio, with pixelated CSS scaling. Run `node scripts/capture-modular-study.mjs --quality-only` to compare the real room at 1×/2× density. Before captures show the former 640 × 680 backing store regardless of display size; after captures use 960 × 1020 and 1920 × 2040 for the same 960 CSS-pixel-wide room. The library totals roughly 3.6 MB rather than 0.3 MB; the extra bitmap data preserves detail that was previously lost.

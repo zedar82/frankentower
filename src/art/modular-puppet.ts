@@ -4,7 +4,14 @@ import type { Joint, Pose, PuppetLayout } from './puppet';
 import { drawHeldItem, heldHandLayer, heldItemCorners, itemArtReady } from './item-assets';
 
 type Point = { x: number; y: number };
-type Contract = { width: number; height: number; root: Point; end?: Point; crown?: Point };
+type Contract = {
+  width: number;
+  height: number;
+  rasterScale: number;
+  root: Point;
+  end?: Point;
+  crown?: Point;
+};
 type GearPainter = (
   c: CanvasRenderingContext2D,
   name: string,
@@ -232,10 +239,11 @@ function sprite(
   flipY = false,
 ) {
   const image = images.get(name)!;
+  const frame = geometry[name];
   c.save();
   c.translate(Math.round(x), Math.round(y));
   c.scale(flipX ? -1 : 1, flipY ? -1 : 1);
-  c.drawImage(image, 0, 0);
+  c.drawImage(image, 0, 0, frame.width, frame.height);
   c.restore();
 }
 function limb(c: CanvasRenderingContext2D, part: Part, j: Joint, angle: number, cropGrip = false) {
@@ -253,7 +261,7 @@ function limb(c: CanvasRenderingContext2D, part: Part, j: Joint, angle: number, 
     c.rect(end.x - g.root.x - 10, end.y - g.root.y - 9, 20, 20);
     c.clip();
   }
-  c.drawImage(image, -g.root.x, -g.root.y);
+  c.drawImage(image, -g.root.x, -g.root.y, g.width, g.height);
   c.restore();
 }
 function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) {
@@ -290,7 +298,10 @@ function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) 
   c.filter = materialFilter(chestVariant(build), true);
   c.save();
   c.clip(path);
-  c.fillStyle = c.createPattern(images.get(`fill-${material}`)!, 'repeat')!;
+  const fill = `fill-${material}`;
+  const pattern = c.createPattern(images.get(fill)!, 'repeat')!;
+  pattern.setTransform(new DOMMatrix().scale(1 / geometry[fill].rasterScale));
+  c.fillStyle = pattern;
   c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
   c.restore();
   // Closed top/bottom sections, corners and fixed one/two-step side transitions.

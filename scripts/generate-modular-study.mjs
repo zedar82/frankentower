@@ -23,11 +23,13 @@ try {
     };
     const files = {},
       contracts = {};
-    const canvas = (w, h) => {
+    const rasterScale = 4;
+    const canvas = (w, h, density = 1) => {
       const c = document.createElement('canvas');
-      c.width = w;
-      c.height = h;
+      c.width = w * density;
+      c.height = h * density;
       const p = c.getContext('2d');
+      p.setTransform(density, 0, 0, density, 0, 0);
       p.imageSmoothingEnabled = false;
       return [c, p];
     };
@@ -79,7 +81,7 @@ try {
         scale = Math.hypot(target[0] - pin[0], target[1] - pin[1]) / Math.hypot(dx, dy);
         angle = Math.atan2(target[1] - pin[1], target[0] - pin[0]) - Math.atan2(dy, dx);
       } else scale = Math.min(52 / (right - left + 1), 48 / (a[1] - top));
-      const [c, p] = canvas(w, h);
+      const [c, p] = canvas(w, h, rasterScale);
       p.translate(...pin);
       p.rotate(angle);
       p.scale(scale, scale);
@@ -93,14 +95,14 @@ try {
           y: pin[1] + scale * (dx * Math.sin(angle) + dy * Math.cos(angle)),
         };
       };
-      const output = p.getImageData(0, 0, w, h).data;
-      let ol = w,
-        ot = h,
+      const output = p.getImageData(0, 0, c.width, c.height).data;
+      let ol = c.width,
+        ot = c.height,
         or = 0,
         ob = 0;
-      for (let yy = 0; yy < h; yy++)
-        for (let xx = 0; xx < w; xx++)
-          if (output[(yy * w + xx) * 4 + 3] > 128) {
+      for (let yy = 0; yy < c.height; yy++)
+        for (let xx = 0; xx < c.width; xx++)
+          if (output[(yy * c.width + xx) * 4 + 3] > 128) {
             ol = Math.min(ol, xx);
             ot = Math.min(ot, yy);
             or = Math.max(or, xx);
@@ -118,8 +120,14 @@ try {
       contracts[name] = {
         width: w,
         height: h,
+        rasterScale,
         root: { x: pin[0], y: pin[1] },
-        bounds: { left: ol, top: ot, right: or + 1, bottom: ob + 1 },
+        bounds: {
+          left: ol / rasterScale,
+          top: ot / rasterScale,
+          right: (or + 1) / rasterScale,
+          bottom: (ob + 1) / rasterScale,
+        },
         source: sourceName,
         sourceScale: scale,
         sourceRotation: angle,
@@ -148,12 +156,13 @@ try {
         scale = (isCrown ? 44 : 70) / (isCrown ? right - left + 1 : bottom - top + 1),
         w = Math.ceil((right - left + 1) * scale),
         h = Math.ceil((bottom - top + 1) * scale),
-        [c, p] = canvas(w, h);
+        [c, p] = canvas(w, h, rasterScale);
       p.drawImage(image, left, top, right - left + 1, bottom - top + 1, 0, 0, w, h);
       save(name, c);
       contracts[name] = {
         width: w,
         height: h,
+        rasterScale,
         root: isCrown
           ? { x: w / 2, y: h - 2 }
           : { x: (0.56 * image.width - left) * scale, y: (0.8 * image.height - top) * scale },
@@ -161,12 +170,15 @@ try {
     }
     for (const material of ['flesh', 'fur', 'bone', 'metal', 'scales']) {
       const image = await load(`material-${material}${material === 'flesh' ? '-v2' : ''}`),
-        [tile, t] = canvas(64, 64);
+        [tile, t] = canvas(64, 64, rasterScale);
       t.drawImage(image, 0, 0, 64, 64);
       save(`fill-${material}`, tile);
+      contracts[`fill-${material}`] = { width: 64, height: 64, root: { x: 0, y: 0 }, rasterScale };
       const paint = (name, w, h, shape, outline, stitches = false) => {
-        const [c, p] = canvas(w, h);
-        p.fillStyle = p.createPattern(tile, 'repeat');
+        const [c, p] = canvas(w, h, rasterScale);
+        const pattern = p.createPattern(tile, 'repeat');
+        pattern.setTransform(new DOMMatrix().scale(1 / rasterScale));
+        p.fillStyle = pattern;
         p.fill(shape);
         p.lineWidth = 2;
         p.strokeStyle = '#34152c';
@@ -182,6 +194,12 @@ try {
           }
         }
         save(`${name}-${material}`, c);
+        contracts[`${name}-${material}`] = {
+          width: w,
+          height: h,
+          root: { x: 0, y: 0 },
+          rasterScale,
+        };
       };
       for (const edge of ['top', 'bottom']) {
         const shape = new Path2D();

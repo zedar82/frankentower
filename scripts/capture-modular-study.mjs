@@ -1,7 +1,8 @@
 import { chromium } from '@playwright/test';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const directory = 'output/art-direction/modular-v2/review';
 const weaponOnly = process.argv.includes('--weapons-only');
+const qualityOnly = process.argv.includes('--quality-only');
 const suffix = process.env.FRANKENTOWER_CAPTURE_SUFFIX ?? '';
 await mkdir(directory, { recursive: true });
 const base = process.env.FRANKENTOWER_LOCAL_URL ?? 'http://127.0.0.1:5174/';
@@ -21,6 +22,69 @@ try {
   await page.goto(`${base}art-study.html`);
   await page.locator('.gallery canvas').first().waitFor();
   await page.waitForTimeout(500);
+  if (qualityOnly) {
+    // Match the production CSS at the selected revision, including display density.
+    const styles = await readFile('src/styles.css', 'utf8');
+    await page.addStyleTag({ content: styles });
+    for (const density of [1, 2]) {
+      const quality = await browser.newPage({
+        viewport: { width: 1120, height: 1600 },
+        deviceScaleFactor: density,
+        reducedMotion: 'reduce',
+      });
+      quality.on('pageerror', (e) => errors.push(e.message));
+      await quality.goto(`${base}art-study.html`);
+      await quality.locator('.quality canvas').waitFor();
+      await quality.addStyleTag({ content: styles });
+      await quality.waitForTimeout(300);
+      await quality
+        .locator('.quality canvas')
+        .screenshot({ path: `${directory}/quality-room-${density}x${suffix}.png` });
+      console.log(
+        JSON.stringify(
+          await quality.locator('.quality canvas').evaluate((c) => ({
+            density: devicePixelRatio,
+            width: c.width,
+            height: c.height,
+            cssWidth: c.clientWidth,
+            cssHeight: c.clientHeight,
+            rendering: getComputedStyle(c).imageRendering,
+          })),
+        ),
+      );
+      await quality.close();
+    }
+    if (!suffix) {
+      const data = await page.evaluate(async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1400;
+        canvas.height = 790;
+        const c = canvas.getContext('2d');
+        c.imageSmoothingEnabled = false;
+        c.fillStyle = '#17181e';
+        c.fillRect(0, 0, canvas.width, canvas.height);
+        for (const [column, revision] of ['-before', ''].entries()) {
+          const image = new Image();
+          image.src = `/output/art-direction/modular-v2/review/quality-room-2x${revision}.png`;
+          await image.decode();
+          c.drawImage(image, 630, 850, 690, 735, column * 700 + 5, 45, 690, 735);
+          c.fillStyle = '#e5cca5';
+          c.font = '22px Georgia';
+          c.fillText(
+            column ? 'Display density + detailed bitmaps' : 'Previous in-game rendering',
+            column * 700 + 18,
+            29,
+          );
+        }
+        return canvas.toDataURL().split(',')[1];
+      });
+      await writeFile(`${directory}/quality-comparison.png`, Buffer.from(data, 'base64'));
+    }
+    if (errors.length) throw new Error(errors.join('\n'));
+    console.log('Captured actual DressingRoom quality at standard and high display density');
+    await browser.close();
+    process.exit(0);
+  }
   const results = await page.evaluate(async () => {
     const rooms = [...document.querySelectorAll('.gallery canvas')];
     const output = {};
@@ -28,6 +92,7 @@ try {
     board.width = 1920;
     board.height = 1460;
     const c = board.getContext('2d');
+    c.imageSmoothingEnabled = false;
     c.fillStyle = '#111016';
     c.fillRect(0, 0, board.width, board.height);
     rooms.forEach((room, i) => {
@@ -36,7 +101,7 @@ try {
       c.fillStyle = '#e5cca5';
       c.font = '22px Georgia';
       c.fillText(room.parentElement.querySelector('h2').textContent, x + 24, y + 34);
-      c.drawImage(room, x, y + 50);
+      c.drawImage(room, x, y + 50, 640, 680);
       output[`room-${i + 1}.png`] = room.toDataURL().split(',')[1];
     });
     output['dressing-room-board.png'] = board.toDataURL().split(',')[1];

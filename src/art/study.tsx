@@ -94,6 +94,20 @@ export const studyCases: Build[] = [
     alternate: true,
   }),
 ];
+const qualityBuild = studyBuild('Living rendering baseline', {
+  heads: 1,
+  arms: 2,
+  legs: 2,
+  fur: false,
+  gear: false,
+  alternate: false,
+});
+qualityBuild.parts.forEach((p) => (p.variant = 'living'));
+qualityBuild.parts
+  .filter((p) => p.slot === 'hand')
+  .forEach(
+    (p, i) => (p.item = { uid: `quality-weapon-${i}`, defId: i ? 'dagger' : 'knife', level: 1 }),
+  );
 function Review() {
   const [options, setOptions] = useState<Options>({
     heads: 2,
@@ -126,6 +140,10 @@ function Review() {
             <DressingRoom build={b} floor={1} />
           </section>
         ))}
+      </div>
+      <h2>Rendering quality baseline</h2>
+      <div className="quality" style={{ width: 'min(100%,960px)' }}>
+        <DressingRoom build={qualityBuild} floor={1} />
       </div>
       <h2>Mix and match</h2>
       <div className="controls">
