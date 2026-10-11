@@ -1,5 +1,3 @@
-import { count } from '../game/anatomy';
-import { ITEM_MAP } from '../game/content';
 import type { Build } from '../game/types';
 import { drawPuppet, puppetReady as anatomyReady, type Pose } from './puppet';
 import { drawGrotesqueItem, itemArtReady } from './item-assets';
@@ -57,53 +55,7 @@ export function pixelItem(c: Pen, name: string, x = 0, y = 0, size = 32, variant
   c.restore();
 }
 export function monster(c: Pen, build: Build, x: number, y: number, scale=1, pose: Pose={}) {
-  if(drawPuppet(c,build,x,y,scale,pose,pixelItem))return;
-  const hands=build.parts.filter(p=>p.slot==='hand'),heads=build.parts.filter(p=>p.slot==='head'),feet=build.parts.filter(p=>p.slot==='foot');
-  const undead=/Skeleton|Bone|Grave|Lich/i.test(build.name), rat=/Rat/i.test(build.name), ogre=/Ogre|Brute/i.test(build.name), ghost=/Wraith/i.test(build.name);
-  const flesh=pose.enemy?(undead?'#c3b994':ghost?'#9e9fbb':ogre?'#b28469':'#a79772'):'#91a574', lit=pose.enemy?(undead?'#ece0b9':'#c1ad84'):'#bfd09a', shade=pose.enemy?'#72634f':'#596d52';
-  c.save();c.translate(Math.round(x),Math.round(y));c.scale(scale*(pose.facing??1),scale);
-  if(pose.dead!==undefined){const p=Math.min(1,pose.dead/.38);c.globalAlpha=.65;c.translate(0,4);c.scale(1,Math.max(.24,1-p));}
-  const bob=pose.moving?Math.round(Math.sin((pose.walk??0)*.2)*2):Math.round(Math.sin((pose.time??0)*2)*.6);
-  oval(c,0,0,24+Math.min(12,feet.length),5,'#0c0c11');
-  c.translate(pose.hurt?-2:0,-bob);
-  if(rat){
-    rect(c,-35,-7,22,3,'#927379');block(c,-23,-22,35,20,shade,flesh);block(c,9,-21,19,15,flesh,lit);rect(c,23,-14,8,6,'#c18d86');rect(c,14,-27,7,9,'#927379');rect(c,20,-20,3,3,'#da6452');for(let i=0;i<4;i++)rect(c,-20+i*12,-4+(pose.moving?Math.sin((pose.walk??0)*.3+i)*2:0),5,6,lit);c.restore();return;
-  }
-  const wide=feet.length>=4||build.parts.length>=15?7:0;
-  if(!feet.length){oval(c,0,-7,24,10,shade);oval(c,0,-10,21,9,flesh);}
-  feet.forEach((p,i)=>{
-    const fx=(i-(feet.length-1)/2)*Math.min(12,64/Math.max(1,feet.length));
-    const stride=pose.moving?Math.round(Math.sin((pose.walk??0)*.22+i*Math.PI)*4):0;
-    block(c,fx-3,-20,7,17,shade,flesh);rect(c,fx-4,-12,9,3,lit);
-    block(c,fx-3+stride,-7,10,7,p.item?'#735647':flesh,p.item?'#b29a70':lit);
-    if(p.item){rect(c,fx-3+stride,-4,12,3,'#b1afa0');rect(c,fx-2+stride,-7,7,2,ITEM_MAP[p.item.defId].tags.includes('Poison')?'#9ea952':'#b39165');}
-  });
-  hands.forEach((p,i)=>{
-    const side=i%2===0?-1:1,tier=Math.floor(i/2), ax=side*(23+tier*8+wide), ay=-32-tier*11;
-    const motion=p.item&&pose.arms?.[p.item.uid];
-    const acting=motion ? motion.strike!==undefined||motion.recovery!==undefined : p.item&&(pose.activeItems?.includes(p.item.uid)||pose.attacking&&!pose.activeItems);
-    const attacking=acting?14:0, lift=motion?Math.round(motion.drawback*19):p.item&&(!pose.windupItem||pose.windupItem===p.item.uid)?Math.round((pose.windup??0)*19):0;
-    block(c,side<0?ax:-2,-44-tier*4,Math.abs(ax)+2,7,p.variant==='clockwork'?'#93816a':shade,flesh);
-    block(c,ax-3+attacking,ay-7-lift,8,13,p.variant==='clockwork'?'#a6a39a':flesh,lit);
-    rect(c,ax-4+attacking,ay+2-lift,10,6,flesh);rect(c,ax-1+attacking,ay-4-lift,2,7,ink);
-    if(p.item){const def=ITEM_MAP[p.item.defId];const size=def.id==='enormous'?42:def.icon==='club'?30:24;c.save();c.translate(ax-12+attacking,ay-size+7-lift);if(side<0&&def.icon!=='shield')c.translate(0,4);pixelItem(c,def.icon,0,0,size,def.id);c.restore();}
-  });
-  block(c,-13-wide,-48,26+wide*2,29,flesh,lit);rect(c,-13-wide,-21,26+wide*2,7,'#54463e');rect(c,-10-wide,-18,8+wide,5,'#6c6250');rect(c,4,-18,8+wide,5,'#6c6250');
-  if(undead){for(let i=0;i<4;i++)rect(c,-10,-43+i*5,20,2,shade);rect(c,-1,-44,3,26,lit);}else{rect(c,-1,-46,2,25,shade);for(let i=0;i<4;i++)rect(c,-3,-42+i*6,6,1,ink);}
-  const chest=build.parts.find(p=>p.slot==='chest'&&p.item);if(chest?.item)pixelItem(c,ITEM_MAP[chest.item.defId].icon,-18,-52,36,chest.item.defId);
-  for(let i=0;i<Math.min(5,count(build,'heart'));i++){rect(c,-8+i%3*6,-32+Math.floor(i/3)*6,4,4,'#b45c5e');rect(c,-8+i%3*6,-32+Math.floor(i/3)*6,2,2,'#e7987a');}
-  if(!heads.length){rect(c,-6,-53,12,5,'#805453');rect(c,-2,-56,4,5,'#c9bea0');}
-  heads.forEach((p,i)=>{
-    const hx=(i-(heads.length-1)/2)*Math.min(19,74/heads.length), hy=-61-Math.round((1-Math.abs(i-(heads.length-1)/2)/Math.max(1,heads.length))*4);
-    block(c,hx-4,-53,8,10,shade,flesh);
-    block(c,hx-9,hy-8,p.variant==='serpent'?23:18,21,flesh,lit);
-    rect(c,hx-10,hy-8,20,4,undead?lit:'#41483d');rect(c,hx-12,hy+2,3,5,'#a4a79b');rect(c,hx+9,hy+2,3,5,'#a4a79b');
-    rect(c,hx-5,hy+2,4,3,ink);rect(c,hx+4,hy+2,4,3,ink);rect(c,hx+(pose.facing===-1?-5:6),hy+2,2,2,pose.enemy?'#ee9965':'#d6cf82');
-    rect(c,hx-3,hy+10,8,2,ink);rect(c,hx-5,hy-3,12,1,shade);rect(c,hx-1,hy-5,1,5,ink);
-    if(p.item)pixelItem(c,ITEM_MAP[p.item.defId].icon,hx-14,hy-24,28,p.item.defId);
-  });
-  if(pose.hurt){c.globalAlpha=.15;rect(c,-20-wide,-72,40+wide*2,65,'#fff0c4');}
-  c.restore();
+  drawPuppet(c,build,x,y,scale,pose,pixelItem);
 }
 export function torch(c: Pen,x:number,y:number,time:number){
   c.save();c.globalAlpha=.055;oval(c,x,y+10,55,40,'#e99843',4);oval(c,x,y+10,36,27,'#ffc568',4);c.restore();

@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><g transform="translate(256 256)">
-  <path d="M-27 -19Q-23 -29 -12 -28L-2 -26L8 -30Q18 -31 21 -21L26 -15Q34 -10 30 0L25 12Q21 25 8 28L-15 26Q-28 22 -31 9L-34 -4Q-35 -14 -27 -19Z" fill="#be715f" stroke="#251925" stroke-width="7" stroke-linejoin="round"/>
-  <path d="M-25 -17Q-20 -23 -12 -21L-3 -19L7 -23Q15 -25 18 -16L24 -9Q29 -4 24 4L20 13Q15 21 5 21L-13 20Q-23 17 -26 7L-29 -4Q-30 -11 -25 -17Z" fill="#e99a79" stroke="#673b4d" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M-25 -9Q-17 -13 -7 -9L5 -5M-28 1Q-16 -3 -5 2L8 6M-23 12Q-12 8 -1 13L9 16" fill="none" stroke="#251925" stroke-width="5" stroke-linecap="square"/>
-  <path d="M14 -13Q22 -8 21 0Q20 8 12 10L4 5Q7 -2 4 -8Z" fill="#ffd2a3" stroke="#251925" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M-20 -21l5-3m27 3 4 5m-30 33 6 2" stroke="#f5d6a7" stroke-width="3"/>
-</g></svg>

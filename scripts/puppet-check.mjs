@@ -48,7 +48,6 @@ try {
     c.fillRect(0, 0, 1500, 3100);
     const failures = [];
     builds.forEach((build, row) => {
-      const variant = build.parts[0].variant;
       const handParts = build.parts.filter((p) => p.slot === 'hand');
       const motion = (facing, drawback, strike) =>
         Object.fromEntries(
@@ -90,7 +89,7 @@ try {
         const pixels = ctx.getImageData(0, 0, 600, 600).data,
           connected = new Uint8Array(600 * 600),
           queue = new Int32Array(600 * 600);
-        const bob = pose.moving ? Math.sin(pose.walk * 0.22) * 1.1 : 0;
+        const bob = pose.moving ? Math.round(Math.sin(pose.walk * 0.22)) : 0;
         const pixel = (p) => ({
           x: Math.round(tf.x + p.x * tf.scale),
           y: Math.round(tf.y + (p.y - bob) * tf.scale),
@@ -121,31 +120,22 @@ try {
           if (q.x < 0 || q.y < 0 || q.x >= 600 || q.y >= 600 || !connected[q.y * 600 + q.x])
             failures.push(`${build.name} pose ${poseIndex}: ${label} is disconnected`);
         };
-        // Donor limbs bend away from the human sleeve centreline. Check independently measured painted hand/foot landmarks.
-        const donors = {
-          rat: {
-            arm: { dx: (400 - 535) / 350, dy: (860 - 495) / 535 },
-            leg: { dx: (1180 - 1100) / 385, dy: (930 - 500) / 510 },
-          },
-          bone: {
-            arm: { dx: (345 - 345) / 225, dy: (1195 - 650) / 630 },
-            leg: { dx: (990 - 970) / 290, dy: (1140 - 650) / 630 },
-          },
-        };
+        // Registered frames share a shoulder-to-grip delta (40,58), hip-to-sole
+        // delta (0,55), and head neck (32,56). Sample two pixels above the sole.
         const landmark = (j, a, point) => ({
-          x: j.pin.x + point.dx * j.w * Math.cos(a) - point.dy * j.h * Math.sin(a),
-          y: j.pin.y + point.dx * j.w * Math.sin(a) + point.dy * j.h * Math.cos(a),
+          x: j.pin.x + point.dx * Math.cos(a) - point.dy * Math.sin(a),
+          y: j.pin.y + point.dx * Math.sin(a) + point.dy * Math.cos(a),
         });
         for (const j of layout.arms) {
           const a = armAngle(j, handParts[j.index], pose);
           check(j.pin, `arm ${j.index} pin`);
-          const point = donors[variant]?.arm ?? { dx: 0, dy: 0.7 };
+          const point = { dx: j.side * 40, dy: 58 };
           check(landmark(j, a, point), `arm ${j.index} hand`);
         }
         for (const j of layout.legs) {
           const a = pose.moving ? Math.sin(pose.walk * 0.22 + j.index * Math.PI) * 0.075 : 0;
           check(j.pin, `leg ${j.index} pin`);
-          check(landmark(j, a, donors[variant]?.leg ?? { dx: 0, dy: 0.72 }), `leg ${j.index} foot`);
+          check(landmark(j, a, { dx: 0, dy: 53 }), `leg ${j.index} foot`);
         }
         for (const j of layout.heads) {
           check(j.pin, `head ${j.index} pin`);

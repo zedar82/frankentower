@@ -151,6 +151,10 @@ The dungeon should use:
 
 The game can be grotesque, but it should not be visually miserable. There is humour and energy underneath the horror.
 
+Creature art retains a grotesque cartoon style. Every body part can have its own colour, texture and material: mismatched grafts are the point. Apply this freedom to all body parts, with consistent drawing, pixel scale and lighting conventions.
+
+Asymmetry is allowed but is not a goal or requirement. Symmetrical parts and balanced faces are welcome. Do not add extra eyes, mouths or displaced facial features merely to make a part asymmetric; unusual anatomy should express a specific readable concept.
+
 Avoid sleek sci-fi UI, glass panels, gradients, productivity-app styling and modern SaaS aesthetics.
 
 Combat Screen

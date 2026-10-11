@@ -1,0 +1,59 @@
+{
+  "mode": "built-in image_gen",
+  "prompts": [
+    {
+      "id": "head-rat",
+      "prompt": "Use case: stylized-concept. Asset type: one interchangeable head sprite for the Frankentower game, not a complete creature or concept scene. Style: grotesque but funny cartoon pixel art, bold dark plum outlines, chunky readable clusters, limited shading, soft frontal light, front orthographic view. Balanced readable face with exactly two eyes and one mouth; symmetry is welcome. Transparent background, no shadow, no labels, no headwear. Square canvas; complete head inside central 80% width and upper 78% height, short straight neck ends at bottom centre at 88% canvas height. Flat top-of-skull crown mounting area at centre; ears may sit on either side. Neck has a stitched graft seam. No arms or torso. Large clean features that survive reduction to roughly 48 pixels wide. Subject: tawny brown furry rat head, round ears, pale muzzle, pink nose, two prominent buck teeth, sly wide-eyed expression. Keep both eyes visible; no extra facial features. Fur is brown, not pink flesh."
+    },
+    {
+      "id": "head-lizard",
+      "prompt": "Use case: stylized-concept. Asset type: one interchangeable head sprite for the Frankentower game, not a complete creature or concept scene. Style: grotesque but funny cartoon pixel art, bold dark plum outlines, chunky readable clusters, limited shading, soft frontal light, front orthographic view. Balanced readable face with exactly two eyes and one mouth; symmetry is welcome. Transparent background, no shadow, no labels, no headwear. Square canvas; complete head inside central 80% width and upper 78% height, short straight neck ends at bottom centre at 88% canvas height. Flat top-of-skull crown mounting area at centre; ears may sit on either side. Neck has a stitched graft seam. No arms or torso. Large clean features that survive reduction to roughly 48 pixels wide. Subject: moss-green and turquoise lizard head, broad blunt muzzle, two amber eyes, small ivory teeth in a single mischievous grin, a few scales as large simple clusters. Compact silhouette, no horns or crest. Keep both eyes visible."
+    },
+    {
+      "id": "arm-flesh",
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated modular limb sprite for Frankentower, no torso, no other body parts or equipment. Grotesque humorous cartoon pixel art, bold dark plum outline, chunky pixel clusters, simple shading, soft frontal lighting. Transparent background, no text or ground shadow. Square canvas, entire part visible with margin. This is a rigged game cutout, follow the neutral pose precisely. A muscular stitched peach flesh RIGHT arm with a clenched gripping hand. Shoulder root near (25% width,18% height), elbow at (36%,48%), closed fist grip centre at (65%,78%). Arm slopes down and out to the right. Shoulder is a plain rounded stump with a stitched seam, no socket button or torso flap. Thick upper arm, forearm, clear thumb and four folded fingers. Hand ready to wrap a vertical weapon handle; show fingers crossing the palm. No extra joints or arm branches."
+    },
+    {
+      "id": "arm-fur",
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated modular limb sprite for Frankentower, no torso, no other body parts or equipment. Grotesque humorous cartoon pixel art, bold dark plum outline, chunky pixel clusters, simple shading, soft frontal lighting. Transparent background, no text or ground shadow. Square canvas, entire part visible with margin. This is a rigged game cutout, follow the neutral pose precisely. A tawny brown furry RIGHT rat arm with pink clawed gripping paw. Shoulder root near (25% width,18% height), elbow at (36%,48%), closed fist grip centre at (65%,78%). Arm slopes down and out to the right. Shoulder is a plain rounded fur stump with a stitched seam, no socket button or torso flap. Thick furred upper arm and forearm. Clear thumb and folded fingers, hand ready to wrap a vertical handle. No extra joints or arm branches."
+    },
+    {
+      "id": "leg-bone",
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated modular limb sprite for Frankentower, no torso, no other body parts or equipment. Grotesque humorous cartoon pixel art, bold dark plum outline, chunky pixel clusters, simple shading, soft frontal lighting. Transparent background, no text or ground shadow. Square canvas, entire part visible with margin. This is a rigged game cutout, follow the neutral pose precisely. ONE ivory skeletal leg graft, vertical front view. Hip root centre at (50% width,15% height), knee at (53%,48%), ankle at (50%,75%), flat sole at (50%,88%). Straight compact standing pose. Thick readable femur and shin joined by one kneecap, small broad three-toed foot pointing toward viewer. Dark leather straps on upper shin, stitched tissue at hip stump. No boot. Keep whole silhouette within central 36% canvas width; no pelvis or extra bones floating around."
+    },
+    {
+      "id": "leg-lizard",
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated modular limb sprite for Frankentower, no torso, no other body parts or equipment. Grotesque humorous cartoon pixel art, bold dark plum outline, chunky pixel clusters, simple shading, soft frontal lighting. Transparent background, no text or ground shadow. Square canvas, entire part visible with margin. This is a rigged game cutout, follow the neutral pose precisely. ONE moss-green scaly lizard leg graft, vertical front view. Hip root centre at (50% width,15% height), knee at (53%,48%), ankle at (50%,75%), flat sole at (50%,88%). Compact standing pose, thick thigh and shin with a small broad three-toed claw foot pointing toward viewer. Stitched seam at hip stump. No boot. Keep whole silhouette within central 36% canvas width; no pelvis, tail or extra limb."
+    },
+    {
+      "id": "material-flesh",
+      "prompt": "Use case: stylized-concept. Frankentower grotesque humorous cartoon pixel-art game asset. Bold dark plum outline where an outline is appropriate, chunky readable pixel clusters, simple shading, consistent soft frontal light. No text, no scene, no cast shadow. Asset type: one square seamless tile of peach and dusky rose stitched skin, an interior torso MATERIAL texture, NOT a complete torso. Edge-to-edge opaque square texture. Low-detail irregular soft skin folds, tiny scattered stitch marks, subtle mottling, broad simple pixel clusters. No silhouette, outline around the tile, body shape, muscles, nipples, ribs, sockets, buttons, eyes or mouths. Avoid a prominent repeated motif. Designed to fill modular body shapes at small game size."
+    },
+    {
+      "id": "material-fur",
+      "prompt": "Use case: stylized-concept. Frankentower grotesque humorous cartoon pixel-art game asset. Bold dark plum outline where an outline is appropriate, chunky readable pixel clusters, simple shading, consistent soft frontal light. No text, no scene, no cast shadow. Asset type: one square seamless tile of tawny brown fur, an interior torso MATERIAL texture, NOT a complete torso. Edge-to-edge opaque square texture. Low-detail short fur tufts, warm brown and ochre pixel clusters, subtle variations, no prominent repeated motif. No tile border, silhouette, complete body, face, nipples, sockets, joints or limbs. Designed to fill modular body shapes at small game size."
+    },
+    {
+      "id": "weapon-cleaver",
+      "prompt": "Use case: stylized-concept. Frankentower grotesque humorous cartoon pixel-art game asset. Bold dark plum outline where an outline is appropriate, chunky readable pixel clusters, simple shading, consistent soft frontal light. No text, no scene, no cast shadow. Asset type: ONE isolated front-facing oversized butcher cleaver sprite on genuine transparent background. Tall vertical orientation, broad battered silver rectangular blade occupying upper two thirds, cutting edge on left, short dark leather handle centred under blade. Full silhouette visible with clear margin. Large readable equipment silhouette, no hand, limb, bone joints, magic effects or extra props. Handle bottom at 90% canvas height, gripping midpoint at 78%. Square canvas."
+    },
+    {
+      "id": "gear-crown",
+      "prompt": "Use case: stylized-concept. Frankentower grotesque humorous cartoon pixel-art game asset. Bold dark plum outline where an outline is appropriate, chunky readable pixel clusters, simple shading, consistent soft frontal light. No text, no scene, no cast shadow. Asset type: ONE isolated squat brass crown sprite on genuine transparent background. Front orthographic view, three chunky points, broad simple band with a single dark red gem. Crown fills central 80% width, sits between 25% and 70% canvas height with flat lower band at 70%. Broad shallow shape that can rest on top of different cartoon heads. No head, face, hood, cloth, helmet enclosure, floating ornaments or extra props. Square canvas."
+    },
+    {
+      "id": "material-flesh-v2",
+      "prompt": "Use case: precise-object-edit. Edit target: the provided square skin texture for Frankentower. Change the surface detail to a much quieter low-detail seamless interior fill. Keep peach/rose colour family, chunky cartoon pixel art, square edge-to-edge opaque texture. Reduce contrast greatly. Remove all large bulges, complete fold loops, dark stitch clusters and dominant repeated motifs. Use broad gentle colour variation and sparse tiny skin speckles only. This is plain interior material; boundary artwork supplies the outline and surgery stitches. No torso silhouette, facial features or complete anatomy.",
+      "reference": "sources/material-flesh.png"
+    },
+    {
+      "id": "leg-bone-v2",
+      "prompt": "Use case: precise-object-edit. Edit target: the provided isolated skeleton leg. Keep the same front view, one knee, vertical pose, ivory material, dark straps, transparent background and hip/sole positions. Make the entire femur and shin MUCH thicker and chunkier: a strong cartoon bone leg rather than a delicate stick. Increase bone shaft widths to roughly double, expand foot and three toes moderately. Keep all of it inside central 36 percent canvas width. Simplify small texture into large readable shaded clusters with dark plum outline, matching grotesque humorous cartoon game art. No other limbs or pelvis.",
+      "reference": "sources/leg-bone.png"
+    },
+    {
+      "id": "leg-flesh",
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated interchangeable flesh leg sprite for Frankentower. Grotesque humorous cartoon pixel art with chunky dark plum outline, big readable features, soft frontal lighting. Genuine transparent background, square canvas, no text or ground shadow. Short stout peach flesh leg with thick thigh and calf, one rounded knee, stitched scars and a broad three-toed foot facing viewer. Entire part front orthographic view. Hip root centred at 50% width and 14% height; knee at 50% width and 48% height; flat sole at 50% width and 91% height. Occupy central 38% canvas width with broad consistent silhouette, not a spindly leg. No pelvis, torso, boots or extra limb."
+    }
+  ]
+}

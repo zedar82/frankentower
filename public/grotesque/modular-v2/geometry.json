@@ -1,0 +1,396 @@
+{
+  "head-rat": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "bounds": {
+      "left": 6,
+      "top": 13,
+      "right": 58,
+      "bottom": 59
+    },
+    "source": "head-rat",
+    "sourceScale": 0.04304635761589404,
+    "sourceRotation": 0,
+    "crown": {
+      "x": 32,
+      "y": 15.514900662251655
+    }
+  },
+  "head-lizard": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "bounds": {
+      "left": 6,
+      "top": 11,
+      "right": 58,
+      "bottom": 59
+    },
+    "source": "head-lizard",
+    "sourceScale": 0.04585537918871252,
+    "sourceRotation": 0,
+    "crown": {
+      "x": 32,
+      "y": 11.435449735449737
+    }
+  },
+  "head-flesh": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "bounds": {
+      "left": 7,
+      "top": 8,
+      "right": 57,
+      "bottom": 57
+    },
+    "source": "head-flesh",
+    "sourceScale": 0.04747117115335166,
+    "sourceRotation": 0,
+    "crown": {
+      "x": 32,
+      "y": 8.376921098957617
+    }
+  },
+  "head-bone": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "bounds": {
+      "left": 11,
+      "top": 8,
+      "right": 53,
+      "bottom": 58
+    },
+    "source": "head-bone",
+    "sourceScale": 0.04443539279035752,
+    "sourceRotation": 0,
+    "crown": {
+      "x": 32,
+      "y": 9.193534650349001
+    }
+  },
+  "head-clockwork": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "bounds": {
+      "left": 6,
+      "top": 11,
+      "right": 58,
+      "bottom": 58
+    },
+    "source": "head-clockwork",
+    "sourceScale": 0.04355108877721943,
+    "sourceRotation": 0,
+    "crown": {
+      "x": 32,
+      "y": 12.30954773869346
+    }
+  },
+  "head-ganglion": {
+    "width": 64,
+    "height": 64,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "bounds": {
+      "left": 8,
+      "top": 8,
+      "right": 56,
+      "bottom": 58
+    },
+    "source": "head-ganglion",
+    "sourceScale": 0.04489253848599914,
+    "sourceRotation": 0,
+    "crown": {
+      "x": 32,
+      "y": 9.27494809300238
+    }
+  },
+  "arm-flesh": {
+    "width": 96,
+    "height": 112,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "bounds": {
+      "left": 10,
+      "top": 9,
+      "right": 74,
+      "bottom": 93
+    },
+    "source": "arm-flesh",
+    "sourceScale": 0.07024738702964459,
+    "sourceRotation": 0.1374298856043591,
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "arm-fur": {
+    "width": 96,
+    "height": 112,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "bounds": {
+      "left": 12,
+      "top": 9,
+      "right": 74,
+      "bottom": 92
+    },
+    "source": "arm-fur",
+    "sourceScale": 0.06952832376965094,
+    "sourceRotation": 0.11158824736155659,
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "arm-bone": {
+    "width": 96,
+    "height": 112,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "bounds": {
+      "left": 6,
+      "top": 7,
+      "right": 80,
+      "bottom": 95
+    },
+    "source": "arm-bone",
+    "sourceScale": 0.07024738702964459,
+    "sourceRotation": 0.1374298856043591,
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "arm-clockwork": {
+    "width": 96,
+    "height": 112,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "bounds": {
+      "left": 4,
+      "top": 7,
+      "right": 81,
+      "bottom": 95
+    },
+    "source": "arm-clockwork",
+    "sourceScale": 0.07024738702964459,
+    "sourceRotation": 0.1374298856043591,
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "arm-lizard": {
+    "width": 96,
+    "height": 112,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "bounds": {
+      "left": 7,
+      "top": 10,
+      "right": 78,
+      "bottom": 93
+    },
+    "source": "arm-lizard",
+    "sourceScale": 0.07024738702964459,
+    "sourceRotation": 0.1374298856043591,
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "arm-ganglion": {
+    "width": 96,
+    "height": 112,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "bounds": {
+      "left": 10,
+      "top": 12,
+      "right": 73,
+      "bottom": 91
+    },
+    "source": "arm-ganglion",
+    "sourceScale": 0.062007864000307195,
+    "sourceRotation": 0.22848954291598156,
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "leg-bone": {
+    "width": 32,
+    "height": 72,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "bounds": {
+      "left": 7,
+      "top": 4,
+      "right": 26,
+      "bottom": 66
+    },
+    "source": "leg-bone-v2",
+    "sourceScale": 0.05335723737567764,
+    "sourceRotation": 0,
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  },
+  "leg-lizard": {
+    "width": 32,
+    "height": 72,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "bounds": {
+      "left": 8,
+      "top": 7,
+      "right": 25,
+      "bottom": 65
+    },
+    "source": "leg-lizard",
+    "sourceScale": 0.056960583276372746,
+    "sourceRotation": 0,
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  },
+  "leg-flesh": {
+    "width": 32,
+    "height": 72,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "bounds": {
+      "left": 4,
+      "top": 3,
+      "right": 28,
+      "bottom": 65
+    },
+    "source": "leg-flesh",
+    "sourceScale": 0.053292404766472685,
+    "sourceRotation": 0,
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  },
+  "leg-fur": {
+    "width": 32,
+    "height": 72,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "bounds": {
+      "left": 7,
+      "top": 4,
+      "right": 25,
+      "bottom": 65
+    },
+    "source": "leg-fur",
+    "sourceScale": 0.05348737697903295,
+    "sourceRotation": 0,
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  },
+  "leg-clockwork": {
+    "width": 32,
+    "height": 72,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "bounds": {
+      "left": 6,
+      "top": 2,
+      "right": 26,
+      "bottom": 66
+    },
+    "source": "leg-clockwork",
+    "sourceScale": 0.05348737697903295,
+    "sourceRotation": 0,
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  },
+  "leg-ganglion": {
+    "width": 32,
+    "height": 72,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "bounds": {
+      "left": 6,
+      "top": 5,
+      "right": 26,
+      "bottom": 66
+    },
+    "source": "leg-ganglion",
+    "sourceScale": 0.054824561403508776,
+    "sourceRotation": 0,
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  },
+  "weapon-cleaver": {
+    "width": 30,
+    "height": 70,
+    "root": {
+      "x": 19.42946502057614,
+      "y": 56.93333333333334
+    }
+  },
+  "gear-crown": {
+    "width": 44,
+    "height": 25,
+    "root": {
+      "x": 22,
+      "y": 23
+    }
+  }
+}
