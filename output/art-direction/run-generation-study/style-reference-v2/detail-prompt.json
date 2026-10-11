@@ -1,0 +1,9 @@
+{
+  "id": "head-toad-detail-v3",
+  "model": "gemini-3.1-flash-image-preview",
+  "credits": 165,
+  "references": [
+    "output/art-direction/modular-v2/sources/head-flesh.png"
+  ],
+  "prompt": "Use case: stylized-concept. ONE isolated interchangeable TOAD HEAD sprite for Frankentower. The single input image is a STYLE REFERENCE ONLY: match its fine handcrafted pixel-art density, detailed material shading, dark plum outlines, round grotesque cartoon forms and soft frontal lighting. Do not copy the human face or peach flesh colour. NEW subject: squat olive-green toad head, ochre lower jaw, exactly two expressive amber eyes, blunt wide muzzle and ONE mischievous toothy grin, a few skin bumps and scars, short green neck stump with a stitched graft seam. No body, crown, horns, ears, prop, extra eye, text, guide or shadow. Frontal orthographic view. White background for removal. FINE RESOLUTION REQUIREMENT: draw at the full output bitmap's detail density, like the original full-resolution reference. Fine 2-5 bitmap-pixel shading clusters and stepped curved contours at approximately1024 pixels. Multiple restrained shades for rich skin texture and highlights, crisp outline. Do not create a64x64 or16-bit thumbnail and upscale it. The geometry measurements below specify placement, NOT the number of pixels to draw. Do not restrict the image to three colours or huge square shading blocks. Preserve expressive cheek/muzzle volume and small readable texture while avoiding random noise. SQUARE composition: silhouette spans9.375%..90.625% canvas width,12.5%..92.1875% height. Neck mount centre exactly(50%,87.5%), neck16/64 canvas width, stump ends90.625% height. Flat crown mounting surface at(50%,15.625%). Complete silhouette fits these bounds with blank margins. Balanced features, symmetry welcome. Draw a new toad creature, not a green recolour of the human reference."
+}

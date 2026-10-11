@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-11",
+  "model": "gemini-3.1-flash-image-preview",
+  "backgroundRemoval": "birefnet",
+  "quotedCredits": 615,
+  "referencePolicy": "Exactly one common image, style only. No target-part artwork or geometry image supplied.",
+  "styleReferenceSource": "public/grotesque/modular-v2/head-flesh.png",
+  "jobs": [
+    {
+      "id": "head-toad",
+      "credits": 165,
+      "aspectRatio": "1:1",
+      "removeBackground": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE modular body-part sprite for FRANKENTOWER, a grotesque humorous cartoon pixel-art monster-building game. The ONE input image is STYLE ONLY: learn its chunky readable pixel clusters, bold dark-plum outlines, compact cartoon proportions and soft frontal three-tone shading. DO NOT copy its human head, face, flesh palette or silhouette. Draw the NEW subject below, in its OWN colours and material. Front orthographic view. Exactly one part, complete silhouette with margins on a plain WHITE background for removal. No labels, guides, frames, ground shadow, equipment, body or extra limbs. All geometric locations below refer to the FULL square canvas, not the subject bounding box. Do not crop or zoom to fill blank margins. Keep details readable at the stated logical game size. Symmetry is welcome; deliberate asymmetry is optional, never a goal. NEW SUBJECT: squat olive-green toad monster HEAD with warm ochre underside, two broad expressive amber eyes, a blunt wide muzzle and ONE broad mischievous mouth with a couple of irregular ivory teeth. Few large readable skin bumps, no horns, hair, ears sticking outside the envelope or extra eyes/mouths. Short thick GREEN neck stump with a stitched graft seam. Flat-ish top centre for crown headgear. GEOMETRY: logical square64x64. Entire painted silhouette within x6..58 and y8..59. Neck mount centre(32,56), seam16 units wide, stump extends to y58. Crown mount(32,10). Neck at50% width and87.5% height. Reserve the unpainted margins even if this means a smaller face.",
+      "references": [
+        "output/art-direction/run-generation-study/style-reference-v2/style-reference.png"
+      ]
+    },
+    {
+      "id": "arm-crustacean",
+      "credits": 165,
+      "aspectRatio": "1:1",
+      "removeBackground": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE modular body-part sprite for FRANKENTOWER, a grotesque humorous cartoon pixel-art monster-building game. The ONE input image is STYLE ONLY: learn its chunky readable pixel clusters, bold dark-plum outlines, compact cartoon proportions and soft frontal three-tone shading. DO NOT copy its human head, face, flesh palette or silhouette. Draw the NEW subject below, in its OWN colours and material. Front orthographic view. Exactly one part, complete silhouette with margins on a plain WHITE background for removal. No labels, guides, frames, ground shadow, equipment, body or extra limbs. All geometric locations below refer to the FULL square canvas, not the subject bounding box. Do not crop or zoom to fill blank margins. Keep details readable at the stated logical game size. Symmetry is welcome; deliberate asymmetry is optional, never a goal. NEW SUBJECT: ONE blue-grey crustacean-inspired RIGHT ARM with broad overlapping shell plates and a mustard-gold underside. Round stitched shoulder stump, ONE elbow, broad plated forearm and a compact articulated FOUR-FINGER gripping hand with a clear thumb. Fingers CLOSED around an imaginary VERTICAL weapon handle. No giant pincer, no actual weapon, no spikes, no extra elbow, no dangling tendrils. GEOMETRY: square112x112 logical canvas, reserved arm frame96x112 inset8 units from left. Shoulder pivot(32,20), seam22 units wide; elbow around(43,48); palm/handle grip centre(72,78). Arm bends DOWN AND RIGHT from shoulder through elbow to fist. Painted silhouette stays within x18..84,y8..96. Shoulder at28.57% width/17.86% height, grip64.29% width/69.64% height. Fingers curl around the grip centre; do not point outwards. Leave upper-right and bottom blank space; shoulder and grip positions must stay exact.",
+      "references": [
+        "output/art-direction/run-generation-study/style-reference-v2/style-reference.png"
+      ]
+    },
+    {
+      "id": "leg-goat",
+      "credits": 165,
+      "aspectRatio": "1:1",
+      "removeBackground": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE modular body-part sprite for FRANKENTOWER, a grotesque humorous cartoon pixel-art monster-building game. The ONE input image is STYLE ONLY: learn its chunky readable pixel clusters, bold dark-plum outlines, compact cartoon proportions and soft frontal three-tone shading. DO NOT copy its human head, face, flesh palette or silhouette. Draw the NEW subject below, in its OWN colours and material. Front orthographic view. Exactly one part, complete silhouette with margins on a plain WHITE background for removal. No labels, guides, frames, ground shadow, equipment, body or extra limbs. All geometric locations below refer to the FULL square canvas, not the subject bounding box. Do not crop or zoom to fill blank margins. Keep details readable at the stated logical game size. Symmetry is welcome; deliberate asymmetry is optional, never a goal. NEW SUBJECT: ONE sturdy cream/grey shaggy GOAT LEG with a short furry thigh, ONE visible knee, thick calf, short ankle and a compact dark split hoof facing forward, with a flat sole. Stitched graft ring at the top of the thigh. No pelvis, tail, second leg, backwards hock, exposed bone, boot or extra joints. GEOMETRY: square72x72 logical canvas; narrow32x72 leg frame centered horizontally at x20..52. Hip graft pivot(36,10), seam16 units wide. Knee near(36,35), ankle near(36,54). Flat hoof sole EXACTLY at y65, centre(36,65). Whole silhouette stays within x22..50,y3..66. Hip50% width/13.89% height; sole50% width/90.28% height. Keep the deliberately narrow central silhouette and large blank left/right margins.",
+      "references": [
+        "output/art-direction/run-generation-study/style-reference-v2/style-reference.png"
+      ]
+    },
+    {
+      "id": "dungeon-background",
+      "credits": 120,
+      "aspectRatio": "3:2",
+      "removeBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: fresh reusable dungeon background for FRANKENTOWER. The ONE input image is STYLE ONLY: use its grotesque cartoon game's chunky visible pixel clusters, bold dark plum outlines, three-tone shading and playful dark-fantasy mood. Do not draw or copy its human head, skin palette or silhouette. NEW SUBJECT: a wide frontal medieval quartermaster alcove with a low vaulted stone arch, charcoal and muted purple masonry, a rusty barred window high on the left, a cluttered bottle/skull shelf on far right, small amber lanterns near outer sides and a broad worn wood counter along the bottom fifth. A few hanging chains and battered iron fittings, restrained warm lights. The central60% of the scene is quiet dark open wall, suitable behind live creature sprites and readable UI. Rich tactile stone/wood/iron, crisp stepped pixel-art edges, no blur or smooth gradients. New architecture and composition, no wooden rectangular picture-frame enclosure. Entire scene, landscape3:2. No people, creatures, body parts, text, labels, icons, UI panels or watermark.",
+      "references": [
+        "output/art-direction/run-generation-study/style-reference-v2/style-reference.png"
+      ]
+    }
+  ]
+}

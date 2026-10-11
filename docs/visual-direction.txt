@@ -2,6 +2,8 @@ FRANKENTOWER — Visual Direction
 
 The current prototype should be redesigned away from the appearance of a management application.
 
+UI implementation requirements are defined in docs/ui-expectations.md (11 October 2026). Core screens and expanded panels must fit the usable viewport without page or panel scrolling, in deliberate phone and desktop modes. Use focused expanded workspaces, tabs and explicit pages for overflow; the combat log is the explicit scrolling exception. These requirements supersede older UI layout suggestions where they conflict.
+
 FRANKENTOWER is a pixel-art monster-building dungeon autobattler built around watching small arena battles. It should look and feel like a game first. Stats, equipment and economy support the game world rather than becoming the dominant visual language.
 
 Primary Visual Principle

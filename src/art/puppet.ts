@@ -56,8 +56,8 @@ type GearPainter = (
 
 export const puppetReady = modularReady;
 export const puppetLayout = modularLayout;
-export function puppetBounds(build: Build) {
-  return puppetLayout(build).bounds;
+export function puppetBounds(build: Build, resting = false) {
+  return puppetLayout(build, resting).bounds;
 }
 export function fitPuppet(build: Build, box: Frame, maxScale = Infinity) {
   const b = puppetBounds(build),

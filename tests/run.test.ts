@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { advance, defaultSave, finishFight, newRun, retire, startRun } from '../src/game/run';
 import { reroll, toggleShopFreeze } from '../src/game/shop';
-import { buy, combine, equip } from '../src/game/inventory';
-import { operate } from '../src/game/surgery';
+import { buy, combine, equip, purchaseItem, unequip } from '../src/game/inventory';
+import { operate, procedurePreview, procedureReason } from '../src/game/surgery';
 import { encounter } from '../src/game/encounters';
-import { RULESET, clone } from '../src/game/types';
+import { RULESET, SATCHEL_CAPACITY, clone } from '../src/game/types';
+import { PROCEDURES } from '../src/game/content';
 import { count, equipped, stats } from '../src/game/anatomy';
 import { Combat } from '../src/game/combat';
 import { canMoveItem, moveItem } from '../src/game/inventory';
@@ -41,6 +42,63 @@ test('moving equipped HP equipment clamps health only after the complete swap', 
   assert.equal(run.hp, hp);
   assert.equal(run.stash[0].defId, 'plate');
   assert.equal(chest.item, undefined);
+});
+
+test('full satchel permits atomic swaps and direct purchases into empty slots', () => {
+  const run = newRun(12);
+  startRun(run, 'dagger');
+  run.gold = 100;
+  run.stash = Array.from({ length: SATCHEL_CAPACITY }, (_, i) => ({
+    uid: `bag-${i}`,
+    defId: 'knife',
+    level: 1,
+  }));
+  const hands = run.build.parts.filter((part) => part.slot === 'hand');
+  assert.equal(equip(run, 'bag-0', hands[0].uid), true);
+  assert.equal(run.stash.length, SATCHEL_CAPACITY);
+  const before = clone(run);
+  assert.equal(unequip(run, hands[0].uid), false);
+  assert.deepEqual(run, before);
+  run.offers[0] = { uid: 'purchase-knife', defId: 'knife', level: 1 };
+  assert.equal(purchaseItem(run, 0), true);
+  assert.equal(hands[1].item?.uid, 'purchase-knife');
+  assert.equal(run.stash.length, SATCHEL_CAPACITY);
+  run.offers[1] = { uid: 'no-room', defId: 'knife', level: 1 };
+  const full = clone(run);
+  assert.equal(purchaseItem(run, 1), false);
+  assert.equal(moveItem(run, 'no-room', hands[0].uid), false);
+  assert.deepEqual(run, full);
+});
+
+test('surgery preview and capacity validation use the same removal selection', () => {
+  const run = newRun(12);
+  startRun(run, 'dagger');
+  run.floor = 5;
+  run.gold = 100;
+  run.procedures = ['amputate'];
+  const hands = run.build.parts.filter((part) => part.slot === 'hand');
+  hands[1].item = { uid: 'second-knife', defId: 'knife', level: 1 };
+  run.stash = Array.from({ length: SATCHEL_CAPACITY }, (_, i) => ({
+    uid: `full-${i}`,
+    defId: 'knife',
+    level: 1,
+  }));
+  const procedure = PROCEDURES.find((p) => p.id === 'amputate')!;
+  const preview = procedurePreview(run, procedure);
+  assert.equal(preview.removed[0].uid, hands[1].uid);
+  assert.equal(preview.displaced[0].uid, 'second-knife');
+  const before = clone(run);
+  assert.match(procedureReason(run, procedure)!, /satchel/);
+  assert.equal(operate(run, 'amputate'), false);
+  assert.deepEqual(run, before);
+  run.stash.pop();
+  assert.equal(operate(run, 'amputate'), true);
+  assert.equal(run.stash.length, SATCHEL_CAPACITY);
+  assert.equal(run.stash.at(-1)?.uid, 'second-knife');
+  assert.deepEqual(
+    run.build.parts.map((part) => part.uid),
+    preview.build.parts.map((part) => part.uid),
+  );
 });
 
 test('new floors refill stock for free while ordinary floors retain surgery choices', () => {
@@ -208,6 +266,19 @@ test('duplicate combining consumes only one matching instance', () => {
   assert.equal(combine(r, target.uid), true);
   assert.equal(target.level, 3);
   assert.equal(combine(r, target.uid), false);
+});
+
+test('combining a satchel item with equipped HP equipment clamps the final health', () => {
+  const run = newRun(12);
+  startRun(run, 'dagger');
+  const chest = run.build.parts.find((part) => part.slot === 'chest')!;
+  chest.item = { uid: 'equipped-donor', defId: 'donor', level: 1 };
+  run.stash.push({ uid: 'bag-donor', defId: 'donor', level: 1 });
+  run.hp = stats(run.build).maxHp;
+  assert.equal(combine(run, 'bag-donor'), true);
+  assert.equal(chest.item, undefined);
+  assert.equal(run.stash[0].level, 2);
+  assert.equal(run.hp, stats(run.build).maxHp);
 });
 test('surgery adds real sockets and soft overload, removal preserves equipment', () => {
   const r = newRun(4);

@@ -24,7 +24,10 @@ if (url.searchParams.get('tag') !== 'private' || !url.searchParams.has('k'))
   );
 const browser = await launchBrowser();
 // A fresh isolated context deliberately does not reuse the developer's real profile.
-const context = await browser.newContext({ viewport: { width: 1440, height: 960 } });
+const context = await browser.newContext({
+  viewport: { width: 1440, height: 960 },
+  deviceScaleFactor: 2,
+});
 const page = await context.newPage();
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
@@ -50,17 +53,68 @@ try {
   await game.getByRole('button', { name: /Butcher’s Knife.*Choose/ }).click();
   await game.getByRole('button', { name: 'To the arena →' }).waitFor();
   const boughtName = await game.locator('.shop-card h3').first().innerText();
+  const boughtSlot = { Head: 'head', Hand: 'hand', Chest: 'chest', Heart: 'heart', Foot: 'foot' }[
+    (await game.locator('.offer-type').first().innerText()).split(' · ')[0]
+  ];
   await game.locator('.buy-button').first().click();
   await game.getByText('Cloud save', { exact: true }).waitFor({ timeout: 30000 });
   await page.reload({ waitUntil: 'domcontentloaded' });
   game = await findGame();
   await game.getByRole('button', { name: 'To the arena →' }).waitFor();
+  await game.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await game.getByLabel('Equipment category').selectOption(boughtSlot);
   assert.ok(
     (await game.locator('.equipment-slot.filled').allTextContents()).some((text) =>
       text.includes(boughtName),
     ),
     'purchased equipment must reload from cloud storage',
   );
+  await game.getByRole('button', { name: 'Close dialog' }).click();
+  // Verify actual production iframe sizing, density and SDK insets on phone and desktop.
+  for (const [width, height] of [
+    [390, 844],
+    [844, 390],
+    [360, 640],
+    [1440, 960],
+  ]) {
+    await page.setViewportSize({ width, height });
+    game = await findGame();
+    await page.waitForTimeout(250);
+    const overflow = await game.evaluate(() => {
+      const issues = [];
+      if (
+        document.documentElement.scrollWidth > innerWidth + 2 ||
+        document.documentElement.scrollHeight > innerHeight + 2
+      )
+        issues.push('game document');
+      for (const element of document.querySelectorAll('.app-shell, .app-shell *')) {
+        if (
+          !element.clientHeight ||
+          getComputedStyle(element).visibility === 'hidden' ||
+          element.closest('.text-measure, .combat-transcript')
+        )
+          continue;
+        if (
+          element.scrollWidth > element.clientWidth + 2 ||
+          element.scrollHeight > element.clientHeight + 2
+        )
+          issues.push(element.className || element.tagName);
+      }
+      return issues;
+    });
+    assert.deepEqual(overflow, [], `private host ${width}x${height}`);
+    const safeArea = await game.evaluate(() =>
+      Object.entries(window.RundotGameAPI.system.getSafeArea()).map(([side, amount]) => [
+        amount,
+        parseFloat(getComputedStyle(document.documentElement).getPropertyValue(`--safe-${side}`)),
+      ]),
+    );
+    assert.equal(safeArea.length, 4);
+    for (const [reported, applied] of safeArea) assert.equal(applied, reported);
+    await (
+      await game.frameElement()
+    ).screenshot({ path: artifact(`frankentower-hosted-ui-${width}x${height}.png`) });
+  }
   await game.getByRole('button', { name: 'To the arena →' }).click();
   await game.getByRole('button', { name: '4×', exact: true }).click();
   await game
@@ -76,11 +130,14 @@ try {
   game = await findGame();
   await game.getByRole('button', { name: 'To the arena →' }).waitFor();
   await game.getByText('FLOOR 02', { exact: true }).waitFor();
+  await game.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await game.getByLabel('Equipment category').selectOption(boughtSlot);
   assert.ok(
     (await game.locator('.equipment-slot.filled').allTextContents()).some((text) =>
       text.includes(boughtName),
     ),
   );
+  await game.getByRole('button', { name: 'Close dialog' }).click();
   await game.getByRole('button', { name: 'To the arena →' }).click();
   await game.getByRole('button', { name: 'Pause combat', exact: true }).click();
   assert.ok(

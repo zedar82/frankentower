@@ -24,11 +24,11 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 ## Controls
 
 - Choose a starting weapon. It is free; you begin with 28 gold for other equipment.
-- Buy items to fill empty compatible sockets automatically. Further purchases go into the tray.
+- Buy items to fill empty compatible sockets automatically. Further purchases need room in the eight-space satchel.
 - Select equipped items to unequip or combine them. Two identical items at the same level make one item at the next level. Level 3 adds a signature effect.
-- Select a tray item to equip, swap, combine, or sell it.
-- Surgery opens every five floors: choose one procedure per visit. Amputation returns equipment to the tray.
-- The arena stays on screen between fights. After combat, open the battle log if you want; the doctor appears on appointment floors, then the supply cabinet opens over the room.
+- Expand equipment to equip, swap, combine, sell, or move items by tapping. Categories and extra slots use pages; Done returns to the shop.
+- Surgery opens every five floors: preview one procedure per visit. Displaced equipment needs room in the satchel before surgery can proceed.
+- After combat, optionally open the battle log. Visit the doctor on appointment floors, then the quartermaster before the next fight.
 - Finish shopping to return directly to combat. There is no separate floor-climb step. Space starts the next fight or toggles combat pause.
 - At floors 20, 40, 60, and 80, retire to replace the checkpoint guardian or risk continuing. Floor 100 preserves its champion automatically.
 
@@ -45,10 +45,10 @@ Offline mode uses a separate local save. The browser-storage adapter is removed 
 - Octopod set thresholds and anatomy-derived identities.
 - A 100-floor budget-generated campaign, seven enemy archetypes, five authored checkpoint guardians, and personal Legacy replacements.
 - Hall of Shame, final-build records, four anatomical challenge achievements, equipment contribution reports, and causal-chain transcripts.
-- Creature-centred equipment room with anatomical sockets, a timber supply counter, a clinical surgery view, a compact combat HUD, responsive mobile camera, sound, safe areas, host pause/resume handling, and cloud saves.
+- Deliberate phone/desktop layouts with a textured dungeon shop, compact phone vitals, expanded equipment workspaces, exact surgery previews, a compact combat HUD, sound, host safe areas, pause/resume handling, and RUN cloud saves. Core views use tabs/pages without scrolling; the combat transcript is the scrolling exception.
 - Custom RUN analytics for purchases, upgrades, rerolls, procedures, equipment choices, fights, retirement, and run outcomes.
 
-The design's later addendum explicitly defers community publishing, Fame, public reactions, and a shared boss repository. Those are not simulated or presented as live features here. The newer visual direction supersedes the original movement deferral. Ordinary floors reuse a circular room; props are decorative and do not block movement or line of sight. The room and equipment icons retain their procedural pixel style; the creature cutouts are an early illustrated art experiment, not final production art.
+The design's later addendum explicitly defers community publishing, Fame, public reactions, and a shared boss repository. Those are not simulated or presented as live features here. The newer visual direction supersedes the original movement deferral. Ordinary floors reuse a circular room; props are decorative and do not block movement or line of sight. The modular creature artwork is described in [the art notes](docs/art-prototype.md); chest/organ overlays and distinct headgear remain later equipment art work.
 
 ## Architecture
 
@@ -63,12 +63,28 @@ The design's later addendum explicitly defers community publishing, Fame, public
 | `src/save-validation.ts`, `save-writer.ts`                        | Boundary validation and serialized retry/coalescing                                           |
 | `src/platform.ts`                                                 | RUN storage, analytics, safe areas, and lifecycle events                                      |
 | `src/App.tsx`                                                     | Build/combat screens, inspection, records, and player controls                                |
+| `src/ui/Shop.tsx`, `Equipment.tsx`, `Surgery.tsx`, `Reference.tsx` | Phone/desktop screens, equipment workspaces, previews, reference views |
+| `src/ui/Paging.tsx`, `Modal.tsx` | Adaptive text/grid pages and focused workspaces without core UI scrolling |
 | `src/ui/Creature.tsx`                                             | Responsive modular creature portraits                                                         |
 | `src/ui/Arena.tsx`                                                | Arena rendering, effects, mobile framing, and dressing room                                   |
 | `src/art/pixel.ts`                                                | Pixel dungeon, props, equipment icons, and creature rendering entry point                     |
 | `src/art/puppet.ts`                                               | Measured artwork pivots, fabric seams, growing creature layout, fitting, and puppet animation |
 
 [Prototype art notes](docs/art-prototype.md) record the torso edit, sprite connection points, and composition checks.
+
+[UI expectations](docs/ui-expectations.md) record the agreed direction for the
+full UI pass: deliberate phone/desktop modes, core screens without scrolling,
+and tabs, explicit pages, and expanded equipment workspaces for excess content.
+The combat transcript is the scrolling exception. The implementation uses eight
+satchel spaces, with atomic capacity checks in inventory and surgery rules.
+[UI review](docs/ui-review.md) records the implemented screens, viewport checks,
+actual in-game captures, and verification limits. [UI materials and RUN prompts](output/art-direction/ui-pass/README.md)
+record the reusable artwork workflow. `src/ui-materials.css` applies the shared
+timber, iron and parchment treatments over the layouts in `src/styles.css`.
+
+[UI pass handoff](docs/ui-pass-handoff.md) records the unfinished checkpoint,
+private deployment state and remaining verification, with setup and transfer
+instructions for another machine.
 
 `public/thumbnail.jpg` is the required 512×512 RUN thumbnail. `node scripts/render-thumbnail.mjs` renders it from the game's own pixel dungeon and creature. RUN text generation is explicitly disabled in `rundot/textGen.config.json`; this game makes no inference calls.
 

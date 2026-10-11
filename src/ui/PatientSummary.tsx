@@ -1,55 +1,125 @@
-import { archetypes, equipped, identity, stats } from '../game/anatomy';
+import { useState } from 'react';
+import { archetypes, equipped, identity, stats, SLOT_LABEL, LEVEL_SCALE } from '../game/anatomy';
 import { buildAbilities } from '../game/abilities';
 import { ITEM_MAP } from '../game/content';
 import type { Build } from '../game/types';
 import { Creature } from './Creature';
 import { Icon } from './Icon';
-const fmt = (value: number) => (Number.isInteger(value) ? value : value.toFixed(1));
+import { PagedList, PagedText, Tabs } from './Paging';
 
 export function PatientSummary({ build }: { build: Build }) {
+  const [section, setSection] = useState<'Patient' | 'Equipment' | 'Abilities' | 'Anatomy'>(
+    'Patient',
+  );
+  const [detail, setDetail] = useState<string | null>(null);
+  const [pages, setPages] = useState<Partial<Record<typeof section, number>>>({});
   const bs = stats(build);
   return (
-    <>
-      <div className="build-summary">
-        <Creature build={build} />
-        <div>
-          <h3>{identity(build)}</h3>
-          <p>{archetypes(build).join(' / ')}</p>
-          <div className="inspect-stats">
-            <span>{bs.maxHp} HP</span>
-            <span>{bs.maxMana} Mana</span>
-            <span>{Math.round(bs.movementSpeed)} Movement</span>
-            <span>{fmt(bs.armour)} Armour</span>
-            <span>{Math.round(bs.efficiency * 100)}% circulation</span>
-          </div>
+    <div className="patient-inspection">
+      <Tabs
+        label="Build information"
+        value={section}
+        values={['Patient', 'Equipment', 'Abilities', 'Anatomy']}
+        onChange={(value) => {
+          setSection(value);
+          setDetail(null);
+        }}
+      />
+      {detail ? (
+        <>
+          <button onClick={() => setDetail(null)}>← Back to {section.toLowerCase()}</button>
+          <PagedText text={detail} />
+        </>
+      ) : section === 'Patient' ? (
+        <div className="build-summary">
+          <Creature build={build} />
+          <PagedText
+            text={`${build.name}\n${identity(build)}\n${archetypes(build).join(' / ')}\n\n${bs.maxHp} HP · ${bs.maxMana} Mana\n${Math.round(bs.movementSpeed)} Movement\n${bs.armour} Armour · ${Math.round(bs.crit * 100)}% Crit\n${Math.round(bs.chance * 100)}% Chance · ${Math.round(bs.speed * 100)}% Activation speed\n${Math.round(bs.efficiency * 100)}% circulation\nCapacity ${bs.capacity} / Load ${bs.load}\nMana recovery ${bs.manaPerSecond}/s`}
+            label="Patient"
+          />
         </div>
-      </div>
-      <div className="inspect-equipment">
-        {equipped(build).map(({ part, item }) => (
-          <div className="inspect-item" key={part.uid}>
-            <Icon name={ITEM_MAP[item.defId].icon} variant={item.defId} />
-            <div>
-              <strong>
-                {ITEM_MAP[item.defId].name} <small>Lv{item.level}</small>
-              </strong>
-              <p>{ITEM_MAP[item.defId].text}</p>
-              {item.level === 3 && <p className="mint">{ITEM_MAP[item.defId].signature}</p>}
-            </div>
-          </div>
-        ))}
-        {buildAbilities(build)
-          .filter((ability) => ability.source.kind !== 'item')
-          .map((ability) => (
-            <div className="inspect-item" key={ability.uid}>
+      ) : section === 'Equipment' ? (
+        <PagedList
+          page={pages[section] ?? 0}
+          onPage={(page) => setPages((previous) => ({ ...previous, [section]: page }))}
+          items={equipped(build)}
+          render={({ part, item }) => (
+            <button
+              className="inspect-item"
+              key={part.uid}
+              onClick={() =>
+                setDetail(
+                  `${ITEM_MAP[item.defId].name} · Lv${item.level}\n${part.variant} ${SLOT_LABEL[part.slot]}\n\n${ITEM_MAP[item.defId].text}\n\nDamage, healing, Shield, status amounts and passive stats are ×${LEVEL_SCALE[item.level]}. Timers and cooldown reductions retain their listed values.\n\nLevel 3 signature${item.level === 3 ? ' — active' : ''}: ${ITEM_MAP[item.defId].signature}`,
+                )
+              }
+            >
+              <Icon name={ITEM_MAP[item.defId].icon} variant={item.defId} />
+              <span>
+                <strong>{ITEM_MAP[item.defId].name}</strong>
+                <small>
+                  {SLOT_LABEL[part.slot]} · Lv{item.level} · Inspect →
+                </small>
+              </span>
+            </button>
+          )}
+        />
+      ) : section === 'Abilities' ? (
+        <PagedList
+          page={pages[section] ?? 0}
+          onPage={(page) => setPages((previous) => ({ ...previous, [section]: page }))}
+          items={buildAbilities(build).filter((ability) => ability.source.kind !== 'item')}
+          empty="No intrinsic abilities or active set bonuses."
+          render={(ability) => (
+            <button
+              className="inspect-item"
+              key={ability.uid}
+              onClick={() =>
+                setDetail(
+                  `${ability.def.name}\n${ability.source.kind === 'limb' ? 'Anatomy ability' : 'Set bonus'}\n\n${ability.def.text}`,
+                )
+              }
+            >
               <Icon name={ability.def.icon} />
-              <div>
+              <span>
                 <strong>{ability.def.name}</strong>
-                <small>{ability.source.kind === 'limb' ? 'Anatomy ability' : 'Set bonus'}</small>
-                <p>{ability.def.text}</p>
-              </div>
-            </div>
-          ))}
-      </div>
-    </>
+                <small>Inspect →</small>
+              </span>
+            </button>
+          )}
+        />
+      ) : (
+        <PagedList
+          page={pages[section] ?? 0}
+          onPage={(page) => setPages((previous) => ({ ...previous, [section]: page }))}
+          items={build.parts}
+          minWidth={150}
+          rowHeight={72}
+          render={(part, index) => (
+            <button
+              key={part.uid}
+              className="inspect-item"
+              onClick={() =>
+                setDetail(
+                  `${SLOT_LABEL[part.slot]} ${build.parts.slice(0, index + 1).filter((candidate) => candidate.slot === part.slot).length}\nMaterial: ${part.variant}\nEquipment: ${part.item ? ITEM_MAP[part.item.defId].name : 'Empty slot'}`,
+                )
+              }
+            >
+              <Icon name={part.slot} />
+              <span>
+                <strong>
+                  {SLOT_LABEL[part.slot]}{' '}
+                  {
+                    build.parts
+                      .slice(0, index + 1)
+                      .filter((candidate) => candidate.slot === part.slot).length
+                  }
+                </strong>
+                <small>{part.variant} · Inspect →</small>
+              </span>
+            </button>
+          )}
+        />
+      )}
+    </div>
   );
 }

@@ -54,6 +54,15 @@ Exit gate: new players understand the loop; skilled players can complete the tow
 
 ## 4. Finish presentation and interaction — release blocker
 
+11 October update: the [UI expectations](ui-expectations.md) have been implemented
+across the application, with phone/desktop compositions, bounded equipment and
+inspection workspaces, explicit pages, and textured dungeon materials. The
+combat transcript is the scrolling exception. The initial satchel capacity is
+eight; inventory and surgery validate complete operations before mutation.
+[UI review](ui-review.md) records browser, artwork and RUN verification evidence
+and the remaining device/playtest limits. This implementation does not establish
+public release readiness or replace the human/device gates below.
+
 Evidence: `docs/visual-direction.txt`, `docs/art-prototype.md`, `src/ui/Arena.tsx`, `src/art/puppet.ts`, `src/ui/Modal.tsx`, `src/App.tsx`.
 
 - Resolve the provisional creature-art direction before expanding assets. Preserve pixel-art arenas and arena-first composition; validate the illustrated creature treatment in that setting.

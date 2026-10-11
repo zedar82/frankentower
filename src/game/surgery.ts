@@ -1,8 +1,29 @@
 import { PROCEDURES } from './content';
 import { canFunction, count, stats } from './anatomy';
-import { clone, type Procedure, type Run } from './types';
+import { clone, SATCHEL_CAPACITY, type Part, type Procedure, type Run } from './types';
 import { Random } from './random';
 import { nextUid } from './run-id';
+
+export function procedurePreview(run: Run, p: Procedure) {
+  const build = clone(run.build);
+  const removed: Part[] = [];
+  for (const remove of p.remove ?? [])
+    for (let i = 0; i < remove.count; i++) {
+      const candidates = build.parts.filter((part) => part.slot === remove.slot);
+      const part = candidates.find((part) => !part.item) ?? candidates[candidates.length - 1];
+      if (!part) continue;
+      removed.push(part);
+      build.parts = build.parts.filter((candidate) => candidate.uid !== part.uid);
+    }
+  for (const add of p.add ?? [])
+    for (let i = 0; i < add.count; i++)
+      build.parts.push({
+        uid: `preview-${add.slot}-${build.parts.length}`,
+        slot: add.slot,
+        variant: add.variant ?? 'living',
+      });
+  return { build, removed, displaced: removed.flatMap((part) => (part.item ? [part.item] : [])) };
+}
 
 export function procedureReason(run: Run, p: Procedure, ignoreMoney = false) {
   if (!ignoreMoney && run.operated) return 'One procedure per visit.';
@@ -12,28 +33,21 @@ export function procedureReason(run: Run, p: Procedure, ignoreMoney = false) {
   for (const remove of p.remove ?? [])
     if (count(run.build, remove.slot) < remove.count)
       return `Requires ${remove.count} ${remove.slot} slots.`;
-  const test = clone(run.build);
-  for (const remove of p.remove ?? []) {
-    let n = remove.count;
-    test.parts = test.parts.filter((part) => part.slot !== remove.slot || n-- <= 0);
-  }
-  for (const add of p.add ?? [])
-    for (let i = 0; i < add.count; i++)
-      test.parts.push({ uid: `preview-${i}`, slot: add.slot, variant: add.variant ?? 'living' });
-  if (!canFunction(test)) return 'A living head or ganglion controller is required.';
+  const preview = procedurePreview(run, p);
+  if (!canFunction(preview.build)) return 'A living head or ganglion controller is required.';
+  if (!ignoreMoney && run.stash.length + preview.displaced.length > SATCHEL_CAPACITY)
+    return `Free ${run.stash.length + preview.displaced.length - SATCHEL_CAPACITY} satchel space(s) for displaced equipment.`;
   return null;
 }
 export function operate(run: Run, id: string) {
   const p = PROCEDURES.find((p) => p.id === id);
   if (!p || !run.procedures.includes(id) || procedureReason(run, p)) return false;
   const before = stats(run.build).maxHp;
-  for (const remove of p.remove ?? [])
-    for (let i = 0; i < remove.count; i++) {
-      const candidates = run.build.parts.filter((part) => part.slot === remove.slot);
-      const part = candidates.find((p) => !p.item) ?? candidates[candidates.length - 1];
-      if (part.item) run.stash.push(part.item);
-      run.build.parts = run.build.parts.filter((x) => x.uid !== part.uid);
-    }
+  const preview = procedurePreview(run, p);
+  run.stash.push(...preview.displaced);
+  run.build.parts = run.build.parts.filter(
+    (part) => !preview.removed.some((removed) => removed.uid === part.uid),
+  );
   for (const add of p.add ?? [])
     for (let i = 0; i < add.count; i++)
       run.build.parts.push({ uid: nextUid(run), slot: add.slot, variant: add.variant ?? 'living' });

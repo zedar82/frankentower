@@ -4,6 +4,8 @@ import { App } from './App';
 import { InvalidSaveError, loadSave, resetSave, telemetry } from './platform';
 import { RULESET } from './game/types';
 import './styles.css';
+import './ui-materials.css';
+import { PagedText } from './ui/Paging';
 
 const root = createRoot(document.getElementById('root')!);
 function Recovery({ error, runtime = false }: { error: unknown; runtime?: boolean }) {
@@ -14,14 +16,27 @@ function Recovery({ error, runtime = false }: { error: unknown; runtime?: boolea
   return (
     <div className="boot-screen" role="alert">
       <span className="eyebrow">PATIENT RECORDS {runtime ? 'PAUSED' : 'UNAVAILABLE'}</span>
-      <h1>{runtime ? 'Your appointment was interrupted.' : 'We could not open your records.'}</h1>
-      <p>
-        {runtime
-          ? 'Reload your saved records to continue. A fight interrupted by an error does not count as a defeat. Progress still waiting to save may need to be repeated.'
-          : error instanceof Error
-            ? error.message
-            : 'Please check your connection.'}
-      </p>
+      <h1>
+        {confirmReset
+          ? 'Permanently delete all patient records?'
+          : runtime
+            ? 'Your appointment was interrupted.'
+            : 'We could not open your records.'}
+      </h1>
+      <PagedText
+        text={
+          (confirmReset
+            ? 'This deletes this game’s current run, guardians, records, achievements, and settings. This cannot be undone.\n\n'
+            : '') +
+          (runtime
+            ? 'Reload your saved records to continue. A fight interrupted by an error does not count as a defeat. Progress still waiting to save may need to be repeated.'
+            : error instanceof Error
+              ? error.message
+              : 'Please check your connection.') +
+          (resetError ? '\n\n' + resetError : '')
+        }
+        label="Recovery"
+      />
       <button disabled={busy} onClick={() => location.reload()}>
         Reconnect
       </button>
@@ -30,10 +45,6 @@ function Recovery({ error, runtime = false }: { error: unknown; runtime?: boolea
       )}
       {invalid && confirmReset && (
         <>
-          <p>
-            This deletes this game's current run, guardians, records, achievements, and settings.
-            This cannot be undone.
-          </p>
           <button
             disabled={busy}
             onClick={async () => {
@@ -47,14 +58,13 @@ function Recovery({ error, runtime = false }: { error: unknown; runtime?: boolea
               }
             }}
           >
-            Confirm reset
+            Confirm permanent reset
           </button>
           <button disabled={busy} onClick={() => setConfirmReset(false)}>
             Keep records
           </button>
         </>
       )}
-      {resetError && <p>{resetError}</p>}
     </div>
   );
 }

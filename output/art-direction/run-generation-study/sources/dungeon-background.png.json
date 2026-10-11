@@ -1,0 +1,7 @@
+{
+  "generationId": "18fb3099-abf4-422e-853f-8a33212cbcb0",
+  "prompt": "Use case: stylized-concept. Asset type: reusable in-game UI background for FRANKENTOWER, a grotesque cartoon pixel-art medieval monster-building dungeon game. Create a richly detailed 1536x1024 landscape FRONT-ON orthographic quartermaster workshop wall and counter, with no character and no UI/text. Dark charcoal rough stone dungeon wall, old reddish brown timbers, rusty iron corner brackets, rivets, hanging chain lengths along outer left/right edges, two small warm orange torch sconces towards the sides. Bottom one fifth is a broad worn wooden counter with a few small candles, bottles and a skull tucked near far left/right corners. Keep the central 75% very dark, uncluttered and readable as backing for live gameplay and UI content. Strong handcrafted game pixel-art style with coherent stepped pixels, crisp ink outlines, granular material shading, muted palette, no blur, no smooth vector gradients, no modern clean rectangle panels. The artwork must feel like a complete moody game setting, warm candlelit stone, iron and wood. No frames within the scene, no labels, no icons, no weapons or body parts, no baked interface, no text, no watermark. The scene should crop comfortably at different phone and desktop aspect ratios.",
+  "model": "gemini-3.1-flash-image-preview",
+  "seed": 903028455,
+  "imageUrl": "https://storage.googleapis.com/venus-app-a037a.firebasestorage.app/h5-imagegen/mjkCVhrId815cvHaoaqj/N606byOO9wOx31Z5E18xKZm9Own1/a09fb1da-c66d-45f2-8082-42bb86022020.png"
+}

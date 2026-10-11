@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { ITEM_MAP, ITEMS, PROCEDURES } from './game/content';
-import { count, equipped, identity, SLOT_LABEL, SLOT_PLURAL, stats, usable } from './game/anatomy';
+import { ITEM_MAP } from './game/content';
+import { equipped, stats } from './game/anatomy';
 import { advance, finishFight, floorReward, newRun, retire, startRun } from './game/run';
 import { recover, reroll, toggleShopFreeze, upgradeShop } from './game/shop';
-import { canMoveItem, moveItem, purchaseItem, combineCandidate, equip } from './game/inventory';
-import { operate, procedureReason } from './game/surgery';
+import { canMoveItem, moveItem, purchaseItem } from './game/inventory';
+import { operate } from './game/surgery';
 import { encounter } from './game/encounters';
 import { type Build, type Item, type Save, type Slot } from './game/types';
 import { hasOffensiveAbility } from './game/abilities';
@@ -26,9 +26,12 @@ import { Shop } from './ui/Shop';
 import { Icon } from './ui/Icon';
 import { Creature } from './ui/Creature';
 import { Modal } from './ui/Modal';
-import { Arena, DressingRoom } from './ui/Arena';
+import { Arena } from './ui/Arena';
+import { EquipmentWorkspace } from './ui/Equipment';
+import { Surgery } from './ui/Surgery';
+import { Help, Hall, Catalogue, Report, Starter } from './ui/Reference';
+import { PagedText, useDisplayMode } from './ui/Paging';
 
-const SLOTS: Slot[] = ['head', 'chest', 'hand', 'foot', 'heart'];
 const SHOP_ACTIONS = { reroll, upgrade: upgradeShop, recover, freeze: toggleShopFreeze };
 type FlowStep = 'log' | 'lab' | 'shop' | null;
 export function App({ initialSave }: { initialSave: Save }) {
@@ -38,20 +41,23 @@ export function App({ initialSave }: { initialSave: Save }) {
     initialSave.run?.phase === 'result' ||
     initialSave.run?.phase === 'checkpoint' ||
     initialSave.run?.phase === 'dead' ||
+    initialSave.run?.phase === 'retired' ||
     initialSave.run?.phase === 'complete'
       ? 'log'
       : initialSave.run?.phase === 'build'
         ? 'shop'
         : null,
   );
-  const [modal, setModal] = useState<'help' | 'hall' | 'catalogue' | 'report' | 'new' | null>(null);
+  const [modal, setModal] = useState<
+    'help' | 'hall' | 'catalogue' | 'report' | 'new' | 'settings' | null
+  >(null);
   const [selected, setSelected] = useState<Item | null>(null);
-  const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  const [equipment, setEquipment] = useState<{ slot?: Slot; item?: Item } | null>(null);
+  const { compact } = useDisplayMode();
   const [inspected, setInspected] = useState<Build | null>(null);
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState('');
   const [fightError, setFightError] = useState<string | null>(null);
-  const [catalogueTag, setCatalogueTag] = useState('All');
   const combatRef = useRef<Combat | null>(null);
   const pauseRef = useRef(paused);
   pauseRef.current = paused;
@@ -112,7 +118,7 @@ export function App({ initialSave }: { initialSave: Save }) {
     setFlowStep(null);
     setPaused(false);
     setSelected(null);
-    setSelectedPart(null);
+    setEquipment(null);
     update('fight_start');
   }
   function advanceFlow() {
@@ -165,7 +171,6 @@ export function App({ initialSave }: { initialSave: Save }) {
     update(purchased ? 'item_purchased' : 'item_equipped');
   }
   const itemDrag = useItemDrag({ enabled: run.phase === 'build', canDrop, onDrop: dropItem });
-  const { dragged, dragProps, dropProps } = itemDrag;
   useEffect(() => subscribePlatform(() => redraw((v) => v + 1)), []);
   useEffect(() => {
     if (!toast) return;
@@ -299,11 +304,14 @@ export function App({ initialSave }: { initialSave: Save }) {
     const handle = (e: KeyboardEvent) => {
       if (
         e.code === 'Space' &&
-        !(e.target instanceof HTMLInputElement) &&
+        !(
+          e.target instanceof Element &&
+          e.target.closest('button, a, input, select, textarea, [role="dialog"]')
+        ) &&
         !modal &&
         !fightError &&
         !selected &&
-        !selectedPart &&
+        !equipment &&
         !inspected &&
         run.phase !== 'start'
       ) {
@@ -315,62 +323,18 @@ export function App({ initialSave }: { initialSave: Save }) {
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
   });
-  const itemButton = (item: Item, small = false) => (
-    <button
-      key={item.uid}
-      {...dragProps(item)}
-      className={`item-tile rarity-${ITEM_MAP[item.defId].rarity} ${small ? 'small' : ''}`}
-      onClick={() => setSelected(item)}
-      title={`${ITEM_MAP[item.defId].name} · Lv${item.level}`}
-    >
-      <Icon name={ITEM_MAP[item.defId].icon} size={small ? 23 : 30} />
-      <span>{ITEM_MAP[item.defId].name}</span>
-      <b className="level">{item.level > 1 ? `L${item.level}` : ''}</b>
-      {combineCandidate(run, item) && (
-        <span className="merge-dot" title="Can combine">
-          ↑
-        </span>
-      )}
-    </button>
-  );
-  const battleView = flowStep !== 'shop';
-  const slotGroup = (slot: Slot) => (
-    <div className={`slot-group socket-${slot}`} key={slot}>
-      <div className="slot-heading">
-        <span>{count(run.build, slot) === 1 ? SLOT_LABEL[slot] : SLOT_PLURAL[slot]}</span>
-        <small>{count(run.build, slot)}</small>
-      </div>
-      <div className="slot-grid">
-        {run.build.parts
-          .filter((p) => p.slot === slot)
-          .map((part) => (
-            <button
-              key={part.uid}
-              {...(part.item ? dragProps(part.item) : {})}
-              {...dropProps(part.uid)}
-              disabled={isCombat}
-              className={`equipment-slot ${dragged ? (canDrop(dragged, part.uid) ? 'drop-ready' : 'drop-blocked') : ''} ${part.item ? 'filled' : ''} ${part.item && !usable(run.build, part.item) ? 'inactive' : ''}`}
-              onClick={() => (part.item ? setSelected(part.item) : setSelectedPart(part.uid))}
-              title={part.item ? ITEM_MAP[part.item.defId].name : `Empty ${slot} slot`}
-              aria-label={
-                part.item
-                  ? `${ITEM_MAP[part.item.defId].name}, level ${part.item.level}`
-                  : `Empty ${slot} slot`
-              }
-            >
-              <Icon name={part.item ? ITEM_MAP[part.item.defId].icon : slot} size={32} />
-              <span>{part.item ? ITEM_MAP[part.item.defId].name : `Empty ${slot}`}</span>
-              <small>
-                {part.item && part.item.level > 1 ? `L${part.item.level}` : !part.item ? '+' : ''}
-              </small>
-              {part.variant !== 'living' && <i className="variant-dot" title={part.variant} />}
-            </button>
-          ))}
-      </div>
-    </div>
-  );
+  const battleView = flowStep !== 'shop' && flowStep !== 'lab';
+  const manage = (slot?: Slot, item?: Item) => {
+    setSelected(null);
+    setEquipment({ slot, item });
+  };
   return (
-    <div className={'app-shell in-battle' + (flowStep === 'shop' ? ' shopping' : '')}>
+    <div
+      className={
+        'app-shell in-battle' +
+        (flowStep === 'shop' ? ' shopping' : flowStep === 'lab' ? ' operating' : '')
+      }
+    >
       <header className="main-header">
         <a
           className="wordmark"
@@ -385,7 +349,10 @@ export function App({ initialSave }: { initialSave: Save }) {
         </a>
         <div className="journey">
           <Icon name="stairs" size={21} />
-          <strong>FLOOR {String(run.floor).padStart(2, '0')}</strong>
+          <strong>
+            <span className="floor-label">FLOOR </span>
+            {String(run.floor).padStart(2, '0')}
+          </strong>
           <span>/ 100</span>
         </div>
         <div className="header-tools">
@@ -394,7 +361,7 @@ export function App({ initialSave }: { initialSave: Save }) {
             {run.gold}
           </span>
           <button
-            className="icon-button"
+            className="icon-button header-shortcut"
             onClick={() => setModal('hall')}
             aria-label="Hall of Shame"
             title="Hall of Shame"
@@ -402,7 +369,7 @@ export function App({ initialSave }: { initialSave: Save }) {
             ♜
           </button>
           <button
-            className="icon-button"
+            className="icon-button header-shortcut"
             onClick={() => {
               save.settings.sound = !save.settings.sound;
               update();
@@ -411,23 +378,28 @@ export function App({ initialSave }: { initialSave: Save }) {
           >
             {save.settings.sound ? '♪' : '♩'}
           </button>
-          <button className="icon-button" onClick={() => setModal('help')} aria-label="How to play">
+          <button
+            className="icon-button header-shortcut"
+            onClick={() => setModal('help')}
+            aria-label="How to play"
+          >
             ?
+          </button>
+          <button
+            className="icon-button"
+            onClick={() => setModal('settings')}
+            aria-label="Settings"
+          >
+            ⚙
           </button>
           <span className="save-status" role="status">
             {platformStatus()}
           </span>
-          {savePending() && (
-            <button
-              onClick={() => {
-                void retrySave();
-              }}
-            >
-              Retry save
-            </button>
-          )}
         </div>
       </header>
+      <div className="app-notice" role="status">
+        {toast || (compact ? platformStatus() : '')}
+      </div>
       {battleView && (
         <main className="battle-world">
           <div className="arena-header">
@@ -486,46 +458,30 @@ export function App({ initialSave }: { initialSave: Save }) {
               setInspected(b);
             }}
           />
-          {run.phase !== 'build' && run.phase !== 'start' && run.phase !== 'combat' && (
-            <div className={'outcome-banner ' + (run.phase === 'dead' ? 'defeat' : '')}>
-              <span className="eyebrow">
-                {run.phase === 'dead'
-                  ? 'PATIENT LOST'
-                  : run.phase === 'complete'
-                    ? 'TOWER COMPLETE'
-                    : 'ROOM CLEARED'}
-              </span>
-              <h2>
-                {run.phase === 'dead'
-                  ? 'The patient needs recovery.'
-                  : run.phase === 'complete'
-                    ? 'A considerable improvement.'
-                    : 'The way is clear.'}
-              </h2>
-              <p>
-                {run.phase === 'dead'
-                  ? (sim.failure ?? 'Your final build is in the Hall of Shame.')
-                  : '+' + floorReward(run.floor) + ' gold · Recovered 25% maximum HP'}
-              </p>
-            </div>
-          )}
           <div className="combat-belt">
             <div className="activation-belt" aria-label="Equipment activations">
-              {sim.player.abilities.map((n) => (
+              {sim.player.abilities.slice(0, compact ? 2 : 6).map((n) => (
                 <button
                   key={n.uid}
                   className={sim.time - n.lastActivated < 0.2 ? 'equipment-pulse' : ''}
+                  aria-label={'Inspect ' + n.def.name}
                   onClick={() => {
                     setPaused(true);
                     if (n.source.kind === 'item') setSelected(n.source.item);
                     else setInspected(run.build);
                   }}
-                  title={n.def.name}
-                  aria-label={'Inspect ' + n.def.name}
                 >
                   <Icon name={n.def.icon} size={28} />
                 </button>
               ))}
+              <button
+                onClick={() => {
+                  setPaused(true);
+                  setInspected(run.build);
+                }}
+              >
+                All abilities ↗
+              </button>
             </div>
             <div className="combat-controls">
               {isCombat && (
@@ -569,27 +525,33 @@ export function App({ initialSave }: { initialSave: Save }) {
             <span className="eyebrow">
               {run.phase === 'checkpoint'
                 ? 'CHECKPOINT'
-                : run.phase === 'dead'
-                  ? 'PATIENT LOST'
-                  : run.phase === 'complete'
-                    ? 'TOWER COMPLETE'
-                    : 'ROOM CLEARED'}
+                : run.phase === 'retired'
+                  ? 'GUARDIAN APPOINTED'
+                  : run.phase === 'dead'
+                    ? 'PATIENT LOST'
+                    : run.phase === 'complete'
+                      ? 'TOWER COMPLETE'
+                      : 'ROOM CLEARED'}
             </span>
             <h2>
               {run.phase === 'checkpoint'
                 ? 'Guardian defeated.'
-                : run.phase === 'dead'
-                  ? 'The patient needs recovery.'
-                  : run.phase === 'complete'
-                    ? 'The tower is yours.'
-                    : 'The way is clear.'}
+                : run.phase === 'retired'
+                  ? 'Your patient guards this floor.'
+                  : run.phase === 'dead'
+                    ? 'The patient needs recovery.'
+                    : run.phase === 'complete'
+                      ? 'The tower is yours.'
+                      : 'The way is clear.'}
             </h2>
             <p>
               {run.phase === 'dead'
                 ? (sim.failure ?? 'Your final build is in the Hall of Shame.')
-                : run.phase === 'checkpoint'
-                  ? 'Review the fight or preserve this build as the floor guardian.'
-                  : '+' + floorReward(run.floor) + ' gold · Recovered 25% maximum HP'}
+                : run.phase === 'retired'
+                  ? 'This build is preserved for your next run.'
+                  : run.phase === 'checkpoint'
+                    ? 'Review the fight or preserve this build as the floor guardian.'
+                    : '+' + floorReward(run.floor) + ' gold · Recovered 25% maximum HP'}
             </p>
             <div className="flow-actions">
               <button
@@ -605,12 +567,14 @@ export function App({ initialSave }: { initialSave: Save }) {
                 <button onClick={retireAtCheckpoint}>Retire as floor guardian</button>
               )}
               {isEnd ? (
-                <button
-                  className="primary"
-                  onClick={() => (run.phase === 'complete' ? setModal('report') : setModal('new'))}
-                >
-                  {run.phase === 'complete' ? 'View champion →' : 'Admit a new patient →'}
-                </button>
+                <>
+                  {run.phase === 'complete' && (
+                    <button onClick={() => setInspected(run.build)}>View champion →</button>
+                  )}
+                  <button className="primary" onClick={() => setModal('new')}>
+                    Admit a new patient →
+                  </button>
+                </>
               ) : (
                 <button className="primary" onClick={continueFromLog}>
                   Continue →
@@ -620,139 +584,62 @@ export function App({ initialSave }: { initialSave: Save }) {
           </section>
         </div>
       )}
-      {(flowStep === 'shop' || flowStep === 'lab') && (
-        <div className={'station-layer station-' + flowStep}>
-          <section className="station-panel">
-            {flowStep === 'lab' ? (
-              <>
-                <div className="station-title">
-                  <div>
-                    <span className="eyebrow">DR. SUTCHER’S PRACTICE · FLOOR {run.floor}</span>
-                    <h2>Reconstructive medicine</h2>
-                  </div>
-                </div>
-                <div className="clinic-body">
-                  <DressingRoom build={run.build} floor={run.floor} surgery />
-                  <div>
-                    <strong>{run.build.name}</strong>
-                    <div className="station-sockets">{SLOTS.map(slotGroup)}</div>
-                  </div>
-                </div>
-                <div className="procedure-content">
-                  <blockquote className="doctor-quote">
-                    “You’ll never make it to the top with your body like that. Here, let me help…”
-                    <cite>Dr. Sutcher</cite>
-                  </blockquote>
-                  <p className="procedure-intro">
-                    {run.operated ? 'Your procedure is complete.' : 'One procedure per visit.'}
-                  </p>
-                  {run.procedures.map((id) => {
-                    const procedure = PROCEDURES.find((x) => x.id === id)!,
-                      reason = procedureReason(run, procedure);
-                    return (
-                      <div className="procedure-card" key={id}>
-                        <div className="procedure-card-heading">
-                          <Icon name={procedure.add?.[0].slot ?? 'surgery'} size={30} />
-                          <h3>{procedure.name}</h3>
-                        </div>
-                        <p>{procedure.text}</p>
-                        <blockquote>“{procedure.quote}”</blockquote>
-                        <button
-                          disabled={!!reason}
-                          title={reason ?? procedure.text}
-                          onClick={() => {
-                            if (operate(run, id)) {
-                              sound('surgery', save.settings.sound);
-                              notify('Procedure complete.');
-                              update('procedure');
-                            }
-                          }}
-                        >
-                          Perform procedure{' '}
-                          <span>
-                            {procedure.price === 0 ? 'No charge' : procedure.price + ' ●'}
-                          </span>
-                        </button>
-                        {reason && <small className="procedure-reason">{reason}</small>}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="station-footer">
-                  <span>One procedure</span>
-                  <button className="primary" onClick={finishLab}>
-                    Continue to supplies →
-                  </button>
-                </div>
-              </>
-            ) : (
-              <Shop
-                run={run}
-                stats={s}
-                slots={SLOTS.map(slotGroup)}
-                drag={itemDrag}
-                renderItem={(item) => itemButton(item, true)}
-                onInspect={setSelected}
-                onPurchase={purchase}
-                onAction={(action) => {
-                  if (SHOP_ACTIONS[action](run)) update('shop_' + action);
-                }}
-                onCatalogue={() => setModal('catalogue')}
-                onFight={beginFight}
-              />
-            )}
-          </section>
-        </div>
+      {flowStep === 'shop' && (
+        <Shop
+          run={run}
+          stats={s}
+          drag={itemDrag}
+          onInspect={setSelected}
+          onPurchase={purchase}
+          onAction={(action) => {
+            if (SHOP_ACTIONS[action](run)) update('shop_' + action);
+          }}
+          onCatalogue={() => setModal('catalogue')}
+          onFight={beginFight}
+          onManage={manage}
+          onBuild={() => setInspected(run.build)}
+        />
       )}
-      {toast && (
-        <div className="toast" role="status">
-          {toast}
-        </div>
+      {flowStep === 'lab' && (
+        <Surgery
+          run={run}
+          onManage={() => manage()}
+          onContinue={finishLab}
+          onOperate={(id) => {
+            if (operate(run, id)) {
+              sound('surgery', save.settings.sound);
+              notify('Procedure complete.');
+              update('procedure');
+            }
+          }}
+        />
       )}
       {run.phase === 'start' && (
         <Modal title="A practical improvement." wide>
-          <div className="welcome-layout">
-            <div className="welcome-specimen">
-              <Creature build={run.build} />
-              <span className="eyebrow">{run.build.name.toUpperCase()} / HUMAN / 1000 HP</span>
-            </div>
-            <div>
-              <p className="welcome-copy">
-                One hundred floors. One ordinary body.
-                <br />
-                We can do something about the second part.
-              </p>
-              <p>
-                Choose your first weapon. It attacks automatically. Buy equipment, graft new
-                anatomy, and give your hearts enough capacity to keep it all working.
-              </p>
-              <div className="starter-weapons">
-                {['dagger', 'club', 'knife'].map((id) => (
-                  <button
-                    key={id}
-                    onClick={() => {
-                      startRun(run, id);
-                      setFlowStep('shop');
-                      sound('equip', save.settings.sound);
-                      update('weapon_chosen');
-                    }}
-                  >
-                    <Icon name={ITEM_MAP[id].icon} size={32} />
-                    <strong>{ITEM_MAP[id].name}</strong>
-                    <small>{ITEM_MAP[id].text}</small>
-                    <span>Choose →</span>
-                  </button>
-                ))}
-              </div>
-              <p className="fine-print">
-                Every patient starts human. At floors 20, 40, 60 and 80 you may retire and become a
-                guardian for your next run.
-              </p>
-            </div>
-          </div>
+          <Starter
+            run={run}
+            onChoose={(id) => {
+              startRun(run, id);
+              setFlowStep('shop');
+              sound('equip', save.settings.sound);
+              update('weapon_chosen');
+            }}
+          />
         </Modal>
       )}
-      {selected && (
+      {equipment && (
+        <EquipmentWorkspace
+          run={run}
+          initialSlot={equipment.slot}
+          initialItem={equipment.item}
+          drag={itemDrag}
+          onMove={dropItem}
+          onChange={update}
+          onPurchase={purchase}
+          onClose={() => setEquipment(null)}
+        />
+      )}
+      {selected && !equipment && (
         <ItemDetails
           run={run}
           selected={selected}
@@ -760,349 +647,88 @@ export function App({ initialSave }: { initialSave: Save }) {
           onPurchase={purchase}
           onEquip={() => sound('equip', save.settings.sound)}
           onChange={update}
+          onTargets={(item) => manage(ITEM_MAP[item.defId].slot, item)}
         />
       )}
-      {selectedPart && (
-        <Modal title="Fill the socket." onClose={() => setSelectedPart(null)}>
-          <p>Select an item from your tray.</p>
-          <div className="equip-targets">
-            {run.stash
-              .filter(
-                (i) =>
-                  ITEM_MAP[i.defId].slot ===
-                  run.build.parts.find((p) => p.uid === selectedPart)?.slot,
-              )
-              .map((item) => (
-                <button
-                  key={item.uid}
-                  disabled={!usable(run.build, item) || run.phase !== 'build'}
-                  onClick={() => {
-                    equip(run, item.uid, selectedPart);
-                    setSelectedPart(null);
-                    sound('equip', save.settings.sound);
-                    update('item_equipped');
-                  }}
-                >
-                  <Icon name={ITEM_MAP[item.defId].icon} />
-                  {ITEM_MAP[item.defId].name}
-                  <small>Lv{item.level}</small>
-                </button>
-              ))}
-          </div>
-          {!run.stash.some(
-            (i) =>
-              ITEM_MAP[i.defId].slot === run.build.parts.find((p) => p.uid === selectedPart)?.slot,
-          ) && (
-            <p className="empty-state">
-              No matching equipment in the tray. Buy an item from the supply cabinet to fill this
-              slot.
-            </p>
-          )}
-        </Modal>
-      )}
-      {inspected && (
+      {inspected && !equipment && !selected && (
         <Modal title="Build inspection" onClose={() => setInspected(null)} wide>
-          {<PatientSummary build={inspected} />}
+          <PatientSummary build={inspected} />
         </Modal>
       )}
-      {fightError && (
+      {fightError && !equipment && !selected && !inspected && (
         <Modal title="Combat interrupted" onClose={() => setFightError(null)}>
-          <p>
-            The fight could not be resolved. Your pre-fight health, equipment, and gold are
-            preserved. This does not count as a defeat.
-          </p>
-          <p>{fightError}</p>
+          <PagedText
+            text={
+              'The fight could not be resolved. Your pre-fight health, equipment, and gold are preserved. This does not count as a defeat.\n\n' +
+              fightError
+            }
+          />
           <button onClick={() => setFightError(null)}>Return to the shop</button>
         </Modal>
       )}
-      {modal === 'help' && (
-        <Modal title="Build something that works." onClose={() => setModal(null)} wide>
-          <div className="help-grid">
-            <div>
-              <h3>01 / Build</h3>
-              <p>
-                Buy equipment to fill matching slots. Extra hands hold extra weapons; extra heads
-                wear extra helmets. Select an equipped item to move it to the tray or combine
-                duplicates. Stock refreshes free on every new floor. Freeze stock to keep it until
-                you unfreeze.
-              </p>
-              <h3>02 / Reconstruct</h3>
-              <p>
-                Surgery opens every five floors. Choose one procedure per visit. New anatomy gives
-                HP and slots; it also asks your hearts for more circulation. Under-supported bodies
-                activate equipment more slowly.
-              </p>
-              <h3>03 / Observe</h3>
-              <p>
-                Combat is automatic. Use 1×, 2× or 4× speed, and pause to inspect an opponent. After
-                a fight, optionally read its battle log, visit the doctor on appointment floors, and
-                shop before the next room. Space starts combat or pauses it.
-              </p>
-              <h3>04 / Leave a legacy</h3>
-              <p>
-                Defeat a guardian every twenty floors. Retire to preserve your exact build as that
-                floor’s guardian next run. Continue to risk losing that opportunity. Floor 100
-                preserves its champion automatically.
-              </p>
-            </div>
-            <div className="rules-glossary">
-              <h3>Clinical reference</h3>
-              <p>
-                <b>Movement</b> comes from your legs. Melee weapons wait until a target is within
-                reach. More legs move faster; ranged attackers try to keep their distance.
-              </p>
-              <p>
-                <b>Armour</b> subtracts a flat amount from each attack.
-              </p>
-              <p>
-                <b>Shield</b> absorbs one direct attack. All remaining Shield is then lost.
-              </p>
-              <p>
-                <b>Bleed</b> adds damage when a direct attack penetrates defence. It does not tick
-                by itself or trigger more Bleed.
-              </p>
-              <p>
-                <b>Poison</b> deals damage once per second and loses 10 per tick. Status damage
-                bypasses Armour and Shield.
-              </p>
-              <p>
-                <b>Mana</b> powers Wands and necrotic hearts. Each Head recovers 10 Mana/s; necrotic
-                hearts spend 20 Mana/s each.
-              </p>
-              <p>
-                <b>Chance overflow</b> grants one success per full 100%, then rolls the remainder.
-                Critical tiers add damage: 230% is ×3 damage, with a 30% chance of ×4.
-              </p>
-              <p>
-                <b>Triggers</b> activate an item without waiting for its timer. Each instance
-                activates once per branch, preventing recursive loops.
-              </p>
-              <p>
-                <b>Octopod set</b> 2 pieces: +10% speed. 4: +20% Crit. 6: +80 capacity. 8: +50%
-                speed.
-              </p>
-              <p>
-                <b>Long battles</b> lose 2% maximum HP/s after 90 seconds.
-              </p>
-            </div>
-          </div>
-          <div className="help-footer">
-            <p>
-              Original game for RUN’s Monster Mash jam.
-              <br />
-              Created by Daniel Andersen.
-            </p>
-            <button onClick={() => setModal('new')}>Begin a new run</button>
-          </div>
-        </Modal>
-      )}
-      {modal === 'new' && (
-        <Modal title="Admit a new patient?" onClose={() => setModal(null)}>
-          <p>This ends the current run. Retired guardians and your Hall of Shame remain saved.</p>
-          <div className="detail-actions">
-            <button onClick={() => setModal(null)}>Keep this patient</button>
-            <button className="primary" onClick={fresh}>
-              Begin a new run
-            </button>
-          </div>
-        </Modal>
-      )}
-      {modal === 'hall' && (
-        <Modal title="Hall of Shame" onClose={() => setModal(null)} wide>
-          <p className="modal-lead">
-            A record of useful improvements. Your retired patients now guard the tower.
-          </p>
-          <div className="hall-summary">
-            <span>
-              Best floor <b>{save.best}</b>
-            </span>
-            <span>
-              Guardians <b>{save.legacy.length} / 5</b>
-            </span>
-            <span>
-              Achievements <b>{save.achievements.length}</b>
-            </span>
-          </div>
-          {save.legacy.length === 0 && (
-            <div className="empty-state">
-              No guardians yet. Defeat floor 20 and retire to appoint your first.
-            </div>
+      {!equipment && !selected && !inspected && !fightError && run.phase !== 'start' && (
+        <>
+          {modal === 'help' && (
+            <Modal title="Build something that works." onClose={() => setModal(null)} wide>
+              <Help />
+              <button onClick={() => setModal('new')}>Begin a new run</button>
+            </Modal>
           )}
-          {save.legacy.map((l) => (
-            <button
-              className="hall-entry"
-              key={l.checkpoint}
-              onClick={() => {
-                setModal(null);
-                setInspected(l.build);
-              }}
-            >
-              <span className="hall-floor">{l.checkpoint}</span>
-              <Creature build={l.build} compact />
-              <div>
-                <h3>{identity(l.build)}</h3>
-                <p>
-                  {l.build.parts.length} parts · {equipped(l.build).length} equipped items
-                </p>
+          {modal === 'new' && (
+            <Modal title="Admit a new patient?" onClose={() => setModal(null)}>
+              <PagedText text="This ends the current run. Retired guardians and your Hall of Shame remain saved." />
+              <div className="detail-actions">
+                <button onClick={() => setModal(null)}>Keep this patient</button>
+                <button className="primary" onClick={fresh}>
+                  Begin a new run
+                </button>
               </div>
-              <span>Inspect →</span>
-            </button>
-          ))}
-          {save.achievements.length > 0 && (
-            <div className="tag-list achievements">
-              {save.achievements.map((a) => (
-                <span key={a}>✦ {a}</span>
-              ))}
-            </div>
+            </Modal>
           )}
-          {save.records.length > 0 && (
-            <>
-              <h3 className="records-title">Previous patients</h3>
-              {save.records.map((r, i) => (
+          {modal === 'hall' && (
+            <Modal title="Hall of Shame" onClose={() => setModal(null)} wide>
+              <Hall save={save} />
+            </Modal>
+          )}
+          {modal === 'catalogue' && (
+            <Modal title="Equipment index" onClose={() => setModal(null)} wide>
+              <Catalogue run={run} onChange={update} />
+            </Modal>
+          )}
+          {modal === 'report' && (
+            <Modal title="Patient outcome report" onClose={() => setModal(null)} wide>
+              <Report run={run} sim={sim} />
+            </Modal>
+          )}
+          {modal === 'settings' && (
+            <Modal title="Settings" onClose={() => setModal(null)}>
+              <div className="settings-actions">
                 <button
-                  className="record-entry"
-                  key={i}
+                  aria-pressed={save.settings.sound}
                   onClick={() => {
-                    setModal(null);
-                    setInspected(r.build);
+                    save.settings.sound = !save.settings.sound;
+                    update();
                   }}
                 >
-                  <strong>{identity(r.build)}</strong>
-                  <span>
-                    {r.reason} · floor {r.floor}
-                  </span>
+                  Sound {save.settings.sound ? 'on' : 'off'}
                 </button>
-              ))}
-            </>
-          )}
-        </Modal>
-      )}
-      {modal === 'catalogue' && (
-        <Modal title="Equipment index" onClose={() => setModal(null)} wide>
-          <p className="modal-lead">
-            {ITEMS.length} components. A considerable number of possibilities.
-          </p>
-          <div className="catalogue-filters">
-            {['All', 'Blood', 'Arcane', 'Poison', 'Mechanical', 'Chance', 'Octopod', 'Bone'].map(
-              (tag) => (
-                <button
-                  className={catalogueTag === tag ? 'active' : ''}
-                  key={tag}
-                  onClick={() => setCatalogueTag(tag)}
-                >
-                  {tag}
-                </button>
-              ),
-            )}
-          </div>
-          <div className="catalogue-list">
-            {ITEMS.filter(
-              (d) => catalogueTag === 'All' || d.tags.some((t) => t === catalogueTag),
-            ).map((d) => (
-              <button
-                className={`catalogue-item rarity-${d.rarity}`}
-                key={d.id}
-                onClick={() => {
-                  setModal(null);
-                  setSelected({ uid: 'index-' + d.id, defId: d.id, level: 1 });
-                }}
-              >
-                <Icon name={d.icon} size={30} />
-                <div>
-                  <strong>{d.name}</strong>
-                  <p>{d.text}</p>
-                </div>
-                <span>{'★'.repeat(d.rarity)}</span>
-              </button>
-            ))}
-          </div>
-        </Modal>
-      )}
-      {modal === 'report' && (
-        <Modal title="Patient outcome report" onClose={() => setModal(null)} wide>
-          <p className="modal-lead">
-            {identity(run.build)} · floor {run.floor} ·{' '}
-            {run.phase === 'dead'
-              ? 'Did not survive'
-              : run.phase === 'retired'
-                ? 'Retired as guardian'
-                : run.phase === 'complete'
-                  ? 'Tower completed'
-                  : sim?.done
-                    ? 'Encounter survived'
-                    : 'Current observation'}
-          </p>
-          {sim && (
-            <>
-              <div className="hall-summary">
-                <span>
-                  Duration <b>{sim.time.toFixed(1)}s</b>
-                </span>
-                <span>
-                  Damage <b>{Math.round(sim.player.damage)}</b>
-                </span>
-                <span>
-                  Healing <b>{Math.round(sim.player.healing)}</b>
-                </span>
-              </div>
-              <h3>Equipment contribution</h3>
-              <div className="contribution-table">
-                <div className="table-row table-heading">
-                  <span>Component</span>
-                  <span>Acts</span>
-                  <span>Damage</span>
-                  <span>Heal</span>
-                </div>
-                {[...sim.player.abilities]
-                  .sort((a, b) => b.damage - a.damage)
-                  .map((n) => (
-                    <div className="table-row" key={n.uid}>
-                      <span>
-                        {n.def.name} <small>L{n.level}</small>
-                      </span>
-                      <span>{n.activations}</span>
-                      <span>{Math.round(n.damage)}</span>
-                      <span>{Math.round(n.healing)}</span>
-                    </div>
-                  ))}
-              </div>
-              <details className="full-transcript">
-                <summary>
-                  Combat transcript & causal chains · {sim.suppressed} recursive activations
-                  prevented
-                </summary>
-                {sim.logs.map((l) => (
-                  <div key={l.id} className={`transcript-line ${l.kind}`}>
-                    <time>{l.time.toFixed(1)}s</time>
-                    <span>
-                      {l.text}
-                      <small>{sim.chainNames(l.chain).join(' → ')}</small>
-                    </span>
-                  </div>
-                ))}
-              </details>
-            </>
-          )}
-          {<PatientSummary build={run.build} />}
-          {run.lastEnemies.length > 0 && (
-            <>
-              <h3>Final encounter</h3>
-              <div className="encounter-inspect">
-                {run.lastEnemies.map((b, i) => (
+                <button onClick={() => setModal('help')}>How to play</button>
+                <button onClick={() => setModal('hall')}>Hall of Shame</button>
+                <button onClick={() => setModal('new')}>Begin a new run</button>
+                <span role="status">{platformStatus()}</span>
+                {savePending() && (
                   <button
-                    key={i}
                     onClick={() => {
-                      setModal(null);
-                      setInspected(b);
+                      void retrySave();
                     }}
                   >
-                    {b.name} →
+                    Retry save
                   </button>
-                ))}
+                )}
               </div>
-            </>
+            </Modal>
           )}
-        </Modal>
+        </>
       )}
     </div>
   );

@@ -1,0 +1,8 @@
+{
+  "id": "button-timber-v1",
+  "date": "2026-10-11",
+  "model": "gemini-3.1-flash-image-preview",
+  "quotedCredits": 120,
+  "reference": "public/ui/quartermaster-scene-v1.png",
+  "prompt": "One seamless tile of dark worn medieval reddish-brown TIMBER for FRANKENTOWER's pixel-art game controls. The single reference image supplies only fine handcrafted pixel-art style and material shading. New asset: quiet close-up old wood grain, broad horizontal plank texture, occasional small dents and thin dark cracks. Muted burnt umber and walnut browns, subtle warm highlights, very dark readable backing for light live text. Fine crisp pixel clusters, rich restrained texture matching the reference source density. Flat orthographic surface, no perspective. Fill the entire square image edge to edge with repeatable wood, no transparency. No frame, border, brackets, rivets, object, scene, skull, torch, lettering, button, icon or watermark. The texture will tile across small UI buttons, so keep contrast restrained and features small."
+}

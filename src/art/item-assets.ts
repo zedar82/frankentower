@@ -78,20 +78,26 @@ const heldAttachments = {
 type HeldIcon = keyof typeof heldAttachments;
 const attachment = (name: string): HeldAttachment | undefined => heldAttachments[name as HeldIcon];
 const base = `${import.meta.env.BASE_URL}grotesque/items/`;
+// Inventory pictures use the same accepted silhouettes as the assembled creature.
+const modularBase = `${import.meta.env.BASE_URL}grotesque/modular-v2/`;
+const presentationFiles: Record<string, string> = {
+  knife: 'weapon-cleaver.png',
+  helmet: 'gear-crown.png',
+  hood: 'gear-crown.png',
+};
 const itemImages = Object.fromEntries(
   Object.entries(itemFiles).map(([name, file]) => {
     const image = new Image();
-    image.src = `${base}${file}`;
+    image.src = presentationFiles[name]
+      ? `${modularBase}${presentationFiles[name]}`
+      : `${base}${file}`;
     return [name, image];
   }),
 ) as Record<ItemIconName, HTMLImageElement>;
 
-const cleaverImage = new Image();
-cleaverImage.src = `${import.meta.env.BASE_URL}grotesque/modular-v2/weapon-cleaver.png`;
+const cleaverImage = itemImages.knife;
 const heldImages = { ...itemImages, knife: cleaverImage };
-export const itemArtReady = Promise.all(
-  [...Object.values(itemImages), cleaverImage].map((image) => image.decode()),
-);
+export const itemArtReady = Promise.all(Object.values(itemImages).map((image) => image.decode()));
 
 function heldTransform(profile: HeldAttachment) {
   const grip = { x: profile.grip.x * profile.frame.x, y: profile.grip.y * profile.frame.y };

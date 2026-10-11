@@ -145,7 +145,7 @@ function widthAt(upper: number, lower: number, height: number, y: number) {
   const t = Math.max(0, Math.min(1, (y - start) / 48));
   return upper + (lower - upper) * t * t * (3 - 2 * t);
 }
-export function modularLayout(build: Build): PuppetLayout {
+export function modularLayout(build: Build, resting = false): PuppetLayout {
   const hands = select(build, 'hand'),
     heads = select(build, 'head'),
     feet = select(build, 'foot');
@@ -185,13 +185,13 @@ export function modularLayout(build: Build): PuppetLayout {
   const legs = feet.map((p, i) =>
     joint(p, i, { x: (i - (feet.length - 1) / 2) * 28, y: torso.y + height }, 0),
   );
-  // Include real sprite corners throughout the supported attack rotation and held gear.
+  // Combat reserves the full swing; a stationary display only needs its resting pose.
   let left = torso.x,
     right = -torso.x,
     top = torso.y - (heads.length ? 78 : 8),
     bottom = 4;
   for (const j of arms)
-    for (const angle of [-1.85, -1.2, -0.6, 0, 0.6, 1.2, 1.85]) {
+    for (const angle of resting ? [0] : [-1.85, -1.2, -0.6, 0, 0.6, 1.2, 1.85]) {
       const g = geometry[asset(hands[j.index])] ?? {
         root: { x: 24, y: 20 },
         end: { x: 64, y: 78 },

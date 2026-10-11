@@ -11,27 +11,40 @@ page.on('console', (m) => {
 try {
   await page.goto(process.env.FRANKENTOWER_PLAYGROUND_URL ?? 'http://127.0.0.1:5174/');
   await page.locator('.main-header .save-status').waitFor({ timeout: 60000 });
-  if (await page.locator('.starter-weapons').count())
+  if (await page.locator('.starter-view').count())
     await page.getByRole('button', { name: /Heavy Club.*Choose/ }).click();
+  await page.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
   // Reuse this test's saved opening patient without discarding existing progress.
   assert.equal(
     await page.locator('.equipment-slot.filled').filter({ hasText: 'Heavy Club' }).count(),
     1,
     'Use an empty Playground test profile or this check’s Heavy Club patient.',
   );
+  await page.getByRole('button', { name: 'Close dialog' }).click();
   const soundToggle = page.getByRole('button', { name: /^(Mute sound|Enable sound)$/ });
   await soundToggle.click();
   await soundToggle.click();
   await page.getByText('Cloud save', { exact: true }).waitFor({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Enter floor 1' }).waitFor();
+  await page.getByRole('button', { name: 'To the arena →' }).waitFor();
   await page.getByText('Cloud save', { exact: true }).waitFor({ timeout: 30000 });
   await page.reload();
-  await page.getByRole('button', { name: 'Enter floor 1' }).waitFor({ timeout: 30000 });
+  await page.getByRole('button', { name: 'To the arena →' }).waitFor({ timeout: 30000 });
   assert.equal(await page.getByRole('dialog').count(), 0);
+  await page.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
   assert.equal(
     await page.locator('.equipment-slot.filled').filter({ hasText: 'Heavy Club' }).count(),
     1,
   );
+  await page.getByRole('button', { name: 'Close dialog' }).click();
+  assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight));
+  const safeArea = await page.evaluate(() => {
+    return Object.entries(window.RundotGameAPI.system.getSafeArea()).map(([side, amount]) => [
+      amount,
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue(`--safe-${side}`)),
+    ]);
+  });
+  assert.equal(safeArea.length, 4);
+  for (const [reported, applied] of safeArea) assert.equal(applied, reported);
   await page.screenshot({ path: artifact('frankentower-playground.png'), fullPage: true });
   assert.deepEqual(errors, []);
   console.log(

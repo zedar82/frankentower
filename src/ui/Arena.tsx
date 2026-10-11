@@ -11,9 +11,18 @@ import {
   type Pen,
 } from '../art/pixel';
 import { puppetLayout } from '../art/puppet';
-import { count } from '../game/anatomy';
 import type { Build } from '../game/types';
 import { prepareCanvas } from '../art/canvas';
+
+const displayStage = new Image();
+displayStage.src = `${import.meta.env.BASE_URL}ui/display-stage-v1.png`;
+let displayStageReady = false;
+void displayStage
+  .decode()
+  .then(() => {
+    displayStageReady = true;
+  })
+  .catch(() => {});
 
 function text(c: Pen, value: string, x: number, y: number, colour: string, size = 10) {
   c.font = `bold ${size}px monospace`;
@@ -150,7 +159,7 @@ export function Arena({
       const time = sim.time + (sim.done && !stopped ? (now - doneAt) / 1000 : 0);
       const small = canvas.current!.clientWidth < 680,
         w = small ? 400 : 640,
-        h = small ? 440 : 400;
+        h = (w * canvas.current!.clientHeight) / Math.max(1, canvas.current!.clientWidth);
       prepareCanvas(c!, w, h);
       c!.clearRect(0, 0, w, h);
       c!.save();
@@ -300,10 +309,12 @@ export function DressingRoom({
   build,
   floor,
   surgery = false,
+  embedded = false,
 }: {
   build: Build;
   floor: number;
   surgery?: boolean;
+  embedded?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null),
     latest = useRef(build);
@@ -350,16 +361,36 @@ export function DressingRoom({
     let frame = 0;
     function draw(now: number) {
       if (!canvas.current) return;
-      prepareCanvas(c!, 320, 340);
-      c!.clearRect(0, 0, 320, 340);
+      const height = embedded
+        ? (320 * canvas.current.clientHeight) / Math.max(1, canvas.current.clientWidth)
+        : 340;
+      const stageScale = embedded ? Math.min(1, height / 300) : 1;
+      const ground = embedded ? height - 83 * stageScale : 257;
+      prepareCanvas(c!, 320, height);
+      c!.clearRect(0, 0, 320, height);
       c!.imageSmoothingEnabled = false;
-      c!.drawImage(bg, 0, 0);
-      torchAt(now);
+      if (embedded) {
+        if (displayStageReady)
+          c!.drawImage(
+            displayStage,
+            160 - 126 * stageScale,
+            ground - 71 * stageScale,
+            252 * stageScale,
+            169 * stageScale,
+          );
+        else {
+          oval(c!, 160, ground + 13, 92, 23, '#4b3b42');
+          oval(c!, 160, ground + 7, 83, 17, '#4e3e48');
+        }
+      } else {
+        c!.drawImage(bg, 0, 0);
+        torchAt(now);
+      }
       const build = latest.current,
-        b = puppetBounds(build),
-        top = count(build, 'head') > 4 ? 84 : 58,
-        scale = Math.min(1.7, 176 / b.width, (257 - top) / -b.top);
-      monster(c!, build, 160 - ((b.left + b.right) * scale) / 2, 257, scale, {
+        b = puppetBounds(build, embedded),
+        top = 20,
+        scale = Math.min(3, 280 / b.width, (ground - top) / -b.top);
+      monster(c!, build, 160 - ((b.left + b.right) * scale) / 2, ground, scale, {
         time: reduced ? 0 : now / 1000,
       });
       frame = requestAnimationFrame(draw);
@@ -371,7 +402,7 @@ export function DressingRoom({
     }
     frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, [floor, surgery]);
+  }, [floor, surgery, embedded]);
   return (
     <canvas
       ref={canvas}

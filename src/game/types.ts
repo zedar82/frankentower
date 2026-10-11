@@ -1,4 +1,5 @@
-export const RULESET = 'frankentower-2';
+export const RULESET = 'frankentower-3';
+export const SATCHEL_CAPACITY = 8;
 export type Slot = 'hand' | 'head' | 'foot' | 'chest' | 'heart';
 export type ItemType = 'Weapon' | 'Wand' | 'Shield' | 'Helmet' | 'Armour' | 'Shoe' | 'Heart';
 export type Tag =

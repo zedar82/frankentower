@@ -91,6 +91,26 @@ try {
     0,
     'build panels leave the screen during combat',
   );
+  await page.setViewportSize({ width: 844, height: 342 });
+  await page.waitForTimeout(150);
+  assert.ok(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollHeight <= innerHeight &&
+        document.documentElement.scrollWidth <= innerWidth,
+    ),
+  );
+  const hiddenControls = await page.locator('.combat-controls button').evaluateAll((buttons) =>
+    buttons
+      .filter((button) => {
+        const r = button.getBoundingClientRect();
+        return r.top < 0 || r.left < 0 || r.right > innerWidth || r.bottom > innerHeight;
+      })
+      .map((button) => button.textContent),
+  );
+  assert.deepEqual(hiddenControls, [], 'combat controls fit the RUN landscape game frame');
+  await page.screenshot({ path: artifact('frankentower-pixel-arena-landscape.png') });
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Resume combat', exact: true }).first().click();
   await page.waitForTimeout(600);
   assert.notEqual(await page.locator('.battle-clock').innerText(), time);

@@ -1,0 +1,62 @@
+{
+  "registration": "Uniform source-square scaling, then canonical frame crop. No landmark correction or production asset changes.",
+  "measurements": [
+    {
+      "id": "head-toad",
+      "sourceDimensions": [
+        1024,
+        1024
+      ],
+      "bounds": {
+        "left": 5.9375,
+        "top": 12.625,
+        "right": 57.9375,
+        "bottom": 59.9375
+      },
+      "paintedPixels": 466665,
+      "outsideFramePixels": 0,
+      "outsideEnvelopePixels": 2856,
+      "outsideEnvelopePercent": 0.6120021857220919,
+      "rootAlpha": 255,
+      "crownAlpha": 0
+    },
+    {
+      "id": "arm-crustacean",
+      "sourceDimensions": [
+        1024,
+        1024
+      ],
+      "bounds": {
+        "left": 11.375,
+        "top": 10.5,
+        "right": 104.015625,
+        "bottom": 99.640625
+      },
+      "paintedPixels": 387155,
+      "outsideFramePixels": 64,
+      "outsideEnvelopePixels": 79069,
+      "outsideEnvelopePercent": 20.423086360759903,
+      "rootAlpha": 255,
+      "endAlpha": 255
+    },
+    {
+      "id": "leg-goat",
+      "sourceDimensions": [
+        1024,
+        1024
+      ],
+      "bounds": {
+        "left": 22.2890625,
+        "top": 0,
+        "right": 49.640625,
+        "bottom": 67.640625
+      },
+      "paintedPixels": 234596,
+      "outsideFramePixels": 0,
+      "outsideEnvelopePixels": 5332,
+      "outsideEnvelopePercent": 2.272843526743849,
+      "rootAlpha": 255,
+      "endAlpha": 255
+    }
+  ]
+}

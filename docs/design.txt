@@ -1,5 +1,15 @@
 Anatomy Autobattler
 
+UI update - October 2026
+
+Follow docs/ui-expectations.md for the full UI pass: deliberate phone and
+desktop layouts; no page or panel scrolling in the core game; expanded
+equipment workspaces with tabs/pages; scrolling reserved for the combat log.
+Limited satchel space is accepted, with eight spaces proposed initially.
+Capacity must apply to the final result of transfers and equipment displaced
+by surgery. This specification takes precedence over older UI layout
+suggestions and does not change item effects or shop prices.
+
 Prototype update — October 2026
 
 Shop stock refreshes for free on every new floor. The player may freeze stock

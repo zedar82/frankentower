@@ -1,0 +1,41 @@
+{
+  "head-rat": {
+    "width": 64,
+    "height": 64,
+    "rasterScale": 4,
+    "root": {
+      "x": 32,
+      "y": 56
+    },
+    "crown": {
+      "x": 32,
+      "y": 10.750626609442058
+    }
+  },
+  "arm-lizard": {
+    "width": 96,
+    "height": 112,
+    "rasterScale": 4,
+    "root": {
+      "x": 24,
+      "y": 20
+    },
+    "end": {
+      "x": 64,
+      "y": 78
+    }
+  },
+  "leg-fur": {
+    "width": 32,
+    "height": 72,
+    "rasterScale": 4,
+    "root": {
+      "x": 16,
+      "y": 10
+    },
+    "end": {
+      "x": 16,
+      "y": 65
+    }
+  }
+}

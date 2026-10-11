@@ -1,0 +1,68 @@
+{
+  "note": "Measured manually from source drawings. Normalized coordinates describe actual graft/grip/sole, not assumed prompt coordinates. Leg remains a rejected candidate because generation baked a thin frame.",
+  "parts": [
+    {
+      "id": "head-toad-detail-v3",
+      "replace": "head-rat",
+      "width": 64,
+      "height": 64,
+      "root": [
+        0.5,
+        0.92
+      ],
+      "pin": [
+        32,
+        56
+      ],
+      "crown": [
+        0.5,
+        0.128
+      ],
+      "paintedWidth": 52
+    },
+    {
+      "id": "arm-crustacean",
+      "replace": "arm-lizard",
+      "width": 96,
+      "height": 112,
+      "root": [
+        0.292,
+        0.255
+      ],
+      "pin": [
+        24,
+        20
+      ],
+      "end": [
+        0.855,
+        0.725
+      ],
+      "target": [
+        64,
+        78
+      ]
+    },
+    {
+      "id": "leg-goat",
+      "replace": "leg-fur",
+      "width": 32,
+      "height": 72,
+      "root": [
+        0.5,
+        0.14
+      ],
+      "pin": [
+        16,
+        10
+      ],
+      "end": [
+        0.5,
+        0.935
+      ],
+      "target": [
+        16,
+        65
+      ]
+    }
+  ]
+}

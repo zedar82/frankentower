@@ -1,0 +1,26 @@
+[
+  {
+    "id": "head-toad-detail-v3",
+    "sourceScale": 0.055793991416309016,
+    "sourceRotation": 0,
+    "outsideFramePixels": 0,
+    "paintedPixels": 578077,
+    "outsideFramePercent": 0
+  },
+  {
+    "id": "arm-crustacean",
+    "sourceScale": 0.0938161642562955,
+    "sourceRotation": 0.2714358123945312,
+    "outsideFramePixels": 1815,
+    "paintedPixels": 387155,
+    "outsideFramePercent": 0.4688044839921995
+  },
+  {
+    "id": "leg-goat",
+    "sourceScale": 0.06756092767295598,
+    "sourceRotation": 0,
+    "outsideFramePixels": 0,
+    "paintedPixels": 234596,
+    "outsideFramePercent": 0
+  }
+]

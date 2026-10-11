@@ -58,7 +58,7 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'polyhead',
     name: 'Polycephalic conversion',
-    text: 'Remove 2 Hands; add 2 Heads. Removed equipment returns to the tray.',
+    text: 'Remove 2 Hands; add 2 Heads. Removed equipment returns to the satchel.',
     quote: 'Let us make more room for your thinking.',
     price: 12,
     remove: [{ slot: 'hand', count: 2 }],
@@ -68,7 +68,7 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'amputate',
     name: 'Arm consolidation',
-    text: 'Remove 1 Hand. −80 HP, −20 load. Equipment returns to the tray.',
+    text: 'Remove 1 Hand. −80 HP, −20 load. Equipment returns to the satchel.',
     quote: 'Sometimes the best addition is a subtraction.',
     price: 0,
     remove: [{ slot: 'hand', count: 1 }],

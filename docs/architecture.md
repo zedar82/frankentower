@@ -4,6 +4,13 @@ The game has one deterministic combat engine for the player, enemies, and
 guardians. React renders it and dispatches build actions; the game modules do
 not import React, browser APIs, audio, persistence, or telemetry.
 
+Presentation follows [UI expectations](ui-expectations.md):
+deliberate phone/desktop layouts, core screens and expanded workspaces without
+scrolling, and tabs/pages for excess content. Keep presentation/navigation in
+React. Satchel capacity belongs in validated inventory and surgery
+operations, including final occupancy during swaps and displaced equipment;
+it must not be enforced only by hiding or disabling UI elements.
+
 ## Where rules belong
 
 | Module                                                 | Responsibility                                                     |
@@ -28,6 +35,8 @@ not import React, browser APIs, audio, persistence, or telemetry.
 | `game/run.ts`                                          | Starting, advancing, finishing, retiring, and run records          |
 | `ui/hooks/useItemDrag.ts`                              | Pointer/native drag lifecycle and listener cleanup                 |
 | `ui/Shop.tsx`, `ItemDetails.tsx`, `PatientSummary.tsx` | Presentation and inspection                                        |
+| `ui/Equipment.tsx`, `Surgery.tsx`, `Reference.tsx` | Expanded equipment, procedure previews, help/history/catalogue/reports |
+| `ui/Paging.tsx`, `Modal.tsx` | Viewport-aware text/grid pages and focused bounded workspaces |
 | `save-validation.ts`, `save-writer.ts`                 | Save boundary validation and serialized retry/coalescing           |
 | `platform.ts`                                          | RUN persistence and host integration                               |
 

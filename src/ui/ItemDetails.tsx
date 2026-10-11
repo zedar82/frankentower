@@ -1,9 +1,18 @@
+import { useState } from 'react';
 import { ITEM_MAP } from '../game/content';
-import { LEVEL_SCALE, SLOT_LABEL, usable } from '../game/anatomy';
-import { combine, combineCandidate, equip, sell, unequip } from '../game/inventory';
+import { LEVEL_SCALE, SLOT_LABEL } from '../game/anatomy';
+import {
+  combine,
+  combineCandidate,
+  itemMoveReason,
+  purchaseReason,
+  sell,
+  unequip,
+} from '../game/inventory';
 import type { Item, Run } from '../game/types';
 import { Modal } from './Modal';
 import { Icon } from './Icon';
+import { PagedText, Tabs } from './Paging';
 
 interface Props {
   run: Run;
@@ -12,129 +21,110 @@ interface Props {
   onPurchase(index: number): void;
   onEquip(): void;
   onChange(event?: string): void;
+  onTargets(item: Item): void;
 }
-export function ItemDetails({ run, selected, onClose, onPurchase, onEquip, onChange }: Props) {
-  const def = ITEM_MAP[selected.defId],
-    offerIndex = run.offers.findIndex((x) => x?.uid === selected.uid),
-    ownerPart = run.build.parts.find((p) => p.item?.uid === selected.uid),
-    inTray = run.stash.some((x) => x.uid === selected.uid);
+
+export function ItemInspector({
+  run,
+  selected,
+  onClose,
+  onPurchase,
+  onEquip,
+  onChange,
+  onTargets,
+}: Props) {
+  const [section, setSection] = useState<'Rules' | 'Signature' | 'About'>('Rules');
+  const def = ITEM_MAP[selected.defId];
+  const offerIndex = run.offers.findIndex((item) => item?.uid === selected.uid);
+  const owner = run.build.parts.find((part) => part.item?.uid === selected.uid);
+  const inTray = run.stash.some((item) => item.uid === selected.uid);
+  const reason =
+    offerIndex >= 0
+      ? purchaseReason(run, offerIndex)
+      : owner
+        ? itemMoveReason(run, selected.uid)
+        : null;
+  const text =
+    section === 'Rules'
+      ? `${def.text}${selected.level > 1 ? `\n\nDamage, healing, Shield, status amounts and passive stats are ×${LEVEL_SCALE[selected.level]}. Timers and cooldown reductions retain their listed values.` : ''}${def.requires ? `\n\nRequires ${def.requires.count} ${SLOT_LABEL[def.requires.slot]} slots.` : ''}`
+      : section === 'Signature'
+        ? `Level 3 signature${selected.level === 3 ? ' — active' : ' — unlock by combining'}\n\n${def.signature}`
+        : `${def.type} · ${SLOT_LABEL[def.slot]} equipment\nRarity ${def.rarity} · Level ${selected.level}\nTags: ${def.tags.join(', ') || 'None'}\n\nTwo identical items at the same level combine into the next level. Each instance activates once per causal branch; separate branches are independent.`;
+  const act = (action: () => boolean, event: string) => {
+    if (!action()) return;
+    onChange(event);
+    onEquip();
+    onClose();
+  };
   return (
-    <Modal title={def.name} onClose={() => onClose()}>
+    <div className="item-inspector">
       <div className="item-detail-art">
-        <Icon name={def.icon} size={76} variant={def.id} />
+        <Icon name={def.icon} size={64} variant={def.id} />
         <div>
-          <span className="stars">{'★'.repeat(def.rarity)}</span>
-          <p>
-            {def.type} · {SLOT_LABEL[def.slot]} slot
-          </p>
-          <strong>Level {selected.level}</strong>
+          <h3>{def.name}</h3>
+          <span>
+            {SLOT_LABEL[def.slot]} · Lv{selected.level} · {'★'.repeat(def.rarity)}
+          </span>
         </div>
       </div>
-      <div className="tag-list">
-        {def.tags.map((t) => (
-          <span key={t}>{t}</span>
-        ))}
-      </div>
-      <p className="item-rules">{def.text}</p>
-      {selected.level > 1 && (
-        <p className="mint">
-          Damage, healing, Shield, status amounts and passive stats are ×
-          {LEVEL_SCALE[selected.level]}. Timers and cooldown reductions retain their listed values.
+      <Tabs<typeof section>
+        label="Item information"
+        value={section}
+        values={['Rules', 'Signature', 'About']}
+        onChange={setSection}
+      />
+      <PagedText key={section} text={text} label={section} />
+      {reason && (
+        <p className="action-reason" role="status">
+          {reason}
         </p>
       )}
-      <div className={`signature ${selected.level === 3 ? 'unlocked' : ''}`}>
-        <span className="eyebrow">LEVEL 3 SIGNATURE</span>
-        <p>{def.signature}</p>
-      </div>
-      {def.requires && (
-        <p className={usable(run.build, selected) ? 'mint' : 'blood'}>
-          Requires {def.requires.count} {SLOT_LABEL[def.requires.slot]} slots.{' '}
-          {usable(run.build, selected)
-            ? 'Your anatomy qualifies.'
-            : 'Add the required anatomy before equipping.'}
-        </p>
-      )}
-      {offerIndex >= 0 ? (
-        <button
-          className="primary full"
-          disabled={run.phase !== 'build' || run.gold < def.price}
-          onClick={() => onPurchase(offerIndex)}
-        >
-          Buy for {def.price} gold
-        </button>
-      ) : (
-        <>
-          <div className="detail-actions">
-            {combineCandidate(run, selected) && (
-              <button
-                disabled={run.phase !== 'build'}
-                onClick={() => {
-                  combine(run, selected.uid);
-                  onClose();
-                  onEquip();
-                  onChange('item_combined');
-                }}
-              >
-                Combine duplicates → Lv{selected.level + 1}
-              </button>
-            )}
-            {ownerPart && (
-              <button
-                disabled={run.phase !== 'build'}
-                onClick={() => {
-                  unequip(run, ownerPart.uid);
-                  onClose();
-                  onChange();
-                }}
-              >
-                Move to tray
-              </button>
-            )}
-            {inTray && (
-              <button
-                disabled={run.phase !== 'build'}
-                onClick={() => {
-                  sell(run, selected.uid);
-                  onClose();
-                  onChange('item_sold');
-                }}
-              >
-                Sell for {Math.floor(def.price * 0.5 * [0, 1, 2, 4][selected.level])} gold
-              </button>
-            )}
-          </div>
-          {inTray && (
-            <>
-              <h3>Choose a {SLOT_LABEL[def.slot]} slot</h3>
-              <div className="equip-targets">
-                {run.build.parts
-                  .filter((p) => p.slot === def.slot)
-                  .map((p, i) => (
-                    <button
-                      key={p.uid}
-                      disabled={run.phase !== 'build' || !usable(run.build, selected)}
-                      onClick={() => {
-                        equip(run, selected.uid, p.uid);
-                        onClose();
-                        onEquip();
-                        onChange('item_equipped');
-                      }}
-                    >
-                      {SLOT_LABEL[p.slot]} {i + 1}
-                      <small>
-                        {p.item ? `Swap ${ITEM_MAP[p.item.defId].name}` : 'Empty socket'}
-                      </small>
-                    </button>
-                  ))}
-              </div>
-            </>
+      {(offerIndex >= 0 || owner || inTray) && (
+        <div className="detail-actions">
+          {offerIndex >= 0 && (
+            <button className="primary" disabled={!!reason} onClick={() => onPurchase(offerIndex)}>
+              Buy for {def.price} gold
+            </button>
           )}
-        </>
+          {run.phase === 'build' && (
+            <button onClick={() => onTargets(selected)}>
+              {offerIndex >= 0 ? 'Buy into slot…' : 'Equip / swap…'}
+            </button>
+          )}
+          {owner && (
+            <button
+              disabled={!!reason}
+              onClick={() => act(() => unequip(run, owner.uid), 'item_unequipped')}
+            >
+              Move to satchel
+            </button>
+          )}
+          {inTray && (
+            <button
+              disabled={run.phase !== 'build'}
+              onClick={() => act(() => sell(run, selected.uid), 'item_sold')}
+            >
+              Sell for {Math.floor(def.price * 0.5 * [0, 1, 2, 4][selected.level])} gold
+            </button>
+          )}
+          {combineCandidate(run, selected) && (
+            <button
+              disabled={run.phase !== 'build'}
+              onClick={() => act(() => combine(run, selected.uid), 'item_combined')}
+            >
+              Combine → Lv{selected.level + 1}
+            </button>
+          )}
+        </div>
       )}
-      <p className="fine-print">
-        Two identical items at the same level combine into the next level. Each item instance can
-        activate once per causal branch; separate branches are independent.
-      </p>
+    </div>
+  );
+}
+
+export function ItemDetails(props: Props) {
+  return (
+    <Modal title="Equipment inspection" onClose={props.onClose}>
+      <ItemInspector {...props} />
     </Modal>
   );
 }

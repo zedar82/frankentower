@@ -1,6 +1,6 @@
 import { ITEM_MAP } from './content';
 import { equipped, stats, usable } from './anatomy';
-import type { Item, Part, Run } from './types';
+import { SATCHEL_CAPACITY, type Item, type Part, type Run } from './types';
 
 type ItemLocation =
   | { kind: 'offer'; index: number; item: Item }
@@ -16,76 +16,78 @@ function locateItem(run: Run, uid: string): ItemLocation | undefined {
   if (part?.item) return { kind: 'equipped', part, item: part.item };
 }
 
-export function canMoveItem(run: Run, uid: string, partUid?: string) {
-  if (run.phase !== 'build') return false;
+export function itemMoveReason(run: Run, uid: string, partUid?: string): string | null {
+  if (run.phase !== 'build') return 'Equipment can only be changed between fights.';
   const location = locateItem(run, uid);
-  if (!location) return false;
+  if (!location) return 'This item is no longer available.';
   const def = ITEM_MAP[location.item.defId];
-  if (location.kind === 'offer' && run.gold < def.price) return false;
-  if (!partUid) return true;
-  const part = run.build.parts.find((part) => part.uid === partUid);
-  return !!part && part.slot === def.slot && usable(run.build, location.item);
+  if (location.kind === 'offer' && run.gold < def.price) return 'Insufficient gold.';
+  const part = partUid ? run.build.parts.find((part) => part.uid === partUid) : undefined;
+  if (partUid && (!part || part.slot !== def.slot)) return 'Choose a matching equipment slot.';
+  if (part && !usable(run.build, location.item))
+    return 'Your anatomy does not meet this item’s requirements.';
+  if (location.kind === 'equipped' && location.part.uid === partUid)
+    return 'Already equipped here.';
+  if (location.kind === 'stash' && !part) return 'Already in the satchel.';
+  const finalSize =
+    run.stash.length - (location.kind === 'stash' ? 1 : 0) + (part ? (part.item ? 1 : 0) : 1);
+  return finalSize > SATCHEL_CAPACITY
+    ? 'Satchel full. Equip, combine, or sell an item to make room.'
+    : null;
+}
+
+export function canMoveItem(run: Run, uid: string, partUid?: string) {
+  return itemMoveReason(run, uid, partUid) === null;
 }
 
 export function moveItem(run: Run, uid: string, partUid?: string) {
   if (!canMoveItem(run, uid, partUid)) return false;
   const location = locateItem(run, uid)!;
-  if (location.kind === 'equipped' && location.part.uid === partUid) return false;
-  if (location.kind === 'stash' && !partUid) return false;
-  if (location.kind === 'offer' && !buy(run, location.index)) return false;
-  if (location.kind === 'equipped') {
-    // Clamp HP after the complete move, not halfway through an equipment swap.
-    delete location.part.item;
-    run.stash.push(location.item);
+  const part = partUid ? run.build.parts.find((part) => part.uid === partUid)! : undefined;
+  // Validate final occupancy before spending or mutating. No intermediate stash overflow.
+  if (location.kind === 'offer') {
+    run.gold -= ITEM_MAP[location.item.defId].price;
+    run.purchases++;
+    run.offers[location.index] = null;
   }
-  if (partUid) return equip(run, uid, partUid);
+  if (location.kind === 'stash') run.stash = run.stash.filter((item) => item.uid !== uid);
+  if (location.kind === 'equipped') delete location.part.item;
+  if (part) {
+    if (part.item) run.stash.push(part.item);
+    part.item = location.item;
+  } else run.stash.push(location.item);
+  // Clamp only after the complete operation, including HP equipment swaps.
   run.hp = Math.min(run.hp, stats(run.build).maxHp);
   return true;
 }
 
+export function purchaseDestination(run: Run, index: number) {
+  const offer = run.offers[index];
+  return offer && usable(run.build, offer)
+    ? run.build.parts.find((part) => part.slot === ITEM_MAP[offer.defId].slot && !part.item)?.uid
+    : undefined;
+}
+export function purchaseReason(run: Run, index: number) {
+  const offer = run.offers[index];
+  return offer
+    ? itemMoveReason(run, offer.uid, purchaseDestination(run, index))
+    : 'Already purchased.';
+}
 export function purchaseItem(run: Run, index: number) {
   const offer = run.offers[index];
-  if (!offer || !buy(run, index)) return false;
-  const empty = run.build.parts.find(
-    (part) => part.slot === ITEM_MAP[offer.defId].slot && !part.item,
-  );
-  if (empty && usable(run.build, offer)) equip(run, offer.uid, empty.uid);
-  return true;
+  return !!offer && moveItem(run, offer.uid, purchaseDestination(run, index));
 }
 
 export function buy(run: Run, index: number) {
-  if (run.phase !== 'build') return false;
   const item = run.offers[index];
-  if (!item) return false;
-  const def = ITEM_MAP[item.defId];
-  if (run.gold < def.price) return false;
-  run.gold -= def.price;
-  run.purchases++;
-  run.stash.push(item);
-  run.offers[index] = null;
-  return true;
+  return !!item && moveItem(run, item.uid);
 }
 export function equip(run: Run, itemUid: string, partUid: string) {
-  if (run.phase !== 'build') return false;
-  const index = run.stash.findIndex((i) => i.uid === itemUid),
-    part = run.build.parts.find((p) => p.uid === partUid);
-  const item = run.stash[index];
-  if (!item || !part || ITEM_MAP[item.defId].slot !== part.slot || !usable(run.build, item))
-    return false;
-  run.stash.splice(index, 1);
-  if (part.item) run.stash.push(part.item);
-  part.item = item;
-  run.hp = Math.min(run.hp, stats(run.build).maxHp);
-  return true;
+  return run.stash.some((item) => item.uid === itemUid) && moveItem(run, itemUid, partUid);
 }
 export function unequip(run: Run, partUid: string) {
-  if (run.phase !== 'build') return;
   const part = run.build.parts.find((p) => p.uid === partUid);
-  if (part?.item) {
-    run.stash.push(part.item);
-    delete part.item;
-    run.hp = Math.min(run.hp, stats(run.build).maxHp);
-  }
+  return !!part?.item && moveItem(run, part.item.uid);
 }
 export function sell(run: Run, itemUid: string) {
   if (run.phase !== 'build') return false;
@@ -117,5 +119,6 @@ export function combine(run: Run, itemUid: string) {
     if (p.item?.uid === donor.uid) delete p.item;
   });
   target.level++;
+  run.hp = Math.min(run.hp, stats(run.build).maxHp);
   return true;
 }

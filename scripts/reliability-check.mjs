@@ -18,10 +18,44 @@ try {
   await page.getByRole('button', { name: 'Reset damaged records…' }).waitFor();
   assert.equal(await page.evaluate(() => localStorage.getItem('frankentower-save-v1')), '{broken');
   await page.getByRole('button', { name: 'Reset damaged records…' }).click();
+  // Recovery and destructive confirmation remain bounded at the same core UI sizes.
+  for (const [width, height] of [
+    [360, 640],
+    [844, 390],
+    [844, 342],
+    [320, 568],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await page.waitForTimeout(100);
+    const overflow = await page.evaluate(() => {
+      const root = document.querySelector('.boot-screen');
+      return [root, ...root.querySelectorAll('*')]
+        .filter(
+          (element) =>
+            element.clientHeight > 0 &&
+            !element.closest('.text-measure') &&
+            (element.scrollHeight > element.clientHeight + 2 ||
+              element.scrollWidth > element.clientWidth + 2),
+        )
+        .map((element) => element.className || element.tagName);
+    });
+    assert.deepEqual(overflow, [], `recovery confirmation ${width}x${height}`);
+    assert.ok(
+      await page
+        .getByRole('heading', { name: 'Permanently delete all patient records?' })
+        .isVisible(),
+    );
+    assert.ok(await page.getByRole('button', { name: 'Confirm permanent reset' }).isVisible());
+    assert.equal(
+      await page.evaluate(() => localStorage.getItem('frankentower-save-v1')),
+      '{broken',
+    );
+  }
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page.getByRole('button', { name: 'Keep records' }).click();
   assert.equal(await page.evaluate(() => localStorage.getItem('frankentower-save-v1')), '{broken');
   await page.getByRole('button', { name: 'Reset damaged records…' }).click();
-  await page.getByRole('button', { name: 'Confirm reset' }).click();
+  await page.getByRole('button', { name: 'Confirm permanent reset' }).click();
   await page.getByRole('button', { name: /Butcher’s Knife.*Choose/ }).click();
   await page.getByRole('button', { name: 'To the arena →' }).waitFor();
   await page.getByText('Local save', { exact: true }).waitFor();
@@ -56,7 +90,9 @@ try {
   });
   await page.getByRole('button', { name: 'Enable sound', exact: true }).click();
   await page.getByText('Unsaved progress · retrying', { exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await page.getByRole('button', { name: 'Retry save', exact: true }).click();
+  await page.getByRole('button', { name: 'Close dialog' }).click();
   await page.getByText('Local save', { exact: true }).waitFor();
   await page.reload();
   await page.getByRole('button', { name: 'To the arena →' }).waitFor();

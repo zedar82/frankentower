@@ -1,0 +1,24 @@
+﻿{
+  "date": "2026-10-11",
+  "provider": "Built-in image_gen, before the RUN switch",
+  "assets": [
+    {
+      "file": "public/ui/quartermaster-scene-v1.png",
+      "originalImage": "exec-247b9581-32c9-4a2c-bc93-f83df83be63e.png",
+      "prompt": "Use case: stylized-concept. Asset type: reusable in-game UI background for FRANKENTOWER, a grotesque cartoon pixel-art medieval monster-building dungeon game. Create a richly detailed 1536x1024 landscape FRONT-ON orthographic quartermaster workshop wall and counter, with no character and no UI/text. Dark charcoal rough stone dungeon wall, old reddish brown timbers, rusty iron corner brackets, rivets, hanging chain lengths along outer left/right edges, two small warm orange torch sconces towards the sides. Bottom one fifth is a broad worn wooden counter with a few small candles, bottles and a skull tucked near far left/right corners. Keep the central 75% very dark, uncluttered and readable as backing for live gameplay and UI content. Strong handcrafted game pixel-art style with coherent stepped pixels, crisp ink outlines, granular material shading, muted palette, no blur, no smooth vector gradients, no modern clean rectangle panels. The artwork must feel like a complete moody game setting, warm candlelit stone, iron and wood. No frames within the scene, no labels, no icons, no weapons or body parts, no baked interface, no text, no watermark. The scene should crop comfortably at different phone and desktop aspect ratios.",
+      "promptRecoveredFrom": "output/art-direction/run-generation-study/prompts.json: dungeon-background"
+    },
+    {
+      "file": "public/ui/parchment-frame-v1.png",
+      "originalImage": "exec-dd0004c0-51f6-4eea-a337-2f7d7bf31f04.png",
+      "originalPrompt": null,
+      "note": "Complete original prompt was not persisted. Retained accepted source is the style exemplar for future RUN generation."
+    },
+    {
+      "file": "public/ui/iron-frame-v1.png",
+      "originalImage": "exec-27d41f28-ad1d-4e75-93c3-05f9b3c8926f.png",
+      "originalPrompt": null,
+      "note": "Complete original prompt was not persisted. Retained accepted source is the style exemplar for future RUN generation."
+    }
+  ]
+}

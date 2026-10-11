@@ -1,184 +1,267 @@
-import type { ReactNode } from 'react';
-import type { Item, Run, Stats } from '../game/types';
+import { useState } from 'react';
+import type { Item, Run, Slot, Stats } from '../game/types';
 import { ITEM_MAP } from '../game/content';
-import { identity, SLOT_LABEL } from '../game/anatomy';
-import { canMoveItem } from '../game/inventory';
+import { archetypes, SLOT_LABEL } from '../game/anatomy';
+import { purchaseReason } from '../game/inventory';
 import { rerollCost, upgradeCost, RECOVERY_COST } from '../game/shop';
 import { Icon } from './Icon';
 import { DressingRoom } from './Arena';
+import { EquipmentOverview } from './Equipment';
+import { PageControls, PagedText, PagedList, Tabs, useDisplayMode } from './Paging';
 import type { useItemDrag } from './hooks/useItemDrag';
 
 export type ShopAction = 'reroll' | 'upgrade' | 'recover' | 'freeze';
 interface Props {
   run: Run;
   stats: Stats;
-  slots: ReactNode;
   drag: ReturnType<typeof useItemDrag>;
-  renderItem(item: Item): ReactNode;
   onInspect(item: Item): void;
   onPurchase(index: number): void;
   onAction(action: ShopAction): void;
   onCatalogue(): void;
   onFight(): void;
+  onManage(slot?: Slot): void;
+  onBuild(): void;
 }
 
 export function Shop({
   run,
   stats: s,
-  slots,
   drag,
-  renderItem,
   onInspect,
   onPurchase,
   onAction,
   onCatalogue,
   onFight,
+  onManage,
+  onBuild,
 }: Props) {
+  const { compact, short } = useDisplayMode();
+  const [view, setView] = useState<'Patient' | 'Stock' | 'Gear' | 'Services'>('Stock');
+  const [offerPage, setOfferPage] = useState(0);
+  const show = (name: typeof view) =>
+    compact
+      ? view === name
+      : name === 'Services'
+        ? view === 'Services'
+        : name === 'Stock'
+          ? view !== 'Services'
+          : true;
+  const service = (label: string, cost: number, action: ShopAction, reason: string | null) => (
+    <div className="service-option">
+      <button disabled={!!reason} onClick={() => onAction(action)}>
+        {label} <span>{cost} gold</span>
+      </button>
+      <small>
+        {reason ??
+          (action === 'recover'
+            ? 'Recover 50% maximum HP.'
+            : action === 'upgrade'
+              ? 'Improve available rarity and replace stock.'
+              : 'Replace all current offers.')}
+      </small>
+    </div>
+  );
   return (
-    <>
-      <div className="shop-patient">
-        <div className="patient-heading">
-          <div>
-            <span className="eyebrow">{identity(run.build)}</span>
-            <h1>{run.build.name}</h1>
-            <div className="shop-health">
-              HP {Math.ceil(run.hp)} / {s.maxHp}
-              <div className="meter health">
-                <i style={{ width: Math.max(0, run.hp / s.maxHp) * 100 + '%' }} />
-              </div>
-              <span>
-                MP {s.maxMana} / {s.maxMana}
-              </span>
-            </div>
-          </div>
-          <div className="battle-heading">
-            <span className="eyebrow">THE LOWER KEEP</span>
-            <span>READY</span>
-            <span className={s.efficiency < 1 ? 'overload' : ''}>
-              Circulation {Math.round(s.efficiency * 100)}%
-            </span>
-          </div>
-        </div>
-        <div className="anatomy-scene">
-          <DressingRoom build={run.build} floor={run.floor} />
-          <div className="slot-groups">{slots}</div>
-        </div>
-        <p className="socket-hint">
-          Drag equipment to a matching slot or into your satchel. Select an item to inspect it.
-        </p>
+    <main className={`shop-screen ${compact ? 'compact-shop' : 'desktop-shop'}`}>
+      <div className="station-title">
+        <span className="eyebrow">FLOOR {run.floor} · QUARTERMASTER</span>
+        <h2>Take what you need.</h2>
       </div>
-      <div
-        className={
-          'tray satchel ' + (drag.dragged && canMoveItem(run, drag.dragged.uid) ? 'drop-ready' : '')
-        }
-        {...drag.dropProps()}
-      >
-        <div className="tray-heading">
-          <span className="eyebrow">
-            SATCHEL · {run.stash.length} / {Math.max(8, run.stash.length)}
-          </span>
-          <button className="quiet" onClick={() => onCatalogue()}>
-            Item index ↗
-          </button>
-        </div>
-        <div className="tray-items">
-          {run.stash.map(renderItem)}
-          {Array.from({ length: Math.max(0, 8 - run.stash.length) }, (_, i) => (
-            <div className="satchel-empty" key={i} aria-hidden="true" />
-          ))}
-        </div>
-      </div>
-      <div className="quartermaster">
-        <div className="station-title">
-          <div>
-            <span className="eyebrow">FLOOR {run.floor} · QUARTERMASTER</span>
-            <h2>Take what you need.</h2>
-          </div>
-          <span className="shop-tier">{'◆'.repeat(run.shopTier)}</span>
-        </div>
-        <div className="shop-grid">
-          {run.offers.map((offer, i) =>
-            offer ? (
-              <div
-                {...drag.dragProps(offer)}
-                className={'shop-card rarity-' + ITEM_MAP[offer.defId].rarity}
-                key={offer.uid}
+      {compact && (
+        <Tabs<typeof view>
+          label="Shop views"
+          value={view}
+          values={['Patient', 'Stock', 'Gear', 'Services']}
+          onChange={setView}
+        />
+      )}
+      <div className="shop-stage">
+        {show('Patient') && (
+          <>
+            <section className="patient-paper parchment">
+              <span className="eyebrow">PATIENT RECORD</span>
+              <button
+                className="patient-name"
+                aria-label={`Inspect ${run.build.name}`}
+                onClick={onBuild}
               >
-                <button
-                  className="card-info"
-                  onClick={() => onInspect(offer)}
-                  aria-label={'Inspect ' + ITEM_MAP[offer.defId].name}
-                >
-                  <div className="item-art">
-                    <Icon name={ITEM_MAP[offer.defId].icon} size={58} variant={offer.defId} />
+                <div className="patient-identity">
+                  <h1>{run.build.name}</h1>
+                  <small className={`patient-circulation ${s.efficiency < 1 ? 'overload' : ''}`}>
+                    Circulation {Math.round(s.efficiency * 100)}%
+                  </small>
+                </div>
+                <span>Inspect ↗</span>
+              </button>
+              <p>{archetypes(run.build)[0]}</p>
+              <div className="patient-meters">
+                <div>
+                  HP{' '}
+                  <strong>
+                    {Math.ceil(run.hp)} / {s.maxHp}
+                  </strong>
+                  <div className="meter health">
+                    <i style={{ width: `${Math.max(0, run.hp / s.maxHp) * 100}%` }} />
                   </div>
-                  <h3>{ITEM_MAP[offer.defId].name}</h3>
-                  <span className="offer-type">
-                    {SLOT_LABEL[ITEM_MAP[offer.defId].slot]} · {ITEM_MAP[offer.defId].type}
-                  </span>
-                  <p>{ITEM_MAP[offer.defId].text}</p>
-                </button>
-                <button
-                  className="buy-button"
-                  disabled={run.phase !== 'build' || run.gold < ITEM_MAP[offer.defId].price}
-                  onClick={() => onPurchase(i)}
-                  aria-label={'Buy ' + ITEM_MAP[offer.defId].name}
+                </div>
+                <div>
+                  MP{' '}
+                  <strong>
+                    {s.maxMana} / {s.maxMana}
+                  </strong>
+                  <div className="meter mana">
+                    <i style={{ width: '100%' }} />
+                  </div>
+                </div>
+                <span className={s.efficiency < 1 ? 'overload' : ''}>
+                  Circulation <strong>{Math.round(s.efficiency * 100)}%</strong>
+                </span>
+              </div>
+            </section>
+            <div className="shop-creature">
+              <DressingRoom build={run.build} floor={run.floor} embedded />
+            </div>
+          </>
+        )}
+        {show('Gear') && <EquipmentOverview run={run} onManage={onManage} />}
+        {show('Stock') && (
+          <section className="stock-counter" aria-label="Quartermaster stock">
+            <div className="panel-heading">
+              <h3>Quartermaster</h3>
+              <span>
+                Tier {run.shopTier} · {run.shopFrozen ? 'Frozen' : 'Fresh each floor'}
+              </span>
+              <button onClick={() => onAction('freeze')} aria-pressed={run.shopFrozen}>
+                {run.shopFrozen ? 'Unfreeze stock' : 'Freeze stock'}
+              </button>
+            </div>
+            <p className="stock-state">
+              Tier {run.shopTier} · {run.shopFrozen ? 'Frozen stock' : 'Fresh each floor'}
+            </p>
+            <div className="shop-grid">
+              {run.offers.map((offer, index) => (
+                <div
+                  key={offer?.uid ?? `sold-${index}`}
+                  className="offer-position"
+                  hidden={compact && index !== offerPage}
                 >
-                  {ITEM_MAP[offer.defId].price} <span>●</span>
-                </button>
-              </div>
-            ) : (
-              <div className="sold-card" key={'sold-' + i}>
-                —
-              </div>
-            ),
-          )}
-        </div>
-        <div className="shop-stock-status">
-          <span>
-            {run.shopFrozen
-              ? 'Stock frozen · kept until you unfreeze'
-              : 'Fresh stock on every new floor'}
-          </span>
-          <button
-            className={'freeze-button' + (run.shopFrozen ? ' active' : '')}
-            aria-pressed={run.shopFrozen}
-            disabled={run.phase !== 'build'}
-            onClick={() => onAction('freeze')}
-          >
-            {run.shopFrozen ? 'Unfreeze stock' : 'Freeze stock'}
-          </button>
-        </div>
-        <div className="shop-actions">
-          <button
-            disabled={run.phase !== 'build' || run.gold < rerollCost(run)}
-            onClick={() => onAction('reroll')}
-          >
-            Fresh stock <span>{rerollCost(run)} ●</span>
-          </button>
-          <button
-            disabled={run.phase !== 'build' || run.shopTier >= 5 || run.gold < upgradeCost(run)}
-            onClick={() => onAction('upgrade')}
-          >
-            Better stock <span>{upgradeCost(run)} ●</span>
-          </button>
-          <button
-            className="recover-button"
-            disabled={run.gold < RECOVERY_COST || run.hp >= s.maxHp}
-            onClick={() => onAction('recover')}
-          >
-            Recover {RECOVERY_COST} ●
-          </button>
-        </div>
-        <div className="station-footer">
-          <span>
-            {run.gold} gold · Floor {run.floor}
-          </span>
-          <button className="primary" onClick={onFight}>
-            To the arena →
-          </button>
-        </div>
+                  {offer ? (
+                    <article
+                      className={`shop-card rarity-${ITEM_MAP[offer.defId].rarity}`}
+                      {...drag.dragProps(offer)}
+                    >
+                      <button
+                        className="card-info"
+                        aria-label={`Inspect ${ITEM_MAP[offer.defId].name}`}
+                        onClick={() => onInspect(offer)}
+                      >
+                        <Icon name={ITEM_MAP[offer.defId].icon} variant={offer.defId} size={64} />
+                        <div>
+                          <h3>{ITEM_MAP[offer.defId].name}</h3>
+                          <span className="offer-type">
+                            {SLOT_LABEL[ITEM_MAP[offer.defId].slot]} · {ITEM_MAP[offer.defId].type}
+                          </span>
+                        </div>
+                      </button>
+                      <PagedText text={ITEM_MAP[offer.defId].text} label="Effect" />
+                      {purchaseReason(run, index) && (
+                        <small className="purchase-reason">{purchaseReason(run, index)}</small>
+                      )}
+                      <button
+                        className="buy-button"
+                        aria-label={`Buy ${ITEM_MAP[offer.defId].name}`}
+                        disabled={!!purchaseReason(run, index)}
+                        onClick={() => onPurchase(index)}
+                      >
+                        <Icon name="gold" size={20} /> {ITEM_MAP[offer.defId].price} · Buy
+                      </button>
+                    </article>
+                  ) : (
+                    <div className="sold-card">
+                      <h3>Purchased</h3>
+                      <p>This position stays empty until stock refreshes.</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {compact && (
+              <PageControls label="Offer" page={offerPage} total={4} onPage={setOfferPage} />
+            )}
+          </section>
+        )}
+        {show('Services') && (
+          <section className="shop-services iron-panel">
+            <h3>Patient services</h3>
+            <PagedList
+              items={[
+                service(
+                  'Fresh stock',
+                  rerollCost(run),
+                  'reroll',
+                  run.gold < rerollCost(run) ? 'Insufficient gold.' : null,
+                ),
+                service(
+                  'Better stock',
+                  upgradeCost(run),
+                  'upgrade',
+                  run.shopTier >= 5
+                    ? 'Maximum shop tier reached.'
+                    : run.gold < upgradeCost(run)
+                      ? 'Insufficient gold.'
+                      : null,
+                ),
+                service(
+                  'Recover',
+                  RECOVERY_COST,
+                  'recover',
+                  run.hp >= s.maxHp
+                    ? 'Already at full health.'
+                    : run.gold < RECOVERY_COST
+                      ? 'Insufficient gold.'
+                      : null,
+                ),
+                <div className="service-option">
+                  <button
+                    aria-label={run.shopFrozen ? 'Unfreeze stock' : 'Freeze stock'}
+                    aria-pressed={run.shopFrozen}
+                    onClick={() => onAction('freeze')}
+                  >
+                    {run.shopFrozen ? 'Unfreeze stock' : 'Freeze stock'}
+                    <span>Free</span>
+                  </button>
+                  <small>
+                    Tier {run.shopTier} ·{' '}
+                    {run.shopFrozen
+                      ? 'Keep these offers on the next floor.'
+                      : 'New offers on each floor.'}
+                  </small>
+                </div>,
+                <div className="service-option">
+                  <button onClick={onCatalogue}>Equipment index →</button>
+                  <small>Browse all equipment.</small>
+                </div>,
+              ]}
+              rowHeight={short ? 64 : 80}
+              minWidth={220}
+              label="Services page"
+              render={(node, index) => <div key={index}>{node}</div>}
+            />
+          </section>
+        )}
       </div>
-    </>
+      <footer className="screen-actions">
+        <button onClick={() => onManage()}>Equipment & satchel ↗</button>
+        {!compact && (
+          <button onClick={() => setView(view === 'Services' ? 'Stock' : 'Services')}>
+            {view === 'Services' ? 'Back to stock' : 'Patient services'}
+          </button>
+        )}
+        <button className="primary" onClick={onFight}>
+          To the arena →
+        </button>
+      </footer>
+    </main>
   );
 }

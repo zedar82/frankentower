@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-11",
+  "model": "gemini-3.1-flash-image-preview",
+  "backgroundRemoval": "birefnet",
+  "quotedCredits": 615,
+  "jobs": [
+    {
+      "id": "dungeon-background",
+      "credits": 120,
+      "prompt": "Use case: stylized-concept. Asset type: reusable in-game UI background for FRANKENTOWER, a grotesque cartoon pixel-art medieval monster-building dungeon game. Create a richly detailed 1536x1024 landscape FRONT-ON orthographic quartermaster workshop wall and counter, with no character and no UI/text. Dark charcoal rough stone dungeon wall, old reddish brown timbers, rusty iron corner brackets, rivets, hanging chain lengths along outer left/right edges, two small warm orange torch sconces towards the sides. Bottom one fifth is a broad worn wooden counter with a few small candles, bottles and a skull tucked near far left/right corners. Keep the central 75% very dark, uncluttered and readable as backing for live gameplay and UI content. Strong handcrafted game pixel-art style with coherent stepped pixels, crisp ink outlines, granular material shading, muted palette, no blur, no smooth vector gradients, no modern clean rectangle panels. The artwork must feel like a complete moody game setting, warm candlelit stone, iron and wood. No frames within the scene, no labels, no icons, no weapons or body parts, no baked interface, no text, no watermark. The scene should crop comfortably at different phone and desktop aspect ratios.",
+      "aspectRatio": "3:2",
+      "references": [
+        "public/ui/quartermaster-scene-v1.png"
+      ]
+    },
+    {
+      "id": "head-rat",
+      "credits": 165,
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated interchangeable body-part sprite for FRANKENTOWER. Match the supplied reference's grotesque humorous cartoon pixel-art drawing, bold dark plum outline, chunky readable pixel clusters, soft frontal lighting and 3-tone shading. Front orthographic view. Square output. White empty background for clean removal. No labels, guides, border, cast shadow, equipment, torso or other limbs. Regenerate the same anatomical concept with a fresh drawing, keeping the exact reference pose, landmarks, silhouette envelope and compact proportions. Do not zoom to fill unused space. The intentionally empty canvas space is part of the geometry contract. Symmetry is welcome; do not invent extra eyes or mouths. Input image 1 is the existing rat head and style reference; image 2 is a geometry diagram only, not artwork to reproduce. Logical canvas 64x64: painted head stays between x=6 and58, y=8 and59. Neck mount centre exactly (32,56), neck seam width16, short straight stump. Flat crown mount top centre (32,12). Brown/tawny furry rat face, pink rounded ears and nose, exactly TWO balanced eyes, ONE mouth with two incisors; no tail, body or crown. Preserve the reference's front-facing expression and cropped neck, not a side-profile rat. Important normalized neck position: (50% width,87.5% height).",
+      "aspectRatio": "1:1",
+      "references": [
+        "public/grotesque/modular-v2/head-rat.png",
+        "output/art-direction/run-generation-study/guides/head-rat.png"
+      ],
+      "removeBackground": true
+    },
+    {
+      "id": "arm-lizard",
+      "credits": 165,
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated interchangeable body-part sprite for FRANKENTOWER. Match the supplied reference's grotesque humorous cartoon pixel-art drawing, bold dark plum outline, chunky readable pixel clusters, soft frontal lighting and 3-tone shading. Front orthographic view. Square output. White empty background for clean removal. No labels, guides, border, cast shadow, equipment, torso or other limbs. Regenerate the same anatomical concept with a fresh drawing, keeping the exact reference pose, landmarks, silhouette envelope and compact proportions. Do not zoom to fill unused space. The intentionally empty canvas space is part of the geometry contract. Symmetry is welcome; do not invent extra eyes or mouths. Input image 1 is the existing arm and style reference; image 2 is the geometry diagram only, not artwork to reproduce. Square logical canvas112x112, containing a96x112 arm frame offset8 units right. Shoulder pivot EXACTLY (32,20); shoulder seam is a round graft stump about22 units wide. ONE elbow around(43,48); grip centre EXACTLY(72,78). Upper arm bends DOWN AND RIGHT, forearm reaches down-right and ends in a compact CLOSED gripping fist with clear thumb and folded claw fingers around an imaginary VERTICAL handle. Moss-green/turquoise scales, no hand-held object. All silhouette inside x=18..84,y=8..96. The shoulder is at(28.57%,17.86%) and palm centre at(64.29%,69.64%) of the square. Leave margins and lower empty space, keep the same pose as reference.",
+      "aspectRatio": "1:1",
+      "references": [
+        "public/grotesque/modular-v2/arm-lizard.png",
+        "output/art-direction/run-generation-study/guides/arm-lizard.png"
+      ],
+      "removeBackground": true
+    },
+    {
+      "id": "leg-fur",
+      "credits": 165,
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated interchangeable body-part sprite for FRANKENTOWER. Match the supplied reference's grotesque humorous cartoon pixel-art drawing, bold dark plum outline, chunky readable pixel clusters, soft frontal lighting and 3-tone shading. Front orthographic view. Square output. White empty background for clean removal. No labels, guides, border, cast shadow, equipment, torso or other limbs. Regenerate the same anatomical concept with a fresh drawing, keeping the exact reference pose, landmarks, silhouette envelope and compact proportions. Do not zoom to fill unused space. The intentionally empty canvas space is part of the geometry contract. Symmetry is welcome; do not invent extra eyes or mouths. Input image 1 is the existing rat leg and style reference; image 2 is the geometry diagram only, not artwork to reproduce. Square logical canvas72x72 containing a32x72 leg frame at x=20. Hip graft pivot EXACTLY(36,10), ONE knee near(36,35), ankle near(36,54), flat sole centred EXACTLY(36,65). Entire leg inside x=22..50,y=3..66: intentionally narrow central39% width. Keep the leg standing vertically, a compact front-facing paw, brown furry thigh and calf, pink paw and three short ivory claws. No pelvis, tail, boot, second leg, extra joints or ground. Hip at(50%,13.89%); sole at(50%,90.28%) of square. Fur may be uneven but no need for deliberate asymmetry.",
+      "aspectRatio": "1:1",
+      "references": [
+        "public/grotesque/modular-v2/leg-fur.png",
+        "output/art-direction/run-generation-study/guides/leg-fur.png"
+      ],
+      "removeBackground": true
+    }
+  ]
+}

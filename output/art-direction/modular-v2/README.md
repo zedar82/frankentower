@@ -10,6 +10,12 @@ The development review mounts the game's DressingRoom and Arena components throu
 
 ## Repeatable art workflow
 
+A separate [RUN image-generation trial](../run-generation-study/README.md) records
+a repeatable single-style-reference workflow, costs, finer-detail prompting and
+measured registration. Its candidates are review artifacts; production parts have
+not been replaced. The existing geometry and renderer acceptance requirements
+below apply to assets from either generation route.
+
 1. Read the assembly specification and design manifest in `docs/`. Geometry owns the interface; generated art must fit it.
 2. Generate one isolated part or quiet material tile per image, with transparent alpha for cutouts. Use the built-in image_gen tool. Keep a frontal view, common lighting and chunky grotesque cartoon drawing. Any part may have its own colour and material. Asymmetry is optional; balanced eyes and ordinary faces are valid.
 3. State the silhouette, maximum envelope, attachment region and intended equipment grip in the prompt. Request folded gripping fingers for arms and a flat crown region for heads. Do not generate hands attached to weapons.
@@ -43,7 +49,7 @@ The 95 runtime sprites include six heads, six arms, six legs, a crown, a substan
 
 Selected quieter flesh and thicker bone revisions supersede initial sources, which remain for repeatability. Runtime files and landmark metadata are in `public/grotesque/modular-v2/`.
 
-Head equipment currently shares crown artwork. Cleavers use the new registered weapon; other held items and footwear retain inventory equipment art. Conventional chest armour and organs have no body overlay yet; their inventory presentation and gameplay effects remain. Old wrapping-hood placement has been removed. Individual crowns, hats, footwear and chest presentation require later equipment work.
+Head equipment currently shares crown artwork. Cleavers use the new registered weapon; other held items and footwear retain inventory equipment art. Inventory pictures now use the same crown and cleaver silhouettes as the assembled creature. Conventional chest armour and organs have no body overlay yet; their inventory presentation and gameplay effects remain. Old wrapping-hood placement has been removed. Individual crowns, hats, footwear and chest presentation require later equipment work.
 
 ## Accepted construction dimensions
 

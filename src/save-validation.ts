@@ -2,7 +2,7 @@ import { defaultSave } from './game/run';
 import { ITEM_MAP, PROCEDURES } from './game/content';
 import { SLOT_DEFINITIONS, VARIANT_DEFINITIONS } from './game/anatomy-content';
 import { stats } from './game/anatomy';
-import { RULESET, type Save, type Build } from './game/types';
+import { RULESET, SATCHEL_CAPACITY, type Save, type Build } from './game/types';
 
 export class InvalidSaveError extends Error {
   constructor() {
@@ -86,7 +86,7 @@ function run(value: unknown) {
   boolean(r.operated);
   build(r.build, items);
   number(r.hp, 0, stats(r.build as unknown as Build).maxHp, false);
-  for (const entry of array(r.stash, 1000)) item(entry, items);
+  for (const entry of array(r.stash, SATCHEL_CAPACITY)) item(entry, items);
   const offers = array(r.offers, 4);
   requireValid(offers.length === 4);
   for (const entry of offers) if (entry !== null) item(entry, items);
