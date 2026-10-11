@@ -1,11 +1,11 @@
-# FRANKENTOWER — grotesque anatomy art pass
+# FRANKENTOWER — modular creature assembly
 
-This private build introduces modular creature anatomy with distinct pixel-art heads, arms, legs, torso details, and attachment adapters. Multi-limbed creatures use spaced sockets, torso modules, and visible joins so the parts read as one assembled body. Body parts can keep their own materials and colors, with asymmetry used selectively.
+The accepted modular assembly is now the default for player and enemy creatures. A continuous torso interior, fixed boundary pieces and individual sockets replace the old stretched body artwork. Additional arm rows reserve vertical space; separate head and leg capacity creates shoulder/hip taper capped at two steps.
 
-Weapon and item illustrations now appear in equipment views and on the creature. Held items are drawn at the hand grip with a visible hand overlay.
+Living, rat, serpent, skeletal, clockwork, ganglion and necrotic anatomy all use the new library. Each graft keeps its own material and colour. Symmetry is welcome; mismatched materials give the creature its character.
 
-The creature renderer now draws one continuous torso, spaces multiple heads apart, fits chest armour across the body, layers hoods around the face, and scales held weapons to read clearly in combat.
+Heads have reserved spacing and measured crown mounts. Head equipment currently shares crown artwork. Cleavers use a substantial new sprite, with the host hand drawn over the handle. Other weapons and footwear retain their equipment artwork. Chest equipment and organs keep their gameplay effects and inventory presentation; body overlays await a later art pass.
 
-Head-slot items now use reusable face and crown attachment profiles, so new headwear fits through art anchors instead of item-specific renderer branches. Idle creatures stay on fixed pixel rows to keep equipment edges steady.
+Legacy body sprites, adapters, stretched-torso rendering and animation fallbacks have been removed. Combat's per-weapon preparation, contact and recovery timing continues to drive the new limb pivots. Static bodies stay on fixed pixel rows. The repeatable generation workflow, prompts and actual in-game review captures are saved with the project.
 
 This build remains private/unlisted. It is not a public release or jam submission.
