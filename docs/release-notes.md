@@ -17,6 +17,11 @@ Inventory pictures now match the accepted cleaver and crown silhouettes. Icons
 render at display density. The creature uses a RUN-generated stone plinth;
 controls use a RUN-generated timber texture.
 
+Short landscape keeps blocked-purchase explanations beside the price and gives
+equipment selection clear space inside its frame. Touch controls retain a minimum
+44-pixel width. The creature display stays within its scene after rotation and
+does not intercept the arena action.
+
 This changes the development ruleset to frankentower-3. Incompatible development
 saves reset; no save migration is provided.
 

@@ -510,6 +510,9 @@ button:hover:not(:disabled) {
   }
 }
 @media (max-height: 499px) and (min-width: 681px) {
+  .modal:has(.equipment-workspace) {
+    padding: 18px;
+  }
   .compact-shop {
     display: grid;
     grid-template-columns: 132px minmax(0, 1fr);

@@ -2,9 +2,19 @@
 
 Recorded **11 October 2026**, Australia/Brisbane. This is an unfinished implementation checkpoint for resuming on another machine.
 
+**13 October continuation:** the UI pass was resumed from commit `a657cd8`.
+The stock/equipment short-height issues, touch widths and display bounds were
+corrected and privately uploaded as RUN **1.8.14**. Unit/build/browser, actual
+125%/200% zoom, Playground and private hosted checks passed. The temporary
+Playground grant was revoked. Read [the updated review](ui-review.md) for the
+current evidence and the hosted automation setup; the remainder of this document
+records the earlier handoff and its then-outstanding work.
+
 ## Goal and agreed direction
 
-Goal: **apply the new UI expectations to the full application**. The goal service currently reports **paused**. Resume this goal when Daniel requests continuation; do not mark it complete from this checkpoint.
+Goal: **apply the new UI expectations to the full application**. At the 11 October
+checkpoint the goal service reported **paused**. Daniel resumed it on 13 October.
+The earlier checkpoint alone was not completion evidence; use the updated review.
 
 Read these before making changes:
 
@@ -137,12 +147,17 @@ For actual RUN checks, install/authorize the RUN CLI using the supported account
 A one-day headless Playground grant was created in the original machine's ignored `.env.local` for a disposable profile (`ui_review_1011`). Revocation has not been confirmed at handoff; expiry is 12 October 2026. **Do not transfer that credential.** Create your own short-lived grant if needed and revoke it when checks finish:
 
 ```sh
-rundot playground grant-access --expires-in-days 1
+rundot playground grant-access --game-id mjkCVhrId815cvHaoaqj --expires-in-days 1
 # Start the real Playground Vite server in another terminal.
 # Set FRANKENTOWER_PLAYGROUND_URL to its URL with a new disposable rundotPlayer.
 node scripts/playground-check.mjs
 rundot playground revoke-access
 ```
+
+The current CLI requires the **production game ID** when minting the headless
+grant. The Vite Playground still runs the different ID in
+`game.config.playground.json`; supplying that Playground ID to grant-access
+returns 404. This was verified during the 13 October continuation.
 
 Original process handles and servers (offline port 5175 and Playground port 5177) are machine-local; do not rely on them. `test-results/`, `.env.local`, `dist/` and installed dependencies are not part of the checkpoint. Portable evidence is under `output/art-direction/`.
 

@@ -1,6 +1,19 @@
 import { launchBrowser, artifact, localUrl } from './browser-support.mjs';
 import assert from 'node:assert/strict';
-const browser = await launchBrowser();
+import { chromium } from '@playwright/test';
+const browserZoom = Number(process.env.FRANKENTOWER_BROWSER_ZOOM ?? 1);
+assert.ok(Number.isFinite(browserZoom) && browserZoom > 0, 'browser zoom must be positive');
+const browser = browserZoom === 1 ? await launchBrowser() : undefined;
+let zoomContext;
+const physicalSize = ({ width, height }) => ({
+  width: Math.round(width * browserZoom),
+  height: Math.round(height * browserZoom),
+});
+async function resizeViewport(page, size) {
+  await page.setViewportSize(physicalSize(size));
+  const actual = await page.evaluate(() => ({ width: innerWidth, height: innerHeight }));
+  assert.ok(Math.abs(actual.width - size.width) <= 1 && Math.abs(actual.height - size.height) <= 1);
+}
 async function openUtility(page, name) {
   const control = page.getByRole('button', { name, exact: true });
   if (!(await control.isVisible()))
@@ -8,10 +21,31 @@ async function openUtility(page, name) {
   await page.getByRole('button', { name, exact: true }).click();
 }
 try {
-  const context = await browser.newContext({
-    viewport: { width: 1440, height: 1080 },
+  const options = {
+    viewport: physicalSize({ width: 1440, height: 1080 }),
     reducedMotion: 'reduce',
-  });
+  };
+  const context = browser
+    ? await browser.newContext(options)
+    : (zoomContext = await chromium.launchPersistentContext('', {
+        ...options,
+        headless: true,
+        ...(process.env.FRANKENTOWER_BROWSER_EXECUTABLE
+          ? { executablePath: process.env.FRANKENTOWER_BROWSER_EXECUTABLE }
+          : {}),
+      }));
+  if (browserZoom !== 1) {
+    // Chrome requires a persistent profile for its settings page. The temporary
+    // profile is isolated from the developer's browser and removed on close.
+    const settings = await context.newPage();
+    await settings.goto('chrome://settings/appearance');
+    await settings.evaluate(
+      (zoom) => new Promise((resolve) => chrome.settingsPrivate.setDefaultZoom(zoom, resolve)),
+      browserZoom,
+    );
+    await settings.close();
+    console.log(`Actual Chrome browser zoom: ${browserZoom * 100}%`);
+  }
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -94,8 +128,8 @@ try {
   await page.getByRole('button', { name: 'Close dialog' }).click();
   await page.getByRole('button', { name: 'Continue to supplies →' }).click();
   await page.screenshot({ path: artifact('frankentower-grafted.png'), fullPage: true });
-  const mobile = await context.newPage({ viewport: { width: 390, height: 844 } });
-  await mobile.setViewportSize({ width: 390, height: 844 });
+  const mobile = await context.newPage();
+  await resizeViewport(mobile, { width: 390, height: 844 });
   mobile.on('pageerror', (error) => errors.push(error.message));
   await mobile.goto(localUrl);
   await mobile.getByRole('button', { name: 'To the arena →' }).waitFor();
@@ -136,6 +170,10 @@ try {
           );
         if (element.matches('button, select, a')) {
           const rect = element.getBoundingClientRect();
+          if (element.matches('button, select') && (rect.width < 42 || rect.height < 42))
+            issues.push(
+              `${element.getAttribute('aria-label') || element.textContent}: touch target ${rect.width}x${rect.height} below 44px allowance`,
+            );
           if (
             rect.bottom > innerHeight + 2 ||
             rect.right > innerWidth + 2 ||
@@ -165,6 +203,7 @@ try {
       }
       return issues;
     });
+    if (failures.length) await mobile.screenshot({ path: artifact('ui-contract-failure.png') });
     assert.deepEqual(failures, [], label);
   }
   async function fixture(kind) {
@@ -256,7 +295,7 @@ try {
     [1024, 576],
     [320, 568],
   ]) {
-    await mobile.setViewportSize({ width, height });
+    await resizeViewport(mobile, { width, height });
     await fixture('start');
     await fits(`start ${width}x${height}`);
     if (!(await mobile.getByRole('button', { name: /Butcher.*Knife.*Choose/ }).count()))
@@ -276,11 +315,15 @@ try {
     }
     await fixture('blocked');
     await fits(`full satchel purchase reason ${width}x${height}`);
+    if (width === 844 && height === 342)
+      await mobile.screenshot({ path: artifact('ui-blocked-stock-landscape.png') });
     assert.equal(await mobile.locator('.buy-button:visible').first().isEnabled(), false);
     await mobile.locator('.card-info:visible').first().click();
     await fits(`blocked item inspection ${width}x${height}`);
     await mobile.getByRole('button', { name: 'Buy into slot…', exact: true }).click();
     await fits(`blocked equipment destinations ${width}x${height}`);
+    if (width === 844 && height === 342)
+      await mobile.screenshot({ path: artifact('ui-blocked-equipment-landscape.png') });
     await mobile.getByRole('button', { name: 'Close dialog' }).click();
     await fixture('extreme');
     await fits(`extreme shop ${width}x${height}`);
@@ -357,7 +400,7 @@ try {
     await mobile.screenshot({ path: artifact(`ui-contract-${width}x${height}.png`) });
     await mobile.getByRole('button', { name: 'Close dialog' }).click();
   }
-  await mobile.setViewportSize({ width: 360, height: 640 });
+  await resizeViewport(mobile, { width: 360, height: 640 });
   await fixture('extreme');
   await mobile.getByRole('button', { name: 'Next offer', exact: true }).click();
   await mobile.getByRole('button', { name: /Buy Butcher.*Knife/ }).click();
@@ -425,9 +468,9 @@ try {
   });
   await fits('portrait safe areas');
   const firstSlot = await mobile.locator('.equipment-slot').first().getAttribute('aria-label');
-  await mobile.setViewportSize({ width: 844, height: 390 });
+  await resizeViewport(mobile, { width: 844, height: 390 });
   await fits('rotated equipment safe areas');
-  await mobile.setViewportSize({ width: 360, height: 640 });
+  await resizeViewport(mobile, { width: 360, height: 640 });
   await fits('returned portrait safe areas');
   assert.equal(
     await mobile.locator('.equipment-slot').first().getAttribute('aria-label'),
@@ -461,10 +504,22 @@ try {
     for (const side of ['top', 'right', 'bottom', 'left'])
       document.documentElement.style.setProperty(`--safe-${side}`, '0px');
   });
+  await resizeViewport(mobile, { width: 1280, height: 720 });
+  await fits('desktop after phone rotation');
+  const footerHitTargets = await mobile.locator('.screen-actions button').evaluateAll((buttons) =>
+    buttons.map((button) => {
+      const rect = button.getBoundingClientRect();
+      return button.contains(
+        document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2),
+      );
+    }),
+  );
+  assert.ok(footerHitTargets.every(Boolean), 'rotated shop footer must receive pointer input');
   assert.deepEqual(errors, []);
   console.log(
     'PASS: onboarding, purchase/equip, combat, report, reload, surgery, desktop/mobile layout, dialogs.',
   );
 } finally {
-  await browser.close();
+  await zoomContext?.close();
+  await browser?.close();
 }

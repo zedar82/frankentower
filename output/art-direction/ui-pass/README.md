@@ -61,9 +61,12 @@ gap; the accepted PNGs are retained as future style exemplars.
 
 ## Captures
 
-`review/` contains actual game screenshots from the implementation checkpoint.
+`review/` contains actual game screenshots, refreshed on 13 October.
 These demonstrate rendered output; automated fit checks are recorded separately
 in the UI review. The phone Patient screen uses the compact record strip rather
 than the former large name/health panel. Short-landscape 844×342 captures show
-local fixes newer than private RUN version 1.8.12. See the
-[handoff](../../../docs/ui-pass-handoff.md) for outstanding verification.
+the layout fixes included in private RUN version 1.8.14. Hosted captures show the
+actual RUN browser viewport and toolbar, without private URLs or credentials. See the
+[implementation review](../../../docs/ui-review.md) for command results,
+zoom coverage and the host automation limitation. The
+[handoff](../../../docs/ui-pass-handoff.md) preserves the earlier checkpoint.
