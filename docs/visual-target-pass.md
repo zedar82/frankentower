@@ -13,11 +13,19 @@ its 44px touch target. Production build and actual local phone/desktop captures
 pass for the HUD update; the complete browser/hosted results below belong to
 the preceding 1.8.16 checkpoint, not a rerun for 1.8.17.
 
-Private **RUN 1.8.18** corrects the circlets' floating appearance. Each asset
+Private **RUN 1.8.18** attempted to correct the circlets' floating appearance. Each asset
 declares its original-pixel front-band seating point, which the shared renderer
 aligns with the host's crown mount. Both circlets were reviewed on all six
 existing head materials and in phone/desktop game captures; production build
 passes. No source PNGs, anatomy contracts or gameplay rules were changed.
+
+Daniel's follow-up rejects the hollow-ring viewpoint and any headwear back layer.
+Private **RUN 1.8.19** replaces those sprites with opaque front-only material.
+Both overlays use an authored seat inside the front material at (512,512),
+aligned with the skull's crown line. Inventory and worn art share the new PNGs.
+Production build and actual-renderer phone/desktop/six-head-material review pass;
+the full suite/hosted checks remain the 1.8.16 checkpoint. The two RUN generations
+cost 330 credits, bringing this pass to 1,920; prompts and originals are retained.
 
 ## Reference and acceptance
 
@@ -66,7 +74,8 @@ of the application after establishing the ordinary shop composition.
   registered to the existing world ellipse; simulation geometry is unchanged.
 - Wooden Shield, Horned Helmet and Bandaged Cap now have distinct wood/iron,
   bone/iron and cloth sprites. Inventory and equipped appearance share these
-  assets. Crowns fit the original 44×25 size and register a measured front-band
+  assets. Headwear contains only visible front material, drawn once over the
+  head, with no rear rim, interior or hollow opening. Crowns fit the original 44×25 size and register a measured front-band
   seating point to the head's crown mount;
   shields retain the existing grip, axis, size and front-of-hand layering.
 - Patient inspection now formats Crit in the engine's percentage units, fixing

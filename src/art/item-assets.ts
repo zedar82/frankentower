@@ -100,7 +100,7 @@ const heldImages = { ...itemImages, knife: cleaverImage };
 type PresentationVariant = {
   file: string;
   crop?: [number, number, number, number];
-  // Source-pixel point where the upper edge of the front band meets the skull.
+  // Source-pixel point aligned to the skull's crown line; front material overlaps it.
   crownSeat?: Point;
 };
 const presentationVariants: Record<string, PresentationVariant> = {
@@ -108,14 +108,14 @@ const presentationVariants: Record<string, PresentationVariant> = {
   spikes: { file: 'spiked-cuirass-v2.png' },
   shield: { file: 'wooden-shield-v1.png', crop: [56, 60, 912, 904] },
   horns: {
-    file: 'horned-crown-v1.png',
-    crop: [60, 276, 904, 472],
-    crownSeat: { x: 512, y: 645 },
+    file: 'horned-crown-front-v2.png',
+    crop: [29, 306, 965, 370],
+    crownSeat: { x: 512, y: 512 },
   },
   bandage: {
-    file: 'bandaged-circlet-v1.png',
-    crop: [63, 319, 897, 448],
-    crownSeat: { x: 512, y: 535 },
+    file: 'bandaged-headband-front-v2.png',
+    crop: [23, 343, 978, 338],
+    crownSeat: { x: 512, y: 512 },
   },
 };
 const variantImages = Object.fromEntries(

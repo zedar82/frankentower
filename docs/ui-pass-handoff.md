@@ -6,7 +6,7 @@ functional completion did not establish visual acceptance. Read
 [the current pass](visual-target-pass.md) first: it records the composed shop,
 four compact offers with effect iconography, clinic redesign, registered arena
 scenery, material-specific gear, current evidence and outstanding work. The
-latest runtime is privately uploaded as RUN **1.8.16**. Unit/build, twelve-size
+full verification checkpoint is private RUN **1.8.16**. Unit/build, twelve-size
 browser coverage, actual 125%/200% local zoom and normal/200% hosted persistence
 checks pass for that checkpoint. The visual completion claim was subsequently withdrawn: framing,
 workshop integration, pixel scale/typography and phone readability remain.
@@ -14,10 +14,13 @@ Daniel explicitly rejects persistent game branding. Private **1.8.17** removes
 the title/banner and retains a compact run HUD. Its production build and local
 phone/desktop captures pass; the full checks above belong to 1.8.16.
 The Playground grant is revoked.
-Latest private runtime: **1.8.18**, with measured front-band seating points for
-both circlets. Build and actual-renderer phone/desktop/six-head-material review
+Latest private runtime: **1.8.19**, with front-only headwear replacements.
+Daniel explicitly rejects backs, interiors and hollow rings for headwear.
+The two new RUN sprites use one overlay after the head and a seat inside the
+front material; no rear layer was added. Build and actual-renderer phone/desktop/six-head-material review
 pass; the full suite/hosted checks still refer to 1.8.16. See the asset workflow
-for `crownSeat` registration, not whole-image bottom-edge placement.
+for `crownSeat` registration and `headwear-front-prompts.json`. The earlier
+1.8.18 full-ring art/placement did not satisfy the worn-headwear brief.
 Use `git log -1` and the
 working tree to identify the actual checkpoint; do not treat the historical
 version statements below as current. This pass has a source/assets/docs commit;

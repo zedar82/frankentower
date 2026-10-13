@@ -218,6 +218,11 @@ Equipment should be visible where practical, particularly iconic equipment such 
 * helmets
 * multiple shoes
 
+Headwear is a single front-facing overlay of the visible material. Do not draw
+a rear band, interior, hollow ring or top-down opening. The creatures are shown
+frontally; register the front material so it overlaps the forehead. This rule
+applies to all current and future headwear, with crown-style construction.
+
 The player should occasionally look at the creature and think:
 
 “What the fuck have I done?”

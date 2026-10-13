@@ -35,10 +35,16 @@ Daniel also rejects persistent game branding during play. Private **1.8.17** now
 removes the FRANKENTOWER title and banner, keeping run state and controls.
 The production build passes and the revised HUD has local phone/desktop captures.
 The full browser/hosted results above remain evidence for 1.8.16.
-Private **1.8.18** subsequently corrects circlet seating with measured source
+Private **1.8.18** subsequently attempted to correct circlet seating with measured source
 landmarks. Production build passes; both hats have actual-renderer review on
 all six head materials and phone/desktop captures. These are visual attachment
 changes and do not establish full visual acceptance.
+Private **1.8.19** replaces the hollow-ring sprites with the visible front
+material alone, following Daniel's direction that no headwear needs a back.
+Build and actual-renderer phone/desktop/all-six-head-material review pass.
+The shared renderer still draws one overlay after the head; no back layer or
+face-specific code was introduced. Historical ring captures are superseded
+by `headwear-front-*` captures.
 Refer to the portable screenshots;
 the historical results below must not be used in place of current evidence.
 

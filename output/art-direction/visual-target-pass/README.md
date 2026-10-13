@@ -30,13 +30,17 @@ No credentials or private preview links are included here.
    `FRANKENTOWER_LOCAL_URL` and `FRANKENTOWER_BROWSER_EXECUTABLE` override the
    local URL and Chrome path. Measurement reads source RGBA; it never edits PNGs.
 6. Register measured crops in `src/art/item-assets.ts`. Crown-family equipment
-   must fit the existing 44×25 size and declare `crownSeat` in original source
-   pixels. Align the upper edge of the front band at its opening to the head's
-   crown mount; the band then overlaps the forehead. Whole-image bottom-edge
-   registration made the circlets look suspended. The measurement helper also
+   must be **only the visible front material**: no back, hollow opening,
+   interior or top-down ring. Generate a continuous front strip/plate and
+   render it once over the head. `headwear-front-prompts.json` is the current
+   example; earlier full-ring prompts are superseded for worn headwear.
+   Fit to the existing 44×25 size and declare `crownSeat` in original source
+   pixels, aligned with the skull's crown line. This point can lie inside the
+   material so the front overlaps the forehead. Both v2 fronts seat at (512,512).
+   Adjusting the earlier full-ring positions did not fix their viewpoint.
+   The measurement helper also
    records solid centre-column alpha intervals (threshold 64); inspect those
-   against the source before authoring the seat. Accepted seats: Horned Helmet
-   (512,645), Bandaged Cap (512,535). Future prompts should specify this seating
+   against the source before authoring the seat. Future prompts should specify this seating
    landmark explicitly. Do not add offsets for particular faces. Held
    items require a grip, shaft axis, frame and hand layer; the wooden shield
    preserves the common central-boss profile. Do not centre a held weapon as if
@@ -51,7 +55,8 @@ No credentials or private preview links are included here.
 
 Model: `gemini-3.1-flash-image-preview`. Opaque scenery costs 120 RUN credits per
 accepted image; the selected cutouts cost 165 each including removal. Eleven
-assets in this pass total **1,590 credits**. Do not infer remaining jam credits
+assets initially cost **1,590 credits**. The two front-only headwear replacements
+cost **330** more, for **1,920 credits** across the pass. Do not infer remaining jam credits
 from the account-wide balance, which may include other allocations/activity.
 
 ## Review captures
@@ -68,3 +73,6 @@ removal of persistent branding; these are separate from the earlier captures.
 `headwear-seated-mobile.png`, `headwear-seated-desktop.png` and
 `headwear-materials.png` show the corrected seating points in the actual
 renderer, including both circlets on all six existing head materials.
+Those full-ring captures are superseded by `headwear-front-mobile.png`,
+`headwear-front-desktop.png` and `headwear-front-materials.png`, which use the
+new front-only overlays. Original source PNGs and prompts remain archived.
