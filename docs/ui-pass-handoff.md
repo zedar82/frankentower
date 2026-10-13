@@ -14,6 +14,10 @@ Daniel explicitly rejects persistent game branding. Private **1.8.17** removes
 the title/banner and retains a compact run HUD. Its production build and local
 phone/desktop captures pass; the full checks above belong to 1.8.16.
 The Playground grant is revoked.
+Latest private runtime: **1.8.18**, with measured front-band seating points for
+both circlets. Build and actual-renderer phone/desktop/six-head-material review
+pass; the full suite/hosted checks still refer to 1.8.16. See the asset workflow
+for `crownSeat` registration, not whole-image bottom-edge placement.
 Use `git log -1` and the
 working tree to identify the actual checkpoint; do not treat the historical
 version statements below as current. This pass has a source/assets/docs commit;

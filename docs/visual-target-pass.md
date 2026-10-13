@@ -13,6 +13,12 @@ its 44px touch target. Production build and actual local phone/desktop captures
 pass for the HUD update; the complete browser/hosted results below belong to
 the preceding 1.8.16 checkpoint, not a rerun for 1.8.17.
 
+Private **RUN 1.8.18** corrects the circlets' floating appearance. Each asset
+declares its original-pixel front-band seating point, which the shared renderer
+aligns with the host's crown mount. Both circlets were reviewed on all six
+existing head materials and in phone/desktop game captures; production build
+passes. No source PNGs, anatomy contracts or gameplay rules were changed.
+
 ## Reference and acceptance
 
 Daniel's illustrated quartermaster reference is the composition target. Treat
@@ -60,7 +66,8 @@ of the application after establishing the ordinary shop composition.
   registered to the existing world ellipse; simulation geometry is unchanged.
 - Wooden Shield, Horned Helmet and Bandaged Cap now have distinct wood/iron,
   bone/iron and cloth sprites. Inventory and equipped appearance share these
-  assets. Crowns fit the original 44×25 envelope and its forehead base edge;
+  assets. Crowns fit the original 44×25 size and register a measured front-band
+  seating point to the head's crown mount;
   shields retain the existing grip, axis, size and front-of-hand layering.
 - Patient inspection now formats Crit in the engine's percentage units, fixing
   the display-only extra ×100. No equipment rules or combat effects changed.

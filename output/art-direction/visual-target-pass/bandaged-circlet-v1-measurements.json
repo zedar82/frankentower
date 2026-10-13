@@ -8,5 +8,16 @@
     448
   ],
   "minAlpha": 0,
-  "maxAlpha": 255
+  "maxAlpha": 255,
+  "centreColumn": 512,
+  "centreAlphaIntervals": [
+    [
+      320,
+      479
+    ],
+    [
+      535,
+      760
+    ]
+  ]
 }

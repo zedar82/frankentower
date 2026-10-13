@@ -40,12 +40,25 @@ try {
             bottom = Math.max(bottom, y);
           }
         }
+      const centreColumn = Math.floor(canvas.width / 2),
+        centreAlphaIntervals = [];
+      let start = -1;
+      for (let y = 0; y <= canvas.height; y++) {
+        const solid = y < canvas.height && data[(y * canvas.width + centreColumn) * 4 + 3] > 64;
+        if (solid && start === -1) start = y;
+        if (!solid && start !== -1) {
+          centreAlphaIntervals.push([start, y - 1]);
+          start = -1;
+        }
+      }
       result[file] = {
         width: canvas.width,
         height: canvas.height,
         crop: [left, top, right - left + 1, bottom - top + 1],
         minAlpha,
         maxAlpha,
+        centreColumn,
+        centreAlphaIntervals,
       };
     }
     return result;

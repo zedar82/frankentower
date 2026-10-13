@@ -100,14 +100,23 @@ const heldImages = { ...itemImages, knife: cleaverImage };
 type PresentationVariant = {
   file: string;
   crop?: [number, number, number, number];
-  crown?: boolean;
+  // Source-pixel point where the upper edge of the front band meets the skull.
+  crownSeat?: Point;
 };
 const presentationVariants: Record<string, PresentationVariant> = {
   plate: { file: 'iron-breastplate-v2.png' },
   spikes: { file: 'spiked-cuirass-v2.png' },
   shield: { file: 'wooden-shield-v1.png', crop: [56, 60, 912, 904] },
-  horns: { file: 'horned-crown-v1.png', crop: [60, 276, 904, 472], crown: true },
-  bandage: { file: 'bandaged-circlet-v1.png', crop: [63, 319, 897, 448], crown: true },
+  horns: {
+    file: 'horned-crown-v1.png',
+    crop: [60, 276, 904, 472],
+    crownSeat: { x: 512, y: 645 },
+  },
+  bandage: {
+    file: 'bandaged-circlet-v1.png',
+    crop: [63, 319, 897, 448],
+    crownSeat: { x: 512, y: 535 },
+  },
 };
 const variantImages = Object.fromEntries(
   Object.entries(presentationVariants).map(([id, profile]) => {
@@ -124,7 +133,7 @@ function sourceRect(image: HTMLImageElement, variant: string): [number, number, 
   return presentationVariants[variant]?.crop ?? [0, 0, image.naturalWidth, image.naturalHeight];
 }
 
-// Fit variants to the common frame's base edge, overlapping the registered forehead.
+// Fit to the common envelope, then register the band's seating point to the head mount.
 export function drawCrownItem(
   c: CanvasRenderingContext2D,
   variant: string,
@@ -133,8 +142,8 @@ export function drawCrownItem(
   envelope: { width: number; height: number; root: Point },
 ) {
   const image = variantImages[variant];
-  if (!presentationVariants[variant]?.crown || !image?.complete || !image.naturalWidth)
-    return false;
+  const seat = presentationVariants[variant]?.crownSeat;
+  if (!seat || !image?.complete || !image.naturalWidth) return false;
   const [sx, sy, sw, sh] = sourceRect(image, variant);
   const scale = Math.min(envelope.width / sw, envelope.height / sh);
   const width = sw * scale,
@@ -147,8 +156,8 @@ export function drawCrownItem(
     sy,
     sw,
     sh,
-    x + envelope.root.x - width / 2,
-    y + envelope.height - height,
+    x + envelope.root.x - (seat.x - sx) * scale,
+    y + envelope.root.y - (seat.y - sy) * scale,
     width,
     height,
   );

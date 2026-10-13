@@ -3,6 +3,9 @@
 The persistent game title and banner are removed from play. A compact HUD keeps
 floor, gold and controls visible, leaving more room for the creature and arena.
 
+Horned and bandaged circlets now sit on the forehead using measured attachment
+points, correcting the floating appearance across head materials.
+
 The quartermaster keeps your creature, patient record, equipment and satchel in
 one scene. All four offers are visible, with compact artwork, corner prices and
 cooldowns, and effect icons with amounts. Use the icon guide to learn symbols

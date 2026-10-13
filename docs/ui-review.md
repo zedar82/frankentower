@@ -35,6 +35,10 @@ Daniel also rejects persistent game branding during play. Private **1.8.17** now
 removes the FRANKENTOWER title and banner, keeping run state and controls.
 The production build passes and the revised HUD has local phone/desktop captures.
 The full browser/hosted results above remain evidence for 1.8.16.
+Private **1.8.18** subsequently corrects circlet seating with measured source
+landmarks. Production build passes; both hats have actual-renderer review on
+all six head materials and phone/desktop captures. These are visual attachment
+changes and do not establish full visual acceptance.
 Refer to the portable screenshots;
 the historical results below must not be used in place of current evidence.
 

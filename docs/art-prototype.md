@@ -41,9 +41,13 @@ Structural acceptance is separate from final art polish. Texture repetition, soc
 ## UI target gear variants — 13 October 2026
 
 `src/art/item-assets.ts` declares presentation variants with an original PNG,
-measured alpha crop and optional crown family. `drawCrownItem` fits a crown into
-the common 44×25 frame, centring on its registered X mount and placing the base
-edge against the forehead. `modular-puppet.ts` uses this shared rule for every
+measured alpha crop and optional `crownSeat` in original image coordinates.
+`drawCrownItem` uniformly fits the artwork to the common 44×25 size and aligns
+that seat with the head's registered crown mount. For a circlet, measure the
+upper edge of the front band at the opening: aligning the complete image's
+bottom edge made the hats look suspended. The Horned Helmet seats at (512,645)
+and Bandaged Cap at (512,535) in their 1024px sources. The front band overlaps
+the forehead. `modular-puppet.ts` uses this shared rule for every
 variant; it does not add item-specific face/head attachment logic. Full original
 PNGs are retained. The Wooden Shield variant uses the existing shield grip and
 front face covers the hand. Inventory and equipment use the same artwork.

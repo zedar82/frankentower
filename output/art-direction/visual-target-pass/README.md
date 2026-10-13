@@ -30,7 +30,14 @@ No credentials or private preview links are included here.
    `FRANKENTOWER_LOCAL_URL` and `FRANKENTOWER_BROWSER_EXECUTABLE` override the
    local URL and Chrome path. Measurement reads source RGBA; it never edits PNGs.
 6. Register measured crops in `src/art/item-assets.ts`. Crown-family equipment
-   must fit the existing 44×25 frame with base-edge forehead registration. Held
+   must fit the existing 44×25 size and declare `crownSeat` in original source
+   pixels. Align the upper edge of the front band at its opening to the head's
+   crown mount; the band then overlaps the forehead. Whole-image bottom-edge
+   registration made the circlets look suspended. The measurement helper also
+   records solid centre-column alpha intervals (threshold 64); inspect those
+   against the source before authoring the seat. Accepted seats: Horned Helmet
+   (512,645), Bandaged Cap (512,535). Future prompts should specify this seating
+   landmark explicitly. Do not add offsets for particular faces. Held
    items require a grip, shaft axis, frame and hand layer; the wooden shield
    preserves the common central-boss profile. Do not centre a held weapon as if
    it were an inventory thumbnail. Inventory and equipped sprites must agree.
@@ -58,3 +65,6 @@ captures come from the existing spatial combat check. `shop-private-host.png`
 is the actual private RUN 1.8.16 frame after purchase/cloud reload.
 `shop-hud-mobile.png` and `shop-hud-desktop.png` show the subsequent local
 removal of persistent branding; these are separate from the earlier captures.
+`headwear-seated-mobile.png`, `headwear-seated-desktop.png` and
+`headwear-materials.png` show the corrected seating points in the actual
+renderer, including both circlets on all six existing head materials.
