@@ -76,3 +76,6 @@ renderer, including both circlets on all six existing head materials.
 Those full-ring captures are superseded by `headwear-front-mobile.png`,
 `headwear-front-desktop.png` and `headwear-front-materials.png`, which use the
 new front-only overlays. Original source PNGs and prompts remain archived.
+`direct-joins-mobile.png`, `direct-joins-desktop.png` and `direct-joins-materials.png`
+show the 14 October removal of decorative shoulder/hip/neck circles. The
+registered parts meet directly through their original graft contours.

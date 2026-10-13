@@ -53,17 +53,7 @@ const names = [
 ];
 for (const material of ['flesh', 'fur', 'bone', 'metal', 'scales']) {
   names.push(
-    ...[
-      'fill',
-      'top',
-      'bottom',
-      'shoulder',
-      'hip',
-      'socket-neck',
-      'socket-arm',
-      'socket-leg',
-      'side',
-    ].map((role) => `${role}-${material}`),
+    ...['fill', 'top', 'bottom', 'shoulder', 'hip', 'side'].map((role) => `${role}-${material}`),
   );
   for (const n of [0, 1, 2])
     for (const direction of ['in', 'out']) names.push(`taper-${n}-${direction}-${material}`);
@@ -374,8 +364,7 @@ export function drawModularPuppet(
   const layout = modularLayout(build),
     hands = select(build, 'hand'),
     feet = select(build, 'foot'),
-    heads = select(build, 'head'),
-    material = materialFor(build);
+    heads = select(build, 'head');
   c.save();
   c.translate(Math.round(x), Math.round(y));
   c.scale(scale, scale);
@@ -394,11 +383,6 @@ export function drawModularPuppet(
     pose.moving ? Math.sin((pose.walk ?? 0) * 0.22 + j.index * Math.PI) * 0.075 : 0;
   for (const j of layout.legs) limb(c, feet[j.index], j, legAngle(j));
   trunk(c, build, layout);
-  c.save();
-  c.filter = materialFilter(chestVariant(build), true);
-  for (const j of layout.legs) sprite(c, `socket-leg-${material}`, j.pin.x - 10, j.pin.y - 6);
-  for (const j of layout.heads) sprite(c, `socket-neck-${material}`, j.pin.x - 10, j.pin.y - 6);
-  c.restore();
   for (const j of layout.heads) limb(c, heads[j.index], j, 0);
   for (const j of layout.heads) {
     const p = heads[j.index];
@@ -435,10 +419,6 @@ export function drawModularPuppet(
     // Arm and equipment share the foreground pass, so a strike across the torso
     // keeps the actual limb visible instead of leaving a floating weapon.
     limb(c, p, j, angle);
-    c.save();
-    c.filter = materialFilter(chestVariant(build), true);
-    sprite(c, `socket-arm-${material}`, j.pin.x - 11, j.pin.y - 12);
-    c.restore();
     if (!p.item) continue;
     const g = geometry[asset(p)],
       end = g.end!,

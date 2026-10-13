@@ -157,6 +157,10 @@ Creature art retains a grotesque cartoon style. Every body part can have its own
 
 Asymmetry is allowed but is not a goal or requirement. Symmetrical parts and balanced faces are welcome. Do not add extra eyes, mouths or displaced facial features merely to make a part asymmetric; unusual anatomy should express a specific readable concept.
 
+Body parts meet directly at their registered graft roots, using their native
+contours and stitched seams. Do not add decorative circular connector discs
+at shoulders, hips or necks. Geometry anchors and pivots remain invisible.
+
 Avoid sleek sci-fi UI, glass panels, gradients, productivity-app styling and modern SaaS aesthetics.
 
 Combat Screen

@@ -111,6 +111,11 @@ The exterior contour may be irregular. Only the interfaces between components ne
 
 ### 4.2 Appendage interfaces
 
+**14 October art direction:** registered interfaces and overlap remain, but
+decorative circular connector discs are removed. Body parts meet directly
+using the native contours and stitched graft seams. An attachment interface
+does not require a visible circle at its anchor.
+
 Each attachment connector defines a standard appendage interface.
 
 A neck connector defines where a head attaches, the available connection width and the direction in which the head extends.

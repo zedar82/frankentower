@@ -6,7 +6,14 @@ The modular assembly is the default renderer, adopted on 2026-10-11 after Daniel
 
 Read [the assembly specification](modular-body-assembly.md), [design manifest](paper-doll-design-manifest.md) and [repeatable asset workflow](../output/art-direction/modular-v2/README.md).
 
-`src/art/puppet.ts` exposes the shared layout, fitting and drawing API. `src/art/modular-puppet.ts` constructs one continuous low-detail torso interior with fixed boundary pieces, sockets and capped zero/one/two-step tapers. Each actual limb gets a root; additional arm rows reserve 68 logical pixels vertically. Head and leg capacity determine separate upper/lower widths. Registered PNGs and measured landmarks live in `public/grotesque/modular-v2/`.
+`src/art/puppet.ts` exposes the shared layout, fitting and drawing API. `src/art/modular-puppet.ts` constructs one continuous low-detail torso interior with fixed boundary pieces, registered roots and capped zero/one/two-step tapers. Each actual limb gets a root; additional arm rows reserve 68 logical pixels vertically. Head and leg capacity determine separate upper/lower widths. Registered PNGs and measured landmarks live in `public/grotesque/modular-v2/`.
+
+14 October 2026: decorative circular connectors are removed from shoulders,
+hips and necks following Daniel's direction. Parts meet through their existing
+root overlap and native stitched contours. The renderer does not paint joint
+discs over the grafts. All root positions, reserved spacing and motion pivots
+remain the same. The registration generator no longer emits the fifteen
+circle sprites; the unused runtime PNGs and geometry entries are removed.
 
 Every existing anatomy variant resolves to new art. Living, rat, serpent, bone, clockwork and ganglion have distinct cutouts; necrotic uses individually tinted flesh heads and bone limbs. Torsos use flesh, fur, scales, bone or metal. Materials remain local to each graft. Symmetry is permitted and does not dictate creature composition.
 
@@ -36,7 +43,9 @@ Start the offline Vite server and open `art-study.html`. It mounts the actual Dr
 
 The existing `node scripts/puppet-check.mjs` verifies painted alpha connectivity at every root, grip, foot and face across eight anatomies, three poses and both attack directions. Its landmarks now match the registered modular frames. Output is `test-results/frankentower-puppet-composition.png` by default. Set `FRANKENTOWER_LOCAL_URL` and `FRANKENTOWER_BROWSER_EXECUTABLE` when necessary.
 
-Structural acceptance is separate from final art polish. Texture repetition, socket finish, consistent pixel detail, individual headgear and footwear still deserve later art passes.
+Structural acceptance is separate from final art polish. Texture repetition,
+natural seam finish, consistent pixel detail, individual headgear and footwear
+still deserve later art passes.
 
 ## UI target gear variants — 13 October 2026
 

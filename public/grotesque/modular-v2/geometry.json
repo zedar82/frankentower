@@ -458,33 +458,6 @@
     },
     "rasterScale": 4
   },
-  "socket-neck-flesh": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-arm-flesh": {
-    "width": 22,
-    "height": 24,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-leg-flesh": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
   "taper-0-in-flesh": {
     "width": 20,
     "height": 48,
@@ -587,33 +560,6 @@
   "hip-fur": {
     "width": 16,
     "height": 16,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-neck-fur": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-arm-fur": {
-    "width": 22,
-    "height": 24,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-leg-fur": {
-    "width": 20,
-    "height": 12,
     "root": {
       "x": 0,
       "y": 0
@@ -728,33 +674,6 @@
     },
     "rasterScale": 4
   },
-  "socket-neck-bone": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-arm-bone": {
-    "width": 22,
-    "height": 24,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-leg-bone": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
   "taper-0-in-bone": {
     "width": 20,
     "height": 48,
@@ -863,33 +782,6 @@
     },
     "rasterScale": 4
   },
-  "socket-neck-metal": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-arm-metal": {
-    "width": 22,
-    "height": 24,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-leg-metal": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
   "taper-0-in-metal": {
     "width": 20,
     "height": 48,
@@ -992,33 +884,6 @@
   "hip-scales": {
     "width": 16,
     "height": 16,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-neck-scales": {
-    "width": 20,
-    "height": 12,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-arm-scales": {
-    "width": 22,
-    "height": 24,
-    "root": {
-      "x": 0,
-      "y": 0
-    },
-    "rasterScale": 4
-  },
-  "socket-leg-scales": {
-    "width": 20,
-    "height": 12,
     "root": {
       "x": 0,
       "y": 0

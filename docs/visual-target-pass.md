@@ -27,6 +27,15 @@ Production build and actual-renderer phone/desktop/six-head-material review pass
 the full suite/hosted checks remain the 1.8.16 checkpoint. The two RUN generations
 cost 330 credits, bringing this pass to 1,920; prompts and originals are retained.
 
+14 October: private **RUN 1.8.20** removes decorative shoulder/hip/neck circles.
+Parts meet at their original registered roots with native stitched contours;
+spacing, pivots and gameplay remain unchanged. Fifteen unused circle PNGs and
+geometry records are removed, and the registration generator no longer emits
+them. The modular runtime library now has 80 assets. Build passes, with actual
+phone/desktop/material and both-direction weapon-swing captures retained.
+No image generation was needed. Full suite/hosted checks remain the 1.8.16
+checkpoint; these changes do not establish full visual acceptance.
+
 ## Reference and acceptance
 
 Daniel's illustrated quartermaster reference is the composition target. Treat

@@ -174,7 +174,7 @@ try {
       t.drawImage(image, 0, 0, 64, 64);
       save(`fill-${material}`, tile);
       contracts[`fill-${material}`] = { width: 64, height: 64, root: { x: 0, y: 0 }, rasterScale };
-      const paint = (name, w, h, shape, outline, stitches = false) => {
+      const paint = (name, w, h, shape, outline) => {
         const [c, p] = canvas(w, h, rasterScale);
         const pattern = p.createPattern(tile, 'repeat');
         pattern.setTransform(new DOMMatrix().scale(1 / rasterScale));
@@ -183,16 +183,6 @@ try {
         p.lineWidth = 2;
         p.strokeStyle = '#34152c';
         p.stroke(outline);
-        if (stitches) {
-          p.lineWidth = 1;
-          p.strokeStyle = material === 'fur' ? '#e8be81' : '#ffe1b2';
-          for (let x = 5; x < w - 3; x += 5) {
-            p.beginPath();
-            p.moveTo(x, 4);
-            p.lineTo(x + 1, h - 3);
-            p.stroke();
-          }
-        }
         save(`${name}-${material}`, c);
         contracts[`${name}-${material}`] = {
           width: w,
@@ -219,13 +209,6 @@ try {
         line.moveTo(16, 2);
         line.quadraticCurveTo(2, 2, 2, 16);
         paint(corner, 16, 16, shape, line);
-      }
-      for (const role of ['neck', 'arm', 'leg']) {
-        const w = role === 'arm' ? 22 : 20,
-          h = role === 'arm' ? 24 : 12,
-          shape = new Path2D();
-        shape.ellipse(w / 2, h / 2, w / 2 - 1, h / 2 - 1, 0, 0, Math.PI * 2);
-        paint(`socket-${role}`, w, h, shape, shape, true);
       }
       for (const steps of [0, 1, 2])
         for (const direction of ['in', 'out']) {

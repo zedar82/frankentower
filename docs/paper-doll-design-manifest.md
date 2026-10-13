@@ -62,6 +62,11 @@ The assembly plan maps anatomy IDs to component IDs, socket IDs, local transform
 
 ## Attachment and equipment interfaces
 
+14 October 2026: retain all declared roots, host anatomy, overlap and motion
+pivots, and remove the decorative circular connector overlays. Joins use the
+parts' own contours and stitched seams. The socket terminology describes the
+geometric interface; it does not require a painted circular joint disc.
+
 | Host | Required interface | Equipment must declare |
 | --- | --- | --- |
 | Arm/hand | Shoulder root and local arm axis; grip point and hand-facing direction. | Grip anchor, wielding orientation, mirror behavior, and the allowed swing envelope. |

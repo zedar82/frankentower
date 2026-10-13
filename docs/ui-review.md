@@ -45,6 +45,11 @@ Build and actual-renderer phone/desktop/all-six-head-material review pass.
 The shared renderer still draws one overlay after the head; no back layer or
 face-specific code was introduced. Historical ring captures are superseded
 by `headwear-front-*` captures.
+On 14 October, private **1.8.20** removes circular connector overlays at
+shoulders, hips and necks, with original graft roots and native seams retained.
+The fifteen unused images/geometry records are removed and the generator now
+emits 80 assets. Build and actual-renderer phone/desktop/material/swing review
+pass; full-suite/hosted evidence remains the 1.8.16 checkpoint.
 Refer to the portable screenshots;
 the historical results below must not be used in place of current evidence.
 

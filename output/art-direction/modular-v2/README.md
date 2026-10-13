@@ -22,7 +22,7 @@ below apply to assets from either generation route.
 4. Preserve source PNGs and full prompts. [prompts.json](prompts.json) records the original set and revisions; [catalogue-prompts.json](catalogue-prompts.json) records the additional catalogue parts. Both sets are in [sources](sources).
 5. Measure shoulder/grip, hip/sole, neck/crown landmarks. Edit the registration specifications in `scripts/generate-modular-study.mjs`. Uniformly scale, rotate and translate cutouts into standard frames; never stretch anatomy separately along X and Y.
 6. Register with nearest-neighbour sampling. The generator records bounds, rejects substantial clipping and emits the same geometry metadata used by the renderer.
-7. For torso materials, generate a quiet tile, then pre-render boundary masks, corners, edges, sockets and straight/one/two-step tapers. Do not tile a complete torso, ribcage or chest.
+7. For torso materials, generate a quiet tile, then pre-render boundary masks, corners, edges and straight/one/two-step tapers. Parts join through their declared root overlap and native stitched contours; do not generate circular connector discs. Do not tile a complete torso, ribcage or chest.
 8. Map each new slot/variant explicitly in `src/art/modular-puppet.ts`. Register and capture the actual game renderer. Inspect the complete silhouette at room and arena scales, mixed materials, odd counts and combat poses before accepting the art.
 
 With the local server running:
@@ -36,7 +36,7 @@ The scripts use installed Chrome by default. Override `FRANKENTOWER_BROWSER_EXEC
 
 ## Library and coverage
 
-The 95 runtime sprites include six heads, six arms, six legs, a crown, a substantial cleaver and fifteen boundary/fill pieces for each of five torso materials.
+The 80 runtime sprites include six heads, six arms, six legs, a crown, a substantial cleaver and twelve boundary/fill pieces for each of five torso materials. On 14 October, the fifteen decorative arm/hip/neck circle overlays were removed from rendering, metadata and the generator. Roots, spacing and pivots are unchanged.
 
 - Living: stitched flesh head, arm and leg.
 - Rat: brown furry head, arm and leg.
@@ -77,7 +77,11 @@ Taper is distributed evenly between both sides. The interior is one continuous t
 - [Review page](review/review-page.png): the browser page and controls.
 - [Rendering quality comparison](review/quality-comparison.png): actual DressingRoom before/after at the same display size and density. Standard and 2× full-room captures are also preserved.
 
-Head spacing, separate arm rows, hip connections, substantial weapons and host-hand occlusion solve the former structural problems. Remaining polish includes flat broad torsos, schematic sockets, visible material repetition, noisy legacy boots and varying outline/pixel density. Acceptance of construction does not imply completion of every equipment or texture pass.
+Head spacing, separate arm rows, hip connections, substantial weapons and host-hand occlusion solve the former structural problems. Remaining polish includes flat broad torsos, natural seam finish, visible material repetition, noisy legacy boots and varying outline/pixel density. Acceptance of construction does not imply completion of every equipment or texture pass.
+
+The `weapon-grips-direct-joins.png` and `weapon-swings-direct-joins.png` captures
+show the actual renderer after the circle removal, including both swing
+directions. The earlier captures retain the historical connector artwork.
 
 The previous SVG and whole-body libraries and their obsolete generators have been removed. Git history retains them. Equipment source cutouts remain separately in `output/art-direction/equipment-v1/sources/`.
 
