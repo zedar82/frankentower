@@ -1,5 +1,9 @@
 # Code structure and content authoring
 
+The [14 October codebase review](codebase-review.md) records proposed correctness
+fixes and restructuring priorities. It is a review plan; the boundaries below
+describe the implemented architecture.
+
 The game has one deterministic combat engine for the player, enemies, and
 guardians. React renders it and dispatches build actions; the game modules do
 not import React, browser APIs, audio, persistence, or telemetry.
