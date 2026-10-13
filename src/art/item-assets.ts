@@ -8,7 +8,7 @@ const itemFiles = {
   helmet: 'helmet.png',
   hood: 'hood.png',
   armour: 'armour.png',
-  shoe: 'shoe.png',
+  shoe: 'running-shoe-front-v2.png',
   heart: 'heart.png',
   dice: 'dice.png',
 } as const;
@@ -102,8 +102,39 @@ type PresentationVariant = {
   crop?: [number, number, number, number];
   // Source-pixel point aligned to the skull's crown line; front material overlaps it.
   crownSeat?: Point;
+  // Bottom-centre of the visible sole, in original source pixels.
+  soleSeat?: Point;
 };
+const footwearFronts = {
+  runner: {
+    file: 'running-shoe-front-v2.png',
+    crop: [55, 39, 913, 985],
+    soleSeat: { x: 512, y: 1015 },
+  },
+  leather: {
+    file: 'leather-boot-front-v2.png',
+    crop: [107, 155, 809, 805],
+    soleSeat: { x: 512, y: 960 },
+  },
+  iron: {
+    file: 'iron-boot-front-v2.png',
+    crop: [132, 123, 761, 821],
+    soleSeat: { x: 512, y: 944 },
+  },
+} satisfies Record<string, PresentationVariant>;
 const presentationVariants: Record<string, PresentationVariant> = {
+  // Shared front archetypes until these items receive individual illustrations.
+  // Future footwear with icon 'shoe' inherits the runner attachment by default.
+  runners: footwearFronts.runner,
+  bloodboots: footwearFronts.leather,
+  venomboots: footwearFronts.leather,
+  ironboots: footwearFronts.iron,
+  spurs: footwearFronts.leather,
+  bloodrunner: footwearFronts.leather,
+  plague: footwearFronts.leather,
+  rabbit: footwearFronts.runner,
+  octoboot: footwearFronts.leather,
+  dance: footwearFronts.runner,
   plate: { file: 'iron-breastplate-v2.png' },
   spikes: { file: 'spiked-cuirass-v2.png' },
   shield: { file: 'wooden-shield-v1.png', crop: [56, 60, 912, 904] },
@@ -131,6 +162,48 @@ export const itemArtReady = Promise.all(
 
 function sourceRect(image: HTMLImageElement, variant: string): [number, number, number, number] {
   return presentationVariants[variant]?.crop ?? [0, 0, image.naturalWidth, image.naturalHeight];
+}
+
+// A front-only shoe replaces the hidden bare foot, instead of centring an icon
+// on top of its toes. Uniform scaling fits the 28px leg pitch without collisions.
+function footwearArt(variant: string) {
+  const profile = presentationVariants[variant]?.soleSeat
+    ? presentationVariants[variant]
+    : footwearFronts.runner;
+  const image = profile === footwearFronts.runner ? variantImages.runners : variantImages[variant];
+  return { profile, image };
+}
+export function footwearArtReady(variant: string) {
+  const { image } = footwearArt(variant);
+  return !!image?.complete && !!image.naturalWidth;
+}
+export function drawFootwearItem(
+  c: CanvasRenderingContext2D,
+  variant: string,
+  soleX: number,
+  soleY: number,
+) {
+  const { profile, image } = footwearArt(variant);
+  if (!footwearArtReady(variant)) return false;
+  const [sx, sy, sw, sh] = profile.crop!;
+  const seat = profile.soleSeat!;
+  const scale = Math.min(26 / sw, 30 / sh);
+  c.save();
+  c.imageSmoothingEnabled = false;
+  c.filter = filterFor(variant);
+  c.drawImage(
+    image,
+    sx,
+    sy,
+    sw,
+    sh,
+    soleX - (seat.x - sx) * scale,
+    soleY - (seat.y - sy) * scale,
+    sw * scale,
+    sh * scale,
+  );
+  c.restore();
+  return true;
 }
 
 // Fit to the common envelope, then register the band's seating point to the head mount.

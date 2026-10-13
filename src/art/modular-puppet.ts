@@ -3,6 +3,8 @@ import { ITEM_MAP } from '../game/content';
 import type { Joint, Pose, PuppetLayout } from './puppet';
 import {
   drawCrownItem,
+  drawFootwearItem,
+  footwearArtReady,
   drawHeldItem,
   heldHandLayer,
   heldItemCorners,
@@ -17,6 +19,7 @@ type Contract = {
   root: Point;
   end?: Point;
   crown?: Point;
+  ankle?: Point;
 };
 type GearPainter = (
   c: CanvasRenderingContext2D,
@@ -242,7 +245,14 @@ function sprite(
   c.drawImage(image, 0, 0, frame.width, frame.height);
   c.restore();
 }
-function limb(c: CanvasRenderingContext2D, part: Part, j: Joint, angle: number, cropGrip = false) {
+function limb(
+  c: CanvasRenderingContext2D,
+  part: Part,
+  j: Joint,
+  angle: number,
+  cropGrip = false,
+  coverFoot = false,
+) {
   const name = asset(part),
     image = images.get(name)!,
     g = geometry[name];
@@ -251,6 +261,13 @@ function limb(c: CanvasRenderingContext2D, part: Part, j: Joint, angle: number, 
   c.filter = materialFilter(part.variant);
   c.rotate(angle);
   if (j.side === -1) c.scale(-1, 1);
+  if (coverFoot && g.ankle) {
+    // Equipped footwear replaces the hidden foot below the authored ankle plane.
+    // The visible leg and shoe retain the same root, sole and walking rotation.
+    c.beginPath();
+    c.rect(-g.root.x, -g.root.y, g.width, g.ankle.y);
+    c.clip();
+  }
   if (cropGrip) {
     const end = g.end!;
     c.beginPath();
@@ -381,7 +398,11 @@ export function drawModularPuppet(
   c.translate(pose.hurt ? -1 : 0, -bob);
   const legAngle = (j: Joint) =>
     pose.moving ? Math.sin((pose.walk ?? 0) * 0.22 + j.index * Math.PI) * 0.075 : 0;
-  for (const j of layout.legs) limb(c, feet[j.index], j, legAngle(j));
+  for (const j of layout.legs) {
+    const p = feet[j.index];
+    const covered = !!p.item && footwearArtReady(p.item.defId);
+    limb(c, p, j, legAngle(j), false, covered);
+  }
   trunk(c, build, layout);
   for (const j of layout.heads) limb(c, heads[j.index], j, 0);
   for (const j of layout.heads) {
@@ -403,14 +424,15 @@ export function drawModularPuppet(
     c.save();
     c.translate(j.pin.x, j.pin.y);
     c.rotate(legAngle(j));
-    gear(
-      c,
-      ITEM_MAP[p.item.defId].icon,
-      end.x - g.root.x - 12,
-      end.y - g.root.y - 20,
-      24,
-      p.item.defId,
-    );
+    if (!drawFootwearItem(c, p.item.defId, end.x - g.root.x, end.y - g.root.y))
+      gear(
+        c,
+        ITEM_MAP[p.item.defId].icon,
+        end.x - g.root.x - 12,
+        end.y - g.root.y - 20,
+        24,
+        p.item.defId,
+      );
     c.restore();
   }
   for (const j of layout.arms) {

@@ -83,6 +83,14 @@ The `weapon-grips-direct-joins.png` and `weapon-swings-direct-joins.png` capture
 show the actual renderer after the circle removal, including both swing
 directions. The earlier captures retain the historical connector artwork.
 
+Footwear follow-up (14 October): leg contracts now include an invisible ankle
+coverage plane, at (16,53) in current frames. Registered sole/root coordinates
+remain unchanged. Front-only shoe material replaces the covered foot below that
+plane and inherits the walking rotation. Three front silhouettes currently
+serve all ten shoe items; unique item illustrations remain an art pass. The
+portable `scripts/capture-footwear-study.mjs` records material, walking and
+all-item boards under `output/art-direction/visual-target-pass/review/`.
+
 The previous SVG and whole-body libraries and their obsolete generators have been removed. Git history retains them. Equipment source cutouts remain separately in `output/art-direction/equipment-v1/sources/`.
 
 Adoption checks: registration emitted 95 sprites; the existing puppet composition check passed eight anatomies, three poses and both attack directions. Eleven actual renderer images captured without browser errors. TypeScript and the production build passed after legacy cleanup. Gameplay definitions and combat rules were not changed.

@@ -36,6 +36,19 @@ phone/desktop/material and both-direction weapon-swing captures retained.
 No image generation was needed. Full suite/hosted checks remain the 1.8.16
 checkpoint; these changes do not establish full visual acceptance.
 
+14 October: private **RUN 1.8.21** replaces inventory-icon footwear placement
+with three front-only runner/leather/iron archetypes. All ten foot items share
+the sole/ankle interface. Source-pixel `soleSeat` aligns with the existing leg
+ground anchor; native feet below the authored ankle plane are hidden while
+equipped. Bare legs retain their complete source art. Walking uses the same
+leg transform. Current fronts fit 26×30 pixels within the 28px leg pitch.
+Six RUN generations cost 990 credits including three rejected opening/back
+attempts; pass total is 2,910. Sources, sidecars, prompts and measurements remain
+recorded. Build passes; actual renderer review covers six leg materials,
+bare/equipped feet, idle/walking, all ten items on mixed anatomy and phone/desktop
+shop views. Full suite/hosted checks remain historical 1.8.16 results. Individual
+themed footwear illustrations remain a later content art pass.
+
 ## Reference and acceptance
 
 Daniel's illustrated quartermaster reference is the composition target. Treat

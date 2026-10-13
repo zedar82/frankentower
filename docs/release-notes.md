@@ -9,6 +9,9 @@ forehead. The hollow ring openings and rear rims are removed from the art.
 Decorative shoulder, hip and neck circles are removed. Body parts now meet
 directly through their existing graft contours and stitched seams.
 
+Shoes now use solid front-facing artwork. They cover the feet, align with the
+soles and move with the legs, without showing hollow cuffs or exposed toes.
+
 The quartermaster keeps your creature, patient record, equipment and satchel in
 one scene. All four offers are visible, with compact artwork, corner prices and
 cooldowns, and effect icons with amounts. Use the icon guide to learn symbols

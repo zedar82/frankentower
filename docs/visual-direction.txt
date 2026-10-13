@@ -227,6 +227,12 @@ a rear band, interior, hollow ring or top-down opening. The creatures are shown
 frontally; register the front material so it overlaps the forehead. This rule
 applies to all current and future headwear, with crown-style construction.
 
+Footwear also uses only visible front material: no back half, hollow cuff or
+interior. Shoes must cover the ankle and toes, rather than sit as small icons
+over bare feet. Register the sole to the leg's ground anchor, hide the foot
+inside the shoe and keep footwear in the same walking transform as its leg.
+Future footwear follows the same attachment and coverage contract.
+
 The player should occasionally look at the creature and think:
 
 “What the fuck have I done?”

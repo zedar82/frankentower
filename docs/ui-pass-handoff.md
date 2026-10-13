@@ -14,7 +14,16 @@ Daniel explicitly rejects persistent game branding. Private **1.8.17** removes
 the title/banner and retains a compact run HUD. Its production build and local
 phone/desktop captures pass; the full checks above belong to 1.8.16.
 The Playground grant is revoked.
-Latest private runtime: **1.8.20** (14 October), with front-only headwear and
+Latest private runtime: **1.8.21** (14 October). Footwear now shares a front-only
+sole/ankle attachment and hides covered toes/claws. Three RUN fronts serve all
+ten foot items; unique heel/rabbit/etc. silhouettes remain a content art pass.
+Production build and real-renderer phone/desktop, six-leg-material, walking
+and mixed ten-item captures pass. See `scripts/capture-footwear-study.mjs` and
+`footwear-panel-prompts.json`; the generator preserves authored ankle planes.
+RUN spend for this follow-up is 990 credits including three rejected attempts,
+bringing the visual pass to 2,910. These are scoped captures, not a rerun of
+the full suite or hosted persistence checks from 1.8.16.
+Private **1.8.20** removed decorative circles, with front-only headwear and
 direct graft joins. Decorative shoulder/hip/neck circles are removed from
 rendering, the runtime library and the generator; registered roots/pivots stay
 unchanged. Build and actual phone/desktop/material/swing captures pass.

@@ -181,3 +181,15 @@ remain part of the performance milestone.
 
 Community publishing remains deferred. Public visibility and jam submission
 require Daniel's explicit permission. Git push is not part of this pass.
+
+## Footwear coverage — 14 October 2026
+
+Private RUN 1.8.21 uses three front-only footwear sprites with a shared sole
+seat and an authored ankle coverage plane. Covered toes/claws are hidden;
+unequipped native feet are intact. Production build passes. Local actual-renderer
+captures cover all six leg materials bare/equipped, idle and walking, every
+current shoe item in mixed many-leg anatomy, plus phone/desktop shop views.
+The existing shop capture helper reports no ordinary/symbol-offer overflow or
+runtime errors. Captures are under `output/art-direction/visual-target-pass/review/`.
+No gameplay rules changed or new formal tests were added/run. Full suite and
+hosted persistence results above remain the historical 1.8.16 checkpoint.

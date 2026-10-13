@@ -1,0 +1,19 @@
+{
+  "width": 1024,
+  "height": 1024,
+  "crop": [
+    132,
+    123,
+    761,
+    821
+  ],
+  "minAlpha": 0,
+  "maxAlpha": 255,
+  "centreColumn": 512,
+  "centreAlphaIntervals": [
+    [
+      124,
+      942
+    ]
+  ]
+}

@@ -45,6 +45,15 @@ No credentials or private preview links are included here.
    items require a grip, shaft axis, frame and hand layer; the wooden shield
    preserves the common central-boss profile. Do not centre a held weapon as if
    it were an inventory thumbnail. Inventory and equipped sprites must agree.
+   Footwear follows the same front-material principle. Use
+   `footwear-panel-prompts.json`; the earlier `footwear-front-prompts.json`
+   attempts were rejected for retaining openings/rear material. Register a
+   measured crop and original-pixel `soleSeat`, uniformly fit inside 26×30
+   logical pixels and align it to the host leg's `end`. Each leg authors an
+   `ankle` coverage plane; the renderer hides native feet below that plane
+   while the shoe's front overlaps it. Review all leg materials and walking
+   with `node scripts/capture-footwear-study.mjs`. New foot items inherit a
+   registered front, with custom art added declaratively to the profile table.
 7. Register scenery using standing planes/floor landmarks. The stone step uses
    `display-step-v2-measurements.json`; arena landmarks are in
    `arena-chamber-v1-geometry.json`. Register artwork to gameplay geometry,
@@ -56,7 +65,11 @@ No credentials or private preview links are included here.
 Model: `gemini-3.1-flash-image-preview`. Opaque scenery costs 120 RUN credits per
 accepted image; the selected cutouts cost 165 each including removal. Eleven
 assets initially cost **1,590 credits**. The two front-only headwear replacements
-cost **330** more, for **1,920 credits** across the pass. Do not infer remaining jam credits
+cost **330** more. Footwear used six generations at 165 each: three rejected
+attempts and three accepted v2 fronts, costing **990** more. Total generation
+spend across this pass is **2,910 credits**, including rejected footwear.
+RUN rate-limited one request; the retry preserved completed outputs.
+Do not infer remaining jam credits
 from the account-wide balance, which may include other allocations/activity.
 
 ## Review captures
@@ -79,3 +92,9 @@ new front-only overlays. Original source PNGs and prompts remain archived.
 `direct-joins-mobile.png`, `direct-joins-desktop.png` and `direct-joins-materials.png`
 show the 14 October removal of decorative shoulder/hip/neck circles. The
 registered parts meet directly through their original graft contours.
+
+`footwear-mobile.png` and `footwear-desktop.png` show the front-only footwear
+in the actual shop. `footwear-materials.png` and `footwear-walking.png` compare
+bare feet and the runner/leather/iron fronts on all six leg materials.
+`footwear-all-items.png` shows all ten current foot items on a mixed many-leg
+build. These are real renderer captures, not generated creature mockups.

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "running-shoe-front-v1",
+    "reference": "public/ui/quartermaster-scene-v1.png",
+    "output": "output/art-direction/visual-target-pass/sources/running-shoe-front-v1.png",
+    "defId": "runners",
+    "model": "gemini-3.1-flash-image-preview",
+    "prompt": "Use case: stylized-concept. Asset type: one FRONT-ONLY worn footwear overlay for a front-facing grotesque cartoon pixel-art creature. The single reference is STYLE ONLY: rich handcrafted pixel clusters, dark outlines, worn materials, warm highlights. Draw exactly ONE shoe, straight-on orthographic FRONT ELEVATION at ankle height, centred and pointing directly toward the viewer. Draw only the opaque visible FRONT: solid upper/tongue, rounded wide toe covering, thick continuous flat sole underneath. This cutout will cover a creature\u0027s ankle and toes. No wearer or body part. There must be NO rear half, back rim, visible inside, hollow opening, oval cuff, top-down view, side view, three-quarter view, exposed heel sticking sideways, extra shoe, pair, bare toes, skin, cast shadow, UI, text or diagram. Upper edge is a closed solid gently curved front boundary; nothing showing the interior. Front toe slightly wider than the ankle shaft. Clean silhouette, readable pixel-art details, crisp edges, no blur or thumbnail enlargement. Plain WHITE background for removal. Generous white margins. Exactly one connected opaque front surface. Subject: low ankle running shoe in worn caramel-brown leather, cream criss-cross laces on the central tongue, patched leather panels, dark brown sole. Broad rounded toe. Silhouette approximately 1.2 times wider than high, fills 80 percent canvas width and 65 percent height. Laces and ankle front rise above the broad toe, no open top."
+  },
+  {
+    "id": "leather-boot-front-v1",
+    "reference": "public/ui/quartermaster-scene-v1.png",
+    "output": "output/art-direction/visual-target-pass/sources/leather-boot-front-v1.png",
+    "defId": "bloodboots",
+    "model": "gemini-3.1-flash-image-preview",
+    "prompt": "Use case: stylized-concept. Asset type: one FRONT-ONLY worn footwear overlay for a front-facing grotesque cartoon pixel-art creature. The single reference is STYLE ONLY: rich handcrafted pixel clusters, dark outlines, worn materials, warm highlights. Draw exactly ONE shoe, straight-on orthographic FRONT ELEVATION at ankle height, centred and pointing directly toward the viewer. Draw only the opaque visible FRONT: solid upper/tongue, rounded wide toe covering, thick continuous flat sole underneath. This cutout will cover a creature\u0027s ankle and toes. No wearer or body part. There must be NO rear half, back rim, visible inside, hollow opening, oval cuff, top-down view, side view, three-quarter view, exposed heel sticking sideways, extra shoe, pair, bare toes, skin, cast shadow, UI, text or diagram. Upper edge is a closed solid gently curved front boundary; nothing showing the interior. Front toe slightly wider than the ankle shaft. Clean silhouette, readable pixel-art details, crisp edges, no blur or thumbnail enlargement. Plain WHITE background for removal. Generous white margins. Exactly one connected opaque front surface. Subject: front of a rugged short dungeon boot in dark oxblood leather, bronze buckle across the FRONT of the ankle shaft, stitched patches, broad round solid toe cap, thick dark sole. Silhouette approximately as wide as high, fills 78 percent canvas width and 80 percent height. Ankle shaft narrower than toe. Solid front shaft edge, no open top."
+  },
+  {
+    "id": "iron-boot-front-v1",
+    "reference": "public/ui/quartermaster-scene-v1.png",
+    "output": "output/art-direction/visual-target-pass/sources/iron-boot-front-v1.png",
+    "defId": "ironboots",
+    "model": "gemini-3.1-flash-image-preview",
+    "prompt": "Use case: stylized-concept. Asset type: one FRONT-ONLY worn footwear overlay for a front-facing grotesque cartoon pixel-art creature. The single reference is STYLE ONLY: rich handcrafted pixel clusters, dark outlines, worn materials, warm highlights. Draw exactly ONE shoe, straight-on orthographic FRONT ELEVATION at ankle height, centred and pointing directly toward the viewer. Draw only the opaque visible FRONT: solid upper/tongue, rounded wide toe covering, thick continuous flat sole underneath. This cutout will cover a creature\u0027s ankle and toes. No wearer or body part. There must be NO rear half, back rim, visible inside, hollow opening, oval cuff, top-down view, side view, three-quarter view, exposed heel sticking sideways, extra shoe, pair, bare toes, skin, cast shadow, UI, text or diagram. Upper edge is a closed solid gently curved front boundary; nothing showing the interior. Front toe slightly wider than the ankle shaft. Clean silhouette, readable pixel-art details, crisp edges, no blur or thumbnail enlargement. Plain WHITE background for removal. Generous white margins. Exactly one connected opaque front surface. Subject: front of a stout iron-toed dungeon boot, dark leather ankle with bronze rivets, segmented weathered steel front armour, wide rounded iron toe cap, thick charcoal sole. Silhouette approximately as wide as high, fills 78 percent canvas width and 80 percent height. Ankle shaft narrower than toe. Solid front shaft edge, no open top."
+  }
+]

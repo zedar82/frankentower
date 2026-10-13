@@ -132,6 +132,7 @@ try {
         sourceScale: scale,
         sourceRotation: angle,
         ...(end ? { end: { x: target[0], y: target[1] } } : {}),
+        ...(name.startsWith('leg-') ? { ankle: { x: target[0], y: target[1] - 12 } } : {}),
         ...(crown ? { crown: map(crown) } : {}),
       };
     }
