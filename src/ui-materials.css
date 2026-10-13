@@ -379,12 +379,6 @@ button:hover:not(:disabled) {
   .main-header::before {
     border-width: 12px;
   }
-  .main-header .wordmark {
-    font-size: clamp(14px, 4.3vw, 18px);
-    letter-spacing: 0;
-    padding: 0;
-    min-height: 44px;
-  }
   .main-header .journey {
     display: flex;
     margin-left: auto;
@@ -676,9 +670,6 @@ button:hover:not(:disabled) {
   .main-header {
     gap: 4px;
     padding: 1px 5px;
-  }
-  .main-header .wordmark {
-    font-size: 14px;
   }
   .header-tools {
     gap: 4px;

@@ -1,9 +1,17 @@
 # Visual target pass
 
-13 October 2026. **Implementation and visual review complete.** Goal: proceed with UI work until the visual
+13 October 2026. **Functional checkpoint; visual target unfinished.** Goal: proceed with UI work until the visual
 target is achieved. The earlier functional checkpoint is commit `b73b618` / RUN
 `1.8.14`. The composed UI is privately uploaded and verified as **RUN `1.8.16`**.
 Use `git log -1` for the source checkpoint; no push has been performed.
+
+The completion claim was premature and is withdrawn after the follow-up visual
+comparison. Passing fit/persistence checks does not establish the visual brief.
+The follow-up in private **RUN 1.8.17** removes the persistent FRANKENTOWER title and its full-width
+banner. The HUD keeps floor, gold, settings and save state; phone settings retains
+its 44px touch target. Production build and actual local phone/desktop captures
+pass for the HUD update; the complete browser/hosted results below belong to
+the preceding 1.8.16 checkpoint, not a rerun for 1.8.17.
 
 ## Reference and acceptance
 
@@ -143,9 +151,11 @@ retry succeeded at 22:24 Brisbane time. Neither interruption was bypassed.
 
 Accepted review captures are in `output/art-direction/visual-target-pass/review/`.
 These use a local review save and the actual game renderer, not a generated UI
-mockup. The recorded visual review finds the reference's composition, density,
-materials and shared screen language implemented. Further art/handset feedback
-can refine this checkpoint without reverting to the old shopping dashboard.
+mockup. Follow-up review identifies remaining work in substantial timber/iron
+framing, connecting panels into the workshop, consistent pixel scale/typography,
+and phone gaps/readability. This is a tested functional checkpoint, not visual
+acceptance. The persistent title banner has been removed following
+Daniel's explicit direction; future UI passes must retain that decision.
 
 No public publishing, jam submission or Git push is authorized by this pass.
 Private uploads and commits remain allowed. Old checks and captures retain

@@ -339,18 +339,7 @@ export function App({ initialSave }: { initialSave: Save }) {
         (flowStep === 'shop' ? ' shopping' : flowStep === 'lab' ? ' operating' : '')
       }
     >
-      <header className="main-header">
-        <a
-          className="wordmark"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setModal('help');
-          }}
-          aria-label="FRANKENTOWER help"
-        >
-          FRANKEN<span>TOWER</span>
-        </a>
+      <header className="main-header" aria-label="Run controls">
         <div className="journey">
           <Icon name="stairs" size={21} />
           <strong>

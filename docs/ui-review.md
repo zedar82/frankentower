@@ -1,6 +1,6 @@
 # UI implementation review
 
-13 October 2026: **the visual target implementation and review are complete**. Comparing the mobile
+13 October 2026: **functional checkpoint; visual target unfinished**. Comparing the mobile
 shop with Daniel's reference exposed composition and density shortfalls despite
 passing functional checks. The earlier completion claim was too strong.
 See [the visual target pass](visual-target-pass.md). The command results below
@@ -24,11 +24,18 @@ reload, SDK safe areas, display-density rendering, footer input after resize,
 combat, saved speed and floor-two/cloud reload. The composed UI also passed
 real RUN Playground persistence/safe-area verification; its grant is revoked.
 
-The visual review finds the reference's hierarchy and materials implemented:
+The checkpoint implements:
 one composed ordinary shop, prominent real creature, compact patient record,
 separate equipment rail, eight-cell satchel, four content-sized offer tiles,
 corner costs/timers, and live effect iconography. Clinic, arena, outcomes and
-focused workspaces share that language. Refer to the portable screenshots;
+focused workspaces share those materials. Follow-up comparison finds that
+framing, integration into the workshop, pixel scale/typography and phone
+readability still need work; the visual completion claim is withdrawn.
+Daniel also rejects persistent game branding during play. Private **1.8.17** now
+removes the FRANKENTOWER title and banner, keeping run state and controls.
+The production build passes and the revised HUD has local phone/desktop captures.
+The full browser/hosted results above remain evidence for 1.8.16.
+Refer to the portable screenshots;
 the historical results below must not be used in place of current evidence.
 
 ## Historical functional checkpoint

@@ -56,3 +56,5 @@ Local captures include the ordinary/equipped shop, intermediate-height fallback,
 effect symbols, clinic, start, equipment, help, outcomes and recovery. Arena
 captures come from the existing spatial combat check. `shop-private-host.png`
 is the actual private RUN 1.8.16 frame after purchase/cloud reload.
+`shop-hud-mobile.png` and `shop-hud-desktop.png` show the subsequent local
+removal of persistent branding; these are separate from the earlier captures.

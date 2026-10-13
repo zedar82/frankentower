@@ -113,7 +113,10 @@ and navigation behaviour across screens. Each activity has its own composition.
 The creature stays prominent during ordinary building; the arena dominates
 combat. Borders and props must leave enough room for readable content.
 
-Use a stable shell for floor, gold where relevant, and settings. Each screen
+Use a compact run HUD for floor, gold where relevant, and settings. Do not show
+a persistent game title or decorative title banner during play; the player
+already knows which game they are in. Reserve branding for launch/presentation.
+Spend the available space on the creature, arena and useful actions. Each screen
 has a clear primary action in a predictable location. Notices must not cover
 purchase buttons, equipment targets, or navigation. Disabled actions explain
 their reason in context without requiring hover.

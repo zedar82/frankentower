@@ -9,6 +9,49 @@
     bold 14px/1.2 Georgia,
     serif;
 }
+/* In-game HUD: the run's state and controls, with no persistent title banner. */
+.main-header {
+  display: flex;
+  min-height: 44px;
+  padding: 0;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.main-header::before {
+  display: none;
+}
+.main-header .journey {
+  margin-left: 0;
+  gap: 6px;
+  font-size: 14px;
+}
+.main-header .journey .pixel-icon,
+.main-header .journey > span {
+  display: inline-block;
+}
+.main-header .floor-label {
+  font-size: inherit;
+}
+.main-header .floor-label::before {
+  content: none;
+}
+.main-header .header-tools {
+  margin-left: auto;
+}
+.main-header .gold {
+  position: static;
+  font-size: 16px;
+}
+.main-header .save-status {
+  display: block;
+  position: static;
+  max-width: 64px;
+  font-size: 10px;
+  line-height: 1.1;
+  white-space: normal;
+}
 .app-notice:empty {
   display: none;
 }
@@ -834,22 +877,6 @@
     gap: 5px;
     padding: calc(5px + var(--safe-top)) calc(7px + var(--safe-right))
       calc(5px + var(--safe-bottom)) calc(7px + var(--safe-left));
-  }
-  .main-header .save-status {
-    white-space: nowrap;
-    width: max-content;
-    display: block;
-    position: absolute;
-    right: 57px;
-    bottom: 1px;
-    font-size: 8px;
-    line-height: 1;
-  }
-  .main-header .gold {
-    transform: translateY(-4px);
-  }
-  .main-header::before {
-    border-width: 12px;
   }
 }
 @media (min-width: 681px) {

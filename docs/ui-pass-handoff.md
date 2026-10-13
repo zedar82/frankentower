@@ -1,14 +1,19 @@
 # UI pass handoff
 
-**Completed visual target pass — 13 October 2026:** the goal was
+**Functional checkpoint; visual target unfinished — 13 October 2026:** the goal was
 “proceed with the UI work until you achive the visual target”. The earlier
 functional completion did not establish visual acceptance. Read
 [the current pass](visual-target-pass.md) first: it records the composed shop,
 four compact offers with effect iconography, clinic redesign, registered arena
 scenery, material-specific gear, current evidence and outstanding work. The
 latest runtime is privately uploaded as RUN **1.8.16**. Unit/build, twelve-size
-browser coverage, actual 125%/200% local zoom, normal/200% hosted persistence,
-and the recorded visual review pass. The Playground grant is revoked.
+browser coverage, actual 125%/200% local zoom and normal/200% hosted persistence
+checks pass for that checkpoint. The visual completion claim was subsequently withdrawn: framing,
+workshop integration, pixel scale/typography and phone readability remain.
+Daniel explicitly rejects persistent game branding. Private **1.8.17** removes
+the title/banner and retains a compact run HUD. Its production build and local
+phone/desktop captures pass; the full checks above belong to 1.8.16.
+The Playground grant is revoked.
 Use `git log -1` and the
 working tree to identify the actual checkpoint; do not treat the historical
 version statements below as current. This pass has a source/assets/docs commit;
