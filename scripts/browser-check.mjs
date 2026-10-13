@@ -67,7 +67,9 @@ try {
   console.log('Opening shop:', offers.join(', '));
   // Buy/equip, inspect, unequip, and equip again through real player controls.
   await page.locator('.buy-button').first().click();
-  await page.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await page
+    .locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible')
+    .click();
   await page.locator('.equipment-slot.filled').last().click();
   await page.getByRole('button', { name: 'Move to satchel' }).click();
   assert.ok((await page.locator('.tray-items button').count()) >= 1);
@@ -183,7 +185,7 @@ try {
             issues.push(`${element.textContent}: outside viewport`);
         }
       }
-      for (const card of root.querySelectorAll('.shop-card')) {
+      for (const card of root.querySelectorAll('.shop-card, .workshop-scene')) {
         const fields = [...card.children]
           .filter((e) => e.clientHeight)
           .map((e) => ({
@@ -287,6 +289,9 @@ try {
   for (const [width, height] of [
     [360, 640],
     [390, 844],
+    [390, 796], // Private host chrome leaves a shorter portrait game frame.
+    [360, 750],
+    [360, 700], // Equipment rail must yield before it overlaps the satchel.
     [844, 390],
     [844, 342], // RUN web toolbar reduces the landscape game frame.
     [1280, 720],
@@ -298,21 +303,34 @@ try {
     await resizeViewport(mobile, { width, height });
     await fixture('start');
     await fits(`start ${width}x${height}`);
+    const visualReview = (width === 390 && height === 844) || (width === 1440 && height === 900);
+    if (visualReview) await mobile.screenshot({ path: artifact(`start-${width}x${height}.png`) });
     if (!(await mobile.getByRole('button', { name: /Butcher.*Knife.*Choose/ }).count()))
       await mobile.getByRole('button', { name: 'Next page', exact: true }).click();
     await mobile.getByRole('button', { name: /Butcher.*Knife.*Choose/ }).click();
     await fits(`shop ${width}x${height}`);
-    if (width < 1100)
-      for (const view of ['Patient', 'Gear', 'Services', 'Stock']) {
-        await mobile.getByRole('button', { name: view, exact: true }).click();
-        await fits(`${view} ${width}x${height}`);
-      }
+    if (visualReview) await mobile.screenshot({ path: artifact(`shop-${width}x${height}.png`) });
+    assert.equal(await mobile.locator('.shop-creature:visible').count(), 1);
+    assert.equal(await mobile.locator('.offer-position:visible').count(), 4);
+    const sceneHeight = await mobile.locator('.workshop-scene').evaluate((e) => e.clientHeight);
+    assert.equal(
+      await mobile.locator('.equipment-category:visible').count(),
+      width <= 680 && (height < 700 || sceneHeight <= 326) ? 0 : 5,
+    );
+    assert.equal(await mobile.locator('.satchel-cells > span').count(), 8);
+    await mobile.getByRole('button', { name: 'Effect icon guide', exact: true }).click();
+    await fits(`effect icon guide ${width}x${height}`);
+    const nextIconPage = mobile.getByRole('button', { name: 'Next icon guide page', exact: true });
+    while ((await nextIconPage.count()) && (await nextIconPage.isEnabled())) {
+      await nextIconPage.click();
+      await fits(`effect icon guide page ${width}x${height}`);
+    }
+    await mobile.getByRole('button', { name: 'Close dialog', exact: true }).click();
+    await mobile.getByRole('button', { name: 'Patient services', exact: true }).click();
+    await fits(`services ${width}x${height}`);
+    await mobile.getByRole('button', { name: 'Close dialog' }).click();
     await mobile.locator('.buy-button:visible').first().click();
     await fits(`purchased stock position ${width}x${height}`);
-    if (width < 1100 || height < 620) {
-      await mobile.getByRole('button', { name: 'Next offer', exact: true }).click();
-      await fits(`remaining stock ${width}x${height}`);
-    }
     await fixture('blocked');
     await fits(`full satchel purchase reason ${width}x${height}`);
     if (width === 844 && height === 342)
@@ -327,14 +345,12 @@ try {
     await mobile.getByRole('button', { name: 'Close dialog' }).click();
     await fixture('extreme');
     await fits(`extreme shop ${width}x${height}`);
-    if (width < 1100 || height < 620) {
-      for (const view of ['Patient', 'Gear', 'Stock']) {
-        await mobile.getByRole('button', { name: view, exact: true }).click();
-        await fits(`extreme ${view} ${width}x${height}`);
-      }
-    }
-    await mobile.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+    await mobile
+      .locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible')
+      .click();
     await fits(`equipment ${width}x${height}`);
+    if (visualReview)
+      await mobile.screenshot({ path: artifact(`equipment-${width}x${height}.png`) });
     await mobile.getByRole('button', { name: /Next hands page/ }).click();
     await fits(`extra hand slots ${width}x${height}`);
     await mobile.getByLabel('Equipment category').selectOption('head');
@@ -354,6 +370,8 @@ try {
     for (const name of ['How to play', 'Hall of Shame', 'Settings']) {
       await openUtility(mobile, name);
       await fits(`${name} ${width}x${height}`);
+      if (visualReview && name === 'How to play')
+        await mobile.screenshot({ path: artifact(`help-${width}x${height}.png`) });
       if (name === 'Hall of Shame') {
         await mobile.getByRole('button', { name: 'Patients', exact: true }).click();
         await fits(`history ${width}x${height}`);
@@ -366,8 +384,7 @@ try {
       }
       await mobile.getByRole('button', { name: 'Close dialog' }).click();
     }
-    if (width < 1100) await mobile.getByRole('button', { name: 'Services', exact: true }).click();
-    else await mobile.getByRole('button', { name: 'Patient services', exact: true }).click();
+    await mobile.getByRole('button', { name: 'Patient services', exact: true }).click();
     while (!(await mobile.getByRole('button', { name: 'Equipment index →' }).count()))
       await mobile.getByRole('button', { name: 'Next services page', exact: true }).click();
     await mobile.getByRole('button', { name: 'Equipment index →' }).click();
@@ -381,15 +398,23 @@ try {
       .getByRole('button', { name: /Continue/ })
       .click();
     await fits(`surgery ${width}x${height}`);
-    for (const section of width < 1100
-      ? ['Procedure', 'Patient', 'Changes']
-      : ['Procedure', 'Changes']) {
-      await mobile.getByRole('button', { name: section, exact: true }).click();
+    if ((width === 390 && height === 844) || (width === 1440 && height === 900))
+      await mobile.screenshot({ path: artifact(`surgery-${width}x${height}.png`) });
+    for (const section of ['Procedure', 'Changes']) {
+      await mobile
+        .locator('.procedure-review-actions')
+        .getByRole('button', { name: section, exact: true })
+        .click();
       await fits(`surgery ${section} ${width}x${height}`);
+      await mobile.getByRole('button', { name: 'Close dialog', exact: true }).click();
     }
+    await mobile.getByRole('button', { name: 'Proposed', exact: true }).click();
+    await fits(`proposed anatomy ${width}x${height}`);
     for (const kind of ['dead', 'complete', 'retired', 'checkpoint']) {
       await fixture(kind);
       await fits(`${kind} outcome ${width}x${height}`);
+      if (visualReview)
+        await mobile.screenshot({ path: artifact(`${kind}-${width}x${height}.png`) });
     }
     await mobile.locator('.flow-card').getByRole('button', { name: 'View battle log ↗' }).click();
     await fits(`report ${width}x${height}`);
@@ -402,7 +427,6 @@ try {
   }
   await resizeViewport(mobile, { width: 360, height: 640 });
   await fixture('extreme');
-  await mobile.getByRole('button', { name: 'Next offer', exact: true }).click();
   await mobile.getByRole('button', { name: /Buy Butcher.*Knife/ }).click();
   await mobile.waitForFunction(
     () => JSON.parse(localStorage.getItem('frankentower-save-v1')).run.purchases === 1,
@@ -413,7 +437,9 @@ try {
     ),
     8,
   );
-  await mobile.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await mobile
+    .locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible')
+    .click();
   await mobile.locator('.equipment-slot.filled').first().click();
   await mobile.getByRole('button', { name: /Combine.*Lv3/ }).click();
   await mobile.getByRole('button', { name: 'Satchel', exact: true }).click();
@@ -459,7 +485,9 @@ try {
   assert.ok((await completeText('Signature')).endsWith(normalize(expected.signature)));
   await mobile.getByRole('button', { name: 'Close dialog' }).click();
   // Safe-area changes and rotation must preserve task, slot page, selection and saved state.
-  await mobile.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await mobile
+    .locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible')
+    .click();
   await mobile.getByRole('button', { name: 'Next hands page', exact: true }).click();
   const unchanged = await mobile.evaluate(() => localStorage.getItem('frankentower-save-v1'));
   await mobile.evaluate(() => {
@@ -488,18 +516,44 @@ try {
   await mobile.keyboard.press('Escape');
   assert.equal(await mobile.getByRole('dialog').count(), 0);
   assert.equal(
-    await mobile.evaluate(() => document.activeElement.textContent),
-    'Equipment & satchel ↗',
+    await mobile.evaluate(() =>
+      document.activeElement.matches('.equipment-category.socket-hand, .short-equipment-summary'),
+    ),
+    true,
   );
   await fits('shop safe areas');
-  await mobile.getByRole('button', { name: 'Services', exact: true }).click();
-  while (!(await mobile.getByRole('button', { name: 'Freeze stock', exact: true }).count()))
+  // A responsive replacement for an opener must receive focus after rotation.
+  await mobile.locator('.short-equipment-summary:visible').click();
+  await resizeViewport(mobile, { width: 1440, height: 900 });
+  await mobile.keyboard.press('Escape');
+  assert.equal(
+    await mobile.evaluate(() => document.activeElement.matches('.equipment-category.socket-hand')),
+    true,
+  );
+  await mobile.locator('.equipment-category.socket-hand:visible').click();
+  await resizeViewport(mobile, { width: 360, height: 640 });
+  await mobile.keyboard.press('Escape');
+  assert.equal(
+    await mobile.evaluate(() => document.activeElement.matches('.short-equipment-summary')),
+    true,
+  );
+  await mobile.getByRole('button', { name: 'Patient services', exact: true }).click();
+  while (
+    !(await mobile
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Freeze stock', exact: true })
+      .count())
+  )
     await mobile.getByRole('button', { name: 'Next services page', exact: true }).click();
-  await mobile.getByRole('button', { name: 'Freeze stock', exact: true }).click();
+  await mobile
+    .getByRole('dialog')
+    .getByRole('button', { name: 'Freeze stock', exact: true })
+    .click();
   await mobile.waitForFunction(
     () => JSON.parse(localStorage.getItem('frankentower-save-v1')).run.shopFrozen,
   );
   await fits('freeze through paged services');
+  await mobile.getByRole('button', { name: 'Close dialog' }).click();
   await mobile.evaluate(() => {
     for (const side of ['top', 'right', 'bottom', 'left'])
       document.documentElement.style.setProperty(`--safe-${side}`, '0px');

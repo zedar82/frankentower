@@ -34,7 +34,7 @@ export function PatientSummary({ build }: { build: Build }) {
         <div className="build-summary">
           <Creature build={build} />
           <PagedText
-            text={`${build.name}\n${identity(build)}\n${archetypes(build).join(' / ')}\n\n${bs.maxHp} HP · ${bs.maxMana} Mana\n${Math.round(bs.movementSpeed)} Movement\n${bs.armour} Armour · ${Math.round(bs.crit * 100)}% Crit\n${Math.round(bs.chance * 100)}% Chance · ${Math.round(bs.speed * 100)}% Activation speed\n${Math.round(bs.efficiency * 100)}% circulation\nCapacity ${bs.capacity} / Load ${bs.load}\nMana recovery ${bs.manaPerSecond}/s`}
+            text={`${build.name}\n${identity(build)}\n${archetypes(build).join(' / ')}\n\n${bs.maxHp} HP · ${bs.maxMana} Mana\n${Math.round(bs.movementSpeed)} Movement\n${bs.armour} Armour · ${Math.round(bs.crit)}% Crit\n${Math.round(bs.chance * 100)}% Chance · ${Math.round(bs.speed * 100)}% Activation speed\n${Math.round(bs.efficiency * 100)}% circulation\nCapacity ${bs.capacity} / Load ${bs.load}\nMana recovery ${bs.manaPerSecond}/s`}
             label="Patient"
           />
         </div>

@@ -1,0 +1,12 @@
+{
+  "width": 1264,
+  "height": 848,
+  "alphaBounds": [
+    64,
+    303,
+    1200,
+    540
+  ],
+  "minAlpha": 0,
+  "maxAlpha": 255
+}

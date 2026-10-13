@@ -37,3 +37,17 @@ Start the offline Vite server and open `art-study.html`. It mounts the actual Dr
 The existing `node scripts/puppet-check.mjs` verifies painted alpha connectivity at every root, grip, foot and face across eight anatomies, three poses and both attack directions. Its landmarks now match the registered modular frames. Output is `test-results/frankentower-puppet-composition.png` by default. Set `FRANKENTOWER_LOCAL_URL` and `FRANKENTOWER_BROWSER_EXECUTABLE` when necessary.
 
 Structural acceptance is separate from final art polish. Texture repetition, socket finish, consistent pixel detail, individual headgear and footwear still deserve later art passes.
+
+## UI target gear variants — 13 October 2026
+
+`src/art/item-assets.ts` declares presentation variants with an original PNG,
+measured alpha crop and optional crown family. `drawCrownItem` fits a crown into
+the common 44×25 frame, centring on its registered X mount and placing the base
+edge against the forehead. `modular-puppet.ts` uses this shared rule for every
+variant; it does not add item-specific face/head attachment logic. Full original
+PNGs are retained. The Wooden Shield variant uses the existing shield grip and
+front face covers the hand. Inventory and equipment use the same artwork.
+
+See [the RUN workflow and prompts](../output/art-direction/visual-target-pass/README.md)
+for repeatable generation and measurement. New headwear must remain inside the
+common envelope; wrapping hoods and face masks are not part of this approach.

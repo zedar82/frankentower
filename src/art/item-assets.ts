@@ -97,7 +97,64 @@ const itemImages = Object.fromEntries(
 
 const cleaverImage = itemImages.knife;
 const heldImages = { ...itemImages, knife: cleaverImage };
-export const itemArtReady = Promise.all(Object.values(itemImages).map((image) => image.decode()));
+type PresentationVariant = {
+  file: string;
+  crop?: [number, number, number, number];
+  crown?: boolean;
+};
+const presentationVariants: Record<string, PresentationVariant> = {
+  plate: { file: 'iron-breastplate-v2.png' },
+  spikes: { file: 'spiked-cuirass-v2.png' },
+  shield: { file: 'wooden-shield-v1.png', crop: [56, 60, 912, 904] },
+  horns: { file: 'horned-crown-v1.png', crop: [60, 276, 904, 472], crown: true },
+  bandage: { file: 'bandaged-circlet-v1.png', crop: [63, 319, 897, 448], crown: true },
+};
+const variantImages = Object.fromEntries(
+  Object.entries(presentationVariants).map(([id, profile]) => {
+    const image = new Image();
+    image.src = `${base}${profile.file}`;
+    return [id, image];
+  }),
+) as Record<string, HTMLImageElement>;
+export const itemArtReady = Promise.all(
+  [...Object.values(itemImages), ...Object.values(variantImages)].map((image) => image.decode()),
+);
+
+function sourceRect(image: HTMLImageElement, variant: string): [number, number, number, number] {
+  return presentationVariants[variant]?.crop ?? [0, 0, image.naturalWidth, image.naturalHeight];
+}
+
+// Fit variants to the common frame's base edge, overlapping the registered forehead.
+export function drawCrownItem(
+  c: CanvasRenderingContext2D,
+  variant: string,
+  x: number,
+  y: number,
+  envelope: { width: number; height: number; root: Point },
+) {
+  const image = variantImages[variant];
+  if (!presentationVariants[variant]?.crown || !image?.complete || !image.naturalWidth)
+    return false;
+  const [sx, sy, sw, sh] = sourceRect(image, variant);
+  const scale = Math.min(envelope.width / sw, envelope.height / sh);
+  const width = sw * scale,
+    height = sh * scale;
+  c.save();
+  c.imageSmoothingEnabled = false;
+  c.drawImage(
+    image,
+    sx,
+    sy,
+    sw,
+    sh,
+    x + envelope.root.x - width / 2,
+    y + envelope.height - height,
+    width,
+    height,
+  );
+  c.restore();
+  return true;
+}
 
 function heldTransform(profile: HeldAttachment) {
   const grip = { x: profile.grip.x * profile.frame.x, y: profile.grip.y * profile.frame.y };
@@ -132,7 +189,7 @@ export function drawHeldItem(
 ) {
   const profile = attachment(name);
   if (!profile) return false;
-  const image = heldImages[name as ItemIconName];
+  const image = variantImages[variant] ?? heldImages[name as ItemIconName];
   if (!image?.complete || !image.naturalWidth) return false;
   const { grip, angle, scale } = heldTransform(profile);
   c.save();
@@ -141,7 +198,14 @@ export function drawHeldItem(
   c.scale(scale, scale);
   c.imageSmoothingEnabled = false;
   c.filter = filterFor(variant);
-  c.drawImage(image, -grip.x, -grip.y, profile.frame.x, profile.frame.y);
+  c.drawImage(
+    image,
+    ...sourceRect(image, variant),
+    -grip.x,
+    -grip.y,
+    profile.frame.x,
+    profile.frame.y,
+  );
   c.restore();
   return true;
 }
@@ -177,16 +241,17 @@ export function drawGrotesqueItem(
   size: number,
   variant = '',
 ) {
-  const image = itemImages[name as ItemIconName];
+  const image = variantImages[variant] ?? itemImages[name as ItemIconName];
   if (!image?.complete || !image.naturalWidth) return false;
 
-  const scale = size / Math.max(image.naturalWidth, image.naturalHeight);
-  const width = image.naturalWidth * scale;
-  const height = image.naturalHeight * scale;
+  const source = sourceRect(image, variant);
+  const scale = size / Math.max(source[2], source[3]);
+  const width = source[2] * scale;
+  const height = source[3] * scale;
   c.save();
   c.imageSmoothingEnabled = false;
   c.filter = filterFor(variant);
-  c.drawImage(image, x + (size - width) / 2, y + (size - height) / 2, width, height);
+  c.drawImage(image, ...source, x + (size - width) / 2, y + (size - height) / 2, width, height);
   c.restore();
   return true;
 }

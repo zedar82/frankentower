@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import type { Item, Run, Slot, Stats } from '../game/types';
+import { SATCHEL_CAPACITY, type Item, type Run, type Slot, type Stats } from '../game/types';
 import { ITEM_MAP } from '../game/content';
-import { archetypes, SLOT_LABEL } from '../game/anatomy';
+import { archetypes } from '../game/anatomy';
 import { purchaseReason } from '../game/inventory';
 import { rerollCost, upgradeCost, RECOVERY_COST } from '../game/shop';
 import { Icon } from './Icon';
 import { DressingRoom } from './Arena';
-import { EquipmentOverview } from './Equipment';
-import { PageControls, PagedText, PagedList, Tabs, useDisplayMode } from './Paging';
+import { EquipmentOverview, SatchelOverview } from './Equipment';
+import { Modal } from './Modal';
+import { PagedList, useDisplayMode } from './Paging';
+import { EFFECT_SYMBOLS, EffectIcon, EffectSummary, type EffectSymbol } from './EffectSummary';
 import type { useItemDrag } from './hooks/useItemDrag';
 
-export type ShopAction = 'reroll' | 'upgrade' | 'recover' | 'freeze';
+export type ShopAction = 'reroll' | 'upgrade' | 'freeze' | 'recover';
 interface Props {
   run: Run;
   stats: Stats;
@@ -21,6 +23,7 @@ interface Props {
   onCatalogue(): void;
   onFight(): void;
   onManage(slot?: Slot): void;
+  onSatchel(): void;
   onBuild(): void;
 }
 
@@ -34,19 +37,13 @@ export function Shop({
   onCatalogue,
   onFight,
   onManage,
+  onSatchel,
   onBuild,
 }: Props) {
   const { compact, short } = useDisplayMode();
-  const [view, setView] = useState<'Patient' | 'Stock' | 'Gear' | 'Services'>('Stock');
-  const [offerPage, setOfferPage] = useState(0);
-  const show = (name: typeof view) =>
-    compact
-      ? view === name
-      : name === 'Services'
-        ? view === 'Services'
-        : name === 'Stock'
-          ? view !== 'Services'
-          : true;
+  const [services, setServices] = useState(false);
+  const [iconGuide, setIconGuide] = useState(false);
+  const landscape = compact && innerWidth >= 681 && innerHeight < 700;
   const service = (label: string, cost: number, action: ShopAction, reason: string | null) => (
     <div className="service-option">
       <button disabled={!!reason} onClick={() => onAction(action)}>
@@ -63,137 +60,244 @@ export function Shop({
     </div>
   );
   return (
-    <main className={`shop-screen ${compact ? 'compact-shop' : 'desktop-shop'}`}>
-      <div className="station-title">
-        <span className="eyebrow">FLOOR {run.floor} · QUARTERMASTER</span>
-        <h2>Take what you need.</h2>
-      </div>
-      {compact && (
-        <Tabs<typeof view>
-          label="Shop views"
-          value={view}
-          values={['Patient', 'Stock', 'Gear', 'Services']}
-          onChange={setView}
-        />
-      )}
-      <div className="shop-stage">
-        {show('Patient') && (
-          <>
-            <section className="patient-paper parchment">
-              <span className="eyebrow">PATIENT RECORD</span>
-              <button
-                className="patient-name"
-                aria-label={`Inspect ${run.build.name}`}
-                onClick={onBuild}
-              >
-                <div className="patient-identity">
-                  <h1>{run.build.name}</h1>
-                  <small className={`patient-circulation ${s.efficiency < 1 ? 'overload' : ''}`}>
-                    Circulation {Math.round(s.efficiency * 100)}%
-                  </small>
-                </div>
-                <span>Inspect ↗</span>
-              </button>
-              <p>{archetypes(run.build)[0]}</p>
-              <div className="patient-meters">
-                <div>
-                  HP{' '}
-                  <strong>
-                    {Math.ceil(run.hp)} / {s.maxHp}
-                  </strong>
-                  <div className="meter health">
-                    <i style={{ width: `${Math.max(0, run.hp / s.maxHp) * 100}%` }} />
-                  </div>
-                </div>
-                <div>
-                  MP{' '}
-                  <strong>
-                    {s.maxMana} / {s.maxMana}
-                  </strong>
-                  <div className="meter mana">
-                    <i style={{ width: '100%' }} />
-                  </div>
-                </div>
-                <span className={s.efficiency < 1 ? 'overload' : ''}>
-                  Circulation <strong>{Math.round(s.efficiency * 100)}%</strong>
-                </span>
+    <main
+      className={`shop-screen workshop-shop compact-offers ${compact ? 'compact-workshop' : 'wide-workshop'} ${short ? 'short-workshop' : ''} ${landscape ? 'landscape-workshop' : ''}`}
+    >
+      <div className="workshop-scene">
+        <section
+          className="patient-paper parchment"
+          role="button"
+          tabIndex={0}
+          aria-label={`Inspect ${run.build.name}`}
+          onClick={onBuild}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              onBuild();
+            }
+          }}
+        >
+          <span className="eyebrow">PATIENT RECORD</span>
+          <div className="patient-name">
+            <div className="patient-identity">
+              <h1>{run.build.name}</h1>
+              <small className={`patient-circulation ${s.efficiency < 1 ? 'overload' : ''}`}>
+                Circulation {Math.round(s.efficiency * 100)}%
+              </small>
+            </div>
+            <span>Inspect ↗</span>
+          </div>
+          <p>{archetypes(run.build)[0]}</p>
+          <div className="patient-meters">
+            <div>
+              HP{' '}
+              <strong>
+                {Math.ceil(run.hp)} / {s.maxHp}
+              </strong>
+              <div className="meter health">
+                <i style={{ width: `${Math.max(0, run.hp / s.maxHp) * 100}%` }} />
               </div>
-            </section>
-            <div className="shop-creature">
-              <DressingRoom build={run.build} floor={run.floor} embedded />
             </div>
-          </>
-        )}
-        {show('Gear') && <EquipmentOverview run={run} onManage={onManage} />}
-        {show('Stock') && (
-          <section className="stock-counter" aria-label="Quartermaster stock">
-            <div className="panel-heading">
-              <h3>Quartermaster</h3>
-              <span>
-                Tier {run.shopTier} · {run.shopFrozen ? 'Frozen' : 'Fresh each floor'}
-              </span>
-              <button onClick={() => onAction('freeze')} aria-pressed={run.shopFrozen}>
-                {run.shopFrozen ? 'Unfreeze stock' : 'Freeze stock'}
-              </button>
+            <div>
+              MP{' '}
+              <strong>
+                {s.maxMana} / {s.maxMana}
+              </strong>
+              <div className="meter mana">
+                <i style={{ width: '100%' }} />
+              </div>
             </div>
-            <p className="stock-state">
-              Tier {run.shopTier} · {run.shopFrozen ? 'Frozen stock' : 'Fresh each floor'}
-            </p>
-            <div className="shop-grid">
-              {run.offers.map((offer, index) => (
-                <div
-                  key={offer?.uid ?? `sold-${index}`}
-                  className="offer-position"
-                  hidden={compact && index !== offerPage}
-                >
-                  {offer ? (
-                    <article
-                      className={`shop-card rarity-${ITEM_MAP[offer.defId].rarity}`}
-                      {...drag.dragProps(offer)}
-                    >
+            <span className={s.efficiency < 1 ? 'overload' : ''}>
+              Circulation <strong>{Math.round(s.efficiency * 100)}%</strong>
+            </span>
+          </div>
+        </section>
+        <div className="shop-creature">
+          <DressingRoom build={run.build} floor={run.floor} embedded />
+        </div>
+        <EquipmentOverview run={run} onManage={onManage} includeSatchel={false} />
+        <div className="short-inventory-tools">
+          <button
+            className="short-equipment-summary"
+            onClick={() => onManage()}
+            aria-label="Manage equipment"
+          >
+            <strong>Gear ↗</strong>
+            <small>
+              {run.build.parts.filter((part) => part.item).length} / {run.build.parts.length}
+            </small>
+          </button>
+          <button className="short-satchel-summary" onClick={onSatchel} aria-label="Open satchel">
+            <strong>Satchel</strong>
+            <small>
+              {run.stash.length} / {SATCHEL_CAPACITY}
+            </small>
+          </button>
+        </div>
+        <SatchelOverview run={run} onOpen={onSatchel} />
+      </div>
+      <section className="stock-counter workshop-stock" aria-label="Quartermaster stock">
+        <div className="panel-heading">
+          <h3>Quartermaster</h3>
+          <span className="stock-caption">
+            Tier {run.shopTier} · {run.shopFrozen ? 'Frozen stock' : 'Fresh each floor'}
+          </span>
+          <button
+            className="effect-guide-button"
+            aria-label="Effect icon guide"
+            onClick={() => setIconGuide(true)}
+          >
+            ?
+          </button>
+          <button
+            className="stock-freeze"
+            onClick={() => onAction('freeze')}
+            aria-label={run.shopFrozen ? 'Unfreeze stock' : 'Freeze stock'}
+            aria-pressed={run.shopFrozen}
+            title="Keep these offers on the next floor · Free"
+          >
+            <span aria-hidden="true">❄</span>
+            <small>{run.shopFrozen ? 'Frozen' : 'Freeze'}</small>
+          </button>
+        </div>
+        <div className="shop-grid">
+          {run.offers.map((offer, index) => {
+            const reason = purchaseReason(run, index),
+              def = offer && ITEM_MAP[offer.defId];
+            return (
+              <div key={offer?.uid ?? `sold-${index}`} className="offer-position">
+                {offer && def ? (
+                  <article
+                    className={`shop-card rarity-${def.rarity}`}
+                    data-slot={def.slot}
+                    {...drag.dragProps(offer)}
+                  >
+                    <div className="offer-topline">
                       <button
-                        className="card-info"
-                        aria-label={`Inspect ${ITEM_MAP[offer.defId].name}`}
+                        className="offer-artline"
+                        aria-label={`Inspect ${def.name} artwork`}
                         onClick={() => onInspect(offer)}
                       >
-                        <Icon name={ITEM_MAP[offer.defId].icon} variant={offer.defId} size={64} />
-                        <div>
-                          <h3>{ITEM_MAP[offer.defId].name}</h3>
-                          <span className="offer-type">
-                            {SLOT_LABEL[ITEM_MAP[offer.defId].slot]} · {ITEM_MAP[offer.defId].type}
-                          </span>
-                        </div>
+                        <span
+                          className="offer-cooldown"
+                          title={
+                            def.cooldown
+                              ? `Every ${def.cooldown} seconds`
+                              : 'Passive or reactive effect'
+                          }
+                        >
+                          {def.cooldown ? (
+                            <>
+                              <EffectIcon kind="clock" />
+                              {def.cooldown}s
+                            </>
+                          ) : (
+                            '—'
+                          )}
+                        </span>
+                        <Icon name={def.icon} variant={offer.defId} size={40} />
                       </button>
-                      <PagedText text={ITEM_MAP[offer.defId].text} label="Effect" />
-                      {purchaseReason(run, index) && (
-                        <small className="purchase-reason">{purchaseReason(run, index)}</small>
-                      )}
                       <button
                         className="buy-button"
-                        aria-label={`Buy ${ITEM_MAP[offer.defId].name}`}
-                        disabled={!!purchaseReason(run, index)}
+                        aria-label={`Buy ${def.name} for ${def.price} gold`}
+                        disabled={!!reason}
                         onClick={() => onPurchase(index)}
                       >
-                        <Icon name="gold" size={20} /> {ITEM_MAP[offer.defId].price} · Buy
+                        <span>
+                          <Icon name="gold" size={16} /> {def.price}
+                        </span>
                       </button>
-                    </article>
-                  ) : (
-                    <div className="sold-card">
-                      <h3>Purchased</h3>
-                      <p>This position stays empty until stock refreshes.</p>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            {compact && (
-              <PageControls label="Offer" page={offerPage} total={4} onPage={setOfferPage} />
-            )}
-          </section>
+                    <button
+                      className="card-info"
+                      aria-label={`Inspect ${def.name}`}
+                      aria-description={def.text}
+                      onClick={() => onInspect(offer)}
+                    >
+                      <h3>{def.name}</h3>
+                      <EffectSummary def={def} level={offer.level} />
+                    </button>
+                    {reason && (
+                      <small className="offer-blocked" role="status">
+                        {run.gold < def.price
+                          ? `Need ${def.price - run.gold} gold`
+                          : 'Satchel full'}
+                      </small>
+                    )}
+                  </article>
+                ) : (
+                  <div className="sold-card">
+                    <h3>Purchased</h3>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+      <footer className="screen-actions workshop-actions">
+        <button
+          disabled={run.gold < rerollCost(run)}
+          aria-label="Fresh stock"
+          onClick={() => onAction('reroll')}
+        >
+          <span>↻ Fresh stock</span>
+          <small>
+            <Icon name="gold" size={14} /> {rerollCost(run)}
+          </small>
+        </button>
+        {!compact && (
+          <button
+            disabled={run.shopTier >= 5 || run.gold < upgradeCost(run)}
+            onClick={() => onAction('upgrade')}
+          >
+            <span>Better stock</span>
+            <small>
+              <Icon name="gold" size={14} /> {upgradeCost(run)}
+            </small>
+          </button>
         )}
-        {show('Services') && (
-          <section className="shop-services iron-panel">
-            <h3>Patient services</h3>
+        {!compact && (
+          <button
+            disabled={run.hp >= s.maxHp || run.gold < RECOVERY_COST}
+            onClick={() => onAction('recover')}
+          >
+            <span>Recover</span>
+            <small>
+              <Icon name="gold" size={14} /> {RECOVERY_COST}
+            </small>
+          </button>
+        )}
+        <button aria-label="Patient services" onClick={() => setServices(true)}>
+          Services
+        </button>
+        <button className="primary" onClick={onFight}>
+          To the arena →
+        </button>
+      </footer>
+      {iconGuide && (
+        <Modal title="Effect icons" onClose={() => setIconGuide(false)}>
+          <p className="icon-guide-caption">
+            Numbers beside icons are amounts. An arrow means event → effect. Inspect an item for
+            targets, conditions and full rules.
+          </p>
+          <PagedList
+            items={Object.entries(EFFECT_SYMBOLS)}
+            rowHeight={44}
+            minWidth={150}
+            label="Icon guide page"
+            render={([kind, [label]]) => (
+              <div className="icon-guide-entry" key={kind}>
+                <EffectIcon kind={kind as EffectSymbol} />
+                {label}
+              </div>
+            )}
+          />
+        </Modal>
+      )}
+      {services && (
+        <Modal title="Quartermaster services" onClose={() => setServices(false)}>
+          <div className="workshop-services">
             <PagedList
               items={[
                 service(
@@ -232,36 +336,31 @@ export function Shop({
                     <span>Free</span>
                   </button>
                   <small>
-                    Tier {run.shopTier} ·{' '}
                     {run.shopFrozen
                       ? 'Keep these offers on the next floor.'
                       : 'New offers on each floor.'}
                   </small>
                 </div>,
                 <div className="service-option">
-                  <button onClick={onCatalogue}>Equipment index →</button>
+                  <button
+                    onClick={() => {
+                      setServices(false);
+                      onCatalogue();
+                    }}
+                  >
+                    Equipment index →
+                  </button>
                   <small>Browse all equipment.</small>
                 </div>,
               ]}
-              rowHeight={short ? 64 : 80}
-              minWidth={220}
+              rowHeight={short ? 64 : 84}
+              minWidth={240}
               label="Services page"
               render={(node, index) => <div key={index}>{node}</div>}
             />
-          </section>
-        )}
-      </div>
-      <footer className="screen-actions">
-        <button onClick={() => onManage()}>Equipment & satchel ↗</button>
-        {!compact && (
-          <button onClick={() => setView(view === 'Services' ? 'Stock' : 'Services')}>
-            {view === 'Services' ? 'Back to stock' : 'Patient services'}
-          </button>
-        )}
-        <button className="primary" onClick={onFight}>
-          To the arena →
-        </button>
-      </footer>
+          </div>
+        </Modal>
+      )}
     </main>
   );
 }

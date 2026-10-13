@@ -11,13 +11,25 @@ import type { useItemDrag } from './hooks/useItemDrag';
 
 export const EQUIPMENT_SLOTS: Slot[] = ['head', 'hand', 'chest', 'heart', 'foot'];
 
-export function EquipmentOverview({ run, onManage }: { run: Run; onManage(slot?: Slot): void }) {
+export function EquipmentOverview({
+  run,
+  onManage,
+  includeSatchel = true,
+}: {
+  run: Run;
+  onManage(slot?: Slot): void;
+  includeSatchel?: boolean;
+}) {
   return (
     <aside className="equipment-overview iron-panel" aria-label="Equipment overview">
-      <div className="panel-heading">
-        <h3>Equipment</h3>
-        <button onClick={() => onManage()}>Expand ↗</button>
-      </div>
+      {includeSatchel && (
+        <div className="panel-heading">
+          <h3>Equipment</h3>
+          <button aria-label="Equipment & satchel ↗" onClick={() => onManage()}>
+            Equipment ↗
+          </button>
+        </div>
+      )}
       {EQUIPMENT_SLOTS.map((slot) => {
         const parts = run.build.parts.filter((part) => part.slot === slot);
         const inactive = parts.filter((part) => part.item && !usable(run.build, part.item)).length;
@@ -55,26 +67,58 @@ export function EquipmentOverview({ run, onManage }: { run: Run; onManage(slot?:
           </button>
         );
       })}
-      <button className="satchel-access" onClick={() => onManage()}>
-        <span>
-          Satchel {run.stash.length} / {SATCHEL_CAPACITY}
-        </span>
-        <span className="satchel-preview" aria-hidden="true">
-          {Array.from({ length: 4 }, (_, i) => (
-            <span key={i}>
-              {run.stash[i] && (
-                <Icon
-                  name={ITEM_MAP[run.stash[i].defId].icon}
-                  variant={run.stash[i].defId}
-                  size={22}
-                />
-              )}
-            </span>
-          ))}
-        </span>
-        <span>→</span>
-      </button>
+      {includeSatchel && (
+        <button className="satchel-access" onClick={() => onManage()}>
+          <span>
+            Satchel {run.stash.length} / {SATCHEL_CAPACITY}
+          </span>
+          <span className="satchel-preview" aria-hidden="true">
+            {Array.from({ length: 4 }, (_, i) => (
+              <span key={i}>
+                {run.stash[i] && (
+                  <Icon
+                    name={ITEM_MAP[run.stash[i].defId].icon}
+                    variant={run.stash[i].defId}
+                    size={22}
+                  />
+                )}
+              </span>
+            ))}
+          </span>
+          <span>→</span>
+        </button>
+      )}
     </aside>
+  );
+}
+
+export function SatchelOverview({ run, onOpen }: { run: Run; onOpen(): void }) {
+  return (
+    <button
+      className="satchel-overview iron-panel"
+      onClick={onOpen}
+      aria-label={`Manage satchel, ${run.stash.length} of ${SATCHEL_CAPACITY} spaces occupied`}
+    >
+      <span>
+        Satchel{' '}
+        <strong>
+          {run.stash.length} / {SATCHEL_CAPACITY}
+        </strong>
+      </span>
+      <span className="satchel-cells" aria-hidden="true">
+        {Array.from({ length: SATCHEL_CAPACITY }, (_, index) => (
+          <span key={index} className={run.stash[index] ? 'occupied' : 'vacant'}>
+            {run.stash[index] && (
+              <Icon
+                name={ITEM_MAP[run.stash[index].defId].icon}
+                variant={run.stash[index].defId}
+                size={28}
+              />
+            )}
+          </span>
+        ))}
+      </span>
+    </button>
   );
 }
 
@@ -82,6 +126,7 @@ interface Props {
   run: Run;
   initialSlot?: Slot;
   initialItem?: Item;
+  initialView?: 'Slots' | 'Satchel';
   drag: ReturnType<typeof useItemDrag>;
   onMove(item: Item, partUid?: string): void;
   onChange(event?: string): void;
@@ -92,6 +137,7 @@ export function EquipmentWorkspace({
   run,
   initialSlot = 'hand',
   initialItem,
+  initialView = 'Slots',
   drag,
   onMove,
   onChange,
@@ -103,7 +149,7 @@ export function EquipmentWorkspace({
   const [details, setDetails] = useState(false);
   const [target, setTarget] = useState<string>();
   const [pages, setPages] = useState<Partial<Record<Slot, number>>>({});
-  const [view, setView] = useState<'Slots' | 'Satchel'>('Slots');
+  const [view, setView] = useState<'Slots' | 'Satchel'>(initialView);
   const { compact } = useDisplayMode();
   const parts = run.build.parts.filter((part) => part.slot === slot);
   const select = (item: Item) => {

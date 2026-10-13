@@ -133,9 +133,16 @@ Keep equipment controls clear of the creature's face, hands, and silhouette.
 The mockup's separate equipment region is the preferred ordinary shop model;
 anatomical ownership must still be clear in labels and selection feedback.
 
-Show all four offers together where readable. On constrained displays, use
-explicit stock pages, show which offers remain, and retain the selected offer's
-price and purchase control. Buying an offer keeps its sold position; opening
+Show all four offers together in the ordinary phone and desktop shop. Phone
+portrait uses a compact two-by-two grid; desktop can use a single row. Size
+tiles to their content, avoiding fixed-height artwork areas and empty paragraph
+space. Use a visible corner price/purchase control, a cooldown in another corner,
+and recognizable effect symbols with numbers (for example a Poison icon and
+its amount). Keep purchase hit areas usable independently of small artwork.
+Provide an accessible icon guide and complete rules through inspection;
+derive summaries from the declarative rules, not hand-maintained item text.
+Use event → effect notation for reactions, and distinguish passive bonuses.
+Buying an offer keeps its sold position; opening
 inspection, equipment, or another page does not refresh stock.
 
 Item art, name, slot/type, and the essential effect communicate the offer.

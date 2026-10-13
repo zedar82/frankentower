@@ -1,0 +1,26 @@
+[
+  {
+    "id": "wooden-shield-v1",
+    "defId": "shield",
+    "model": "gemini-3.1-flash-image-preview",
+    "reference": "public/ui/quartermaster-scene-v1.png",
+    "output": "output/art-direction/visual-target-pass/sources/wooden-shield-v1.png",
+    "prompt": "Use case: stylized-concept. One isolated WOODEN SHIELD sprite for both inventory and hand attachment in a grotesque cartoon pixel-art dungeon game. The one reference is STYLE ONLY, not a part to duplicate. Match detailed handcrafted pixel clusters, stepped outlines, dark contours, worn timber and steel and amber edge highlights. NEW front-facing round shield, thick dark brown wooden planks, weathered reddish wood grain, two dark iron reinforcing bands, battered metal outer rim with rivets, a simple round dull steel boss at exact centre. Readable manufactured equipment silhouette, charming exaggeration, substantial wood clearly dominates. Entire round shield centred at 50 percent width/height, fills approximately 80 percent of square canvas; no perspective tilt, protruding handle or side view. Central boss at 50/50 is the hand grip landmark; vertical axis through boss. Plain WHITE background for background removal. No cast shadow, wearer, hand, arm, face, organ, flesh, eye, skull, detached body part, text, UI or frame. Crisp coherent pixel-art texture, no blur, photographic rendering or smooth vector gradients."
+  },
+  {
+    "id": "horned-crown-v1",
+    "defId": "horns",
+    "model": "gemini-3.1-flash-image-preview",
+    "reference": "public/ui/quartermaster-scene-v1.png",
+    "output": "output/art-direction/visual-target-pass/sources/horned-crown-v1.png",
+    "prompt": "Use case: stylized-concept. One isolated HORNED CROWN/CIRCLET sprite, crown-model headgear for a grotesque cartoon pixel-art dungeon game. ONE image is STYLE ONLY: match detailed handcrafted pixel clusters, stepped outlines, worn metal and pale bone texture, dark contours and amber highlights. NEW low-profile dark iron circlet with bronze rivets, small bone ornament at front centre, two chunky pale bone horns curving outward and upward from the left/right edges. Balanced strongly readable silhouette, broad and low, approximately 2.2 times as wide as high including horns. It rests ABOVE a creature's forehead: an open bottom edge, absolutely no face enclosure, hood, neckcloth, mask, cheek guards or full helmet dome. Front view, no tilt. Whole item centred in square WHITE canvas for background removal, fills about 80 percent of width and 36 percent height, large clean margins. Bottom-centre of the band is the attachment landmark. No wearer, head, face, eye, body part, stand, text, UI frame or cast shadow. Crisp coherent pixel-art texture, no blur, photograph or smooth vector gradients."
+  },
+  {
+    "id": "bandaged-circlet-v1",
+    "defId": "bandage",
+    "model": "gemini-3.1-flash-image-preview",
+    "reference": "public/ui/quartermaster-scene-v1.png",
+    "output": "output/art-direction/visual-target-pass/sources/bandaged-circlet-v1.png",
+    "prompt": "Use case: stylized-concept. One isolated BANDAGED CIRCLET sprite, crown-model headgear for a grotesque cartoon pixel-art dungeon game. ONE image is STYLE ONLY: match detailed handcrafted pixel clusters, stepped outlines, cloth texture, dark contours and amber highlights. NEW low-profile broad headband made of layered off-white cloth bandages, frayed cloth edges, muted tan stitches, one small red cross patch at front centre and a tiny dark metal clasp. Broad low silhouette approximately 2.2 times as wide as high. It rests ABOVE a creature's forehead, like a cloth circlet: bottom open, no face enclosure, hood, mask, neckcloth or cheek covering. Front view, no tilt. Whole item centred in square WHITE canvas for background removal, fills about 80 percent width and 36 percent height, clean margins. Bottom-centre of the cloth band is attachment landmark. No wearer, head, face, eye, body part, stand, crown jewels, horns, text, UI frame or cast shadow. Crisp coherent pixel art, no blur, photograph or smooth vector gradients."
+  }
+]

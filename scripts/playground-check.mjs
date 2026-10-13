@@ -13,7 +13,7 @@ try {
   await page.locator('.main-header .save-status').waitFor({ timeout: 60000 });
   if (await page.locator('.starter-view').count())
     await page.getByRole('button', { name: /Heavy Club.*Choose/ }).click();
-  await page.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await page.locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible').click();
   // Reuse this test's saved opening patient without discarding existing progress.
   assert.equal(
     await page.locator('.equipment-slot.filled').filter({ hasText: 'Heavy Club' }).count(),
@@ -30,7 +30,7 @@ try {
   await page.reload();
   await page.getByRole('button', { name: 'To the arena →' }).waitFor({ timeout: 30000 });
   assert.equal(await page.getByRole('dialog').count(), 0);
-  await page.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await page.locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible').click();
   assert.equal(
     await page.locator('.equipment-slot.filled').filter({ hasText: 'Heavy Club' }).count(),
     1,

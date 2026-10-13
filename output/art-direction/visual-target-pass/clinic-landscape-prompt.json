@@ -1,0 +1,8 @@
+{
+  "id": "clinic-alcove-landscape-v1",
+  "model": "gemini-3.1-flash-image-preview",
+  "reference": "public/ui/quartermaster-scene-v1.png",
+  "output": "output/art-direction/visual-target-pass/sources/clinic-alcove-landscape-v1.png",
+  "aspectRatio": "16:9",
+  "prompt": "Use case: stylized-concept. Asset: EMPTY wide clinical display alcove background for a live grotesque cartoon pixel-art dungeon game. The one supplied image is STYLE ONLY, not a composition to copy. Match its richly crafted pixel clusters, stepped silhouettes, battered masonry and iron, timber, muted materials and warm amber torchlight. NEW frontal dungeon surgeon's practice: a broad LOW round stone arch with its top fully visible in wide landscape 16:9, deep charcoal recess, small amber lamps on outer pillars, narrow shelves of green and blue specimen bottles tucked into outer sides, hanging metal instrument rack at far outer edge, faded teal cloth and small medical jars on peripheral trolley. Quiet practical medieval clinic mood. Leave central TWO THIRDS empty and dark for a colourful live creature; props stay along outer edges. Bottom tenth is flat dark flagstone floor, standing plane at 90 percent height. No steps, table, dais or plinth in centre. Fill whole image, no white margin. Coherent crisp pixel-art texture and strong material depth; no blur or smooth photographic lighting. NO creatures, patients, faces, bodies, body parts, detached limbs, gore, text, letters, numbers, UI, panels, cards, labels or guides. Reusable scenery, not a finished game screenshot."
+}

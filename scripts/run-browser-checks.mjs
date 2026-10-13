@@ -10,6 +10,8 @@ await new Promise((yes, no) => {
 const port = server.address().port;
 await new Promise((yes) => server.close(yes));
 const url = `http://127.0.0.1:${port}/`;
+const checkTimeout = Number(process.env.FRANKENTOWER_CHECK_TIMEOUT_MS ?? 120000);
+if (!Number.isFinite(checkTimeout) || checkTimeout <= 0) throw new Error('Invalid check timeout');
 const vite = spawn(
   process.execPath,
   [
@@ -67,7 +69,7 @@ try {
       const timeout = setTimeout(() => {
         child.kill();
         no(new Error(`${check} check timed out`));
-      }, 120000);
+      }, checkTimeout);
       child.once('error', (error) => {
         clearTimeout(timeout);
         no(error);

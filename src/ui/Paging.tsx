@@ -19,11 +19,13 @@ export function PageControls({
   total,
   onPage,
   label = 'Page',
+  showLabel = true,
 }: {
   page: number;
   total: number;
   onPage(page: number): void;
   label?: string;
+  showLabel?: boolean;
 }) {
   if (total <= 1) return null;
   return (
@@ -36,7 +38,8 @@ export function PageControls({
         ←
       </button>
       <span aria-live="polite">
-        {label} {page + 1} / {Math.max(1, total)}
+        {showLabel ? `${label} ` : ''}
+        {page + 1} / {Math.max(1, total)}
       </span>
       <button
         disabled={page >= total - 1}

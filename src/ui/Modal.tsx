@@ -15,6 +15,7 @@ export function Modal({
   close.current = onClose;
   useEffect(() => {
     const previous = document.activeElement as HTMLElement;
+    const previousLabel = previous?.getAttribute('aria-label');
     ref.current?.focus();
     const keydown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && close.current) {
@@ -45,7 +46,33 @@ export function Modal({
     document.addEventListener('keydown', keydown);
     return () => {
       document.removeEventListener('keydown', keydown);
-      previous?.focus();
+      const focusable = (node: HTMLElement | null): node is HTMLElement =>
+        !!node?.isConnected &&
+        node.matches('button, a[href], input, select, textarea, [tabindex]') &&
+        !node.hasAttribute('disabled') &&
+        !!node.getClientRects().length &&
+        getComputedStyle(node).visibility !== 'hidden';
+      const equivalent = previous?.matches('.equipment-category, .short-equipment-summary')
+        ? [
+            ...document.querySelectorAll<HTMLElement>(
+              '.short-equipment-summary, .equipment-category.socket-hand',
+            ),
+          ]
+        : [];
+      const sameLabel = previousLabel
+        ? [...document.querySelectorAll<HTMLElement>('[aria-label]')].filter(
+            (node) => node.getAttribute('aria-label') === previousLabel,
+          )
+        : [];
+      const candidates = [
+        previous,
+        ...sameLabel,
+        ...equivalent,
+        ...document.querySelectorAll<HTMLElement>(
+          '.workshop-stock .card-info, .workshop-stock .effect-guide-button, .screen-actions .primary, .combat-controls button, .main-header .icon-button',
+        ),
+      ];
+      candidates.find(focusable)?.focus();
     };
   }, []);
   return (

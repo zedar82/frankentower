@@ -1,5 +1,20 @@
 # UI pass handoff
 
+**Completed visual target pass — 13 October 2026:** the goal was
+“proceed with the UI work until you achive the visual target”. The earlier
+functional completion did not establish visual acceptance. Read
+[the current pass](visual-target-pass.md) first: it records the composed shop,
+four compact offers with effect iconography, clinic redesign, registered arena
+scenery, material-specific gear, current evidence and outstanding work. The
+latest runtime is privately uploaded as RUN **1.8.16**. Unit/build, twelve-size
+browser coverage, actual 125%/200% local zoom, normal/200% hosted persistence,
+and the recorded visual review pass. The Playground grant is revoked.
+Use `git log -1` and the
+working tree to identify the actual checkpoint; do not treat the historical
+version statements below as current. This pass has a source/assets/docs commit;
+no Git push or public release is authorized. Further work should start from
+specific feedback on these actual captures, not the earlier task-tab prototype.
+
 Recorded **11 October 2026**, Australia/Brisbane. This is an unfinished implementation checkpoint for resuming on another machine.
 
 **13 October continuation:** the UI pass was resumed from commit `a657cd8`.

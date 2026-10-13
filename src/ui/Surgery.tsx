@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { ITEM_MAP, PROCEDURES } from '../game/content';
 import { stats, SLOT_PLURAL } from '../game/anatomy';
 import { procedurePreview, procedureReason } from '../game/surgery';
-import type { Run } from '../game/types';
+import { SATCHEL_CAPACITY, type Run } from '../game/types';
 import { DressingRoom } from './Arena';
-import { PagedText, Tabs, useDisplayMode } from './Paging';
+import { PagedText, Tabs } from './Paging';
+import { Modal } from './Modal';
+import { EffectIcon } from './EffectSummary';
+import { Icon } from './Icon';
 
 export function Surgery({
   run,
@@ -18,9 +21,8 @@ export function Surgery({
   onContinue(): void;
 }) {
   const [id, setId] = useState(run.procedures[0] ?? '');
-  const [section, setSection] = useState<'Changes' | 'Procedure' | 'Patient'>('Changes');
+  const [section, setSection] = useState<'Changes' | 'Procedure' | 'Patient'>('Patient');
   const [bodyView, setBodyView] = useState<'Current' | 'Proposed'>('Current');
-  const { compact } = useDisplayMode();
   const p = PROCEDURES.find((p) => p.id === id);
   const preview = p && !run.operated ? procedurePreview(run, p) : null;
   const before = stats(run.build),
@@ -52,13 +54,13 @@ export function Surgery({
         ? `Procedure complete.\n\nCurrent patient:\nMaximum HP ${before.maxHp}\nMana ${before.maxMana}\nCirculation ${Math.round(before.efficiency * 100)}%\nCapacity ${before.capacity} / Load ${before.load}\nMovement ${Math.round(before.movementSpeed)}\n\nContinue to supplies when you are ready.`
         : 'No procedures available.';
   return (
-    <main className="surgery-screen">
+    <main className="surgery-screen clinic-scene">
       <div className="station-title">
         <span className="eyebrow">DR. SUTCHER’S PRACTICE · FLOOR {run.floor}</span>
         <h2>Reconstructive medicine</h2>
       </div>
       <div className="surgery-stage">
-        {(!compact || section === 'Patient') && (
+        {
           <div className="clinic-patient">
             <Tabs<typeof bodyView>
               label="Anatomy preview"
@@ -77,8 +79,8 @@ export function Surgery({
               {bodyView === 'Proposed' && preview ? 'Proposed anatomy' : 'Current anatomy'}
             </div>
           </div>
-        )}
-        <section className="procedure-content iron-panel">
+        }
+        <section className="procedure-content parchment">
           <div className="procedure-picker">
             <label>
               Available procedures
@@ -87,7 +89,7 @@ export function Surgery({
                 value={id}
                 onChange={(event) => {
                   setId(event.target.value);
-                  setSection('Changes');
+                  setSection('Patient');
                 }}
               >
                 {run.procedures.map((value) => (
@@ -98,38 +100,110 @@ export function Surgery({
               </select>
             </label>
           </div>
-          <Tabs<typeof section>
-            label="Procedure information"
-            value={section}
-            values={compact ? ['Changes', 'Procedure', 'Patient'] : ['Changes', 'Procedure']}
-            onChange={setSection}
-          />
-          <div className="procedure-card">
+          <div className="procedure-overview">
             <h3>{p?.name ?? 'Your appointment'}</h3>
-            <PagedText
-              key={`${id}-${section}`}
-              text={
-                section !== 'Procedure'
-                  ? changes
-                  : `${p?.text ?? ''}\n\n“${p?.quote ?? 'Your procedure is complete.'}”\n— Dr. Sutcher\n\nOne procedure per visit. Your hearts must support your new anatomy.`
-              }
-              label={section}
-            />
+            <div className="procedure-anatomy-effects">
+              {run.operated ? (
+                <strong>Procedure complete</strong>
+              ) : (
+                <>
+                  {(p?.remove ?? []).map((change, index) => (
+                    <span key={`remove-${index}`}>
+                      −{change.count} {SLOT_PLURAL[change.slot]}
+                    </span>
+                  ))}
+                  {(p?.add ?? []).map((change, index) => (
+                    <span key={`add-${index}`}>
+                      +{change.count} {change.variant ?? 'living'} {SLOT_PLURAL[change.slot]}
+                    </span>
+                  ))}
+                </>
+              )}
+            </div>
+            <dl className="procedure-comparison">
+              <div>
+                <dt>
+                  <EffectIcon kind="maxHp" />
+                  HP
+                </dt>
+                <dd>
+                  {before.maxHp} → {after.maxHp}
+                </dd>
+              </div>
+              <div>
+                <dt>
+                  <EffectIcon kind="maxMana" />
+                  Mana
+                </dt>
+                <dd>
+                  {before.maxMana} → {after.maxMana}
+                </dd>
+              </div>
+              <div>
+                <dt>
+                  <EffectIcon kind="capacity" />
+                  Circulation
+                </dt>
+                <dd>
+                  {Math.round(before.efficiency * 100)}% → {Math.round(after.efficiency * 100)}%
+                </dd>
+              </div>
+              <div>
+                <dt>Satchel</dt>
+                <dd>
+                  {run.stash.length} → {run.stash.length + (preview?.displaced.length ?? 0)} /{' '}
+                  {SATCHEL_CAPACITY}
+                </dd>
+              </div>
+            </dl>
+            <div className="procedure-review-actions">
+              <button onClick={() => setSection('Changes')}>Changes</button>
+              <button onClick={() => setSection('Procedure')}>Procedure</button>
+            </div>
           </div>
           <p className="procedure-reason action-reason">
             {reason ?? 'Review the consequences, then confirm your procedure.'}
           </p>
         </section>
       </div>
-      <footer className="screen-actions">
+      <footer className="screen-actions clinic-actions">
         <button disabled={!!reason} onClick={() => p && onOperate(p.id)}>
-          Perform procedure · {p?.price ? `${p.price} gold` : 'No charge'}
+          Perform procedure ·{' '}
+          {p?.price ? (
+            <>
+              <Icon name="gold" size={14} /> {p.price}
+            </>
+          ) : (
+            'Free'
+          )}
         </button>
         <button onClick={onManage}>Manage equipment</button>
         <button className="primary" onClick={onContinue}>
           Continue to supplies →
         </button>
       </footer>
+      {section !== 'Patient' && (
+        <Modal title="Procedure review" onClose={() => setSection('Patient')}>
+          <Tabs<'Changes' | 'Procedure'>
+            label="Procedure information"
+            value={section}
+            values={['Changes', 'Procedure']}
+            onChange={setSection}
+          />
+          <PagedText
+            key={`${id}-${section}`}
+            text={
+              section === 'Changes'
+                ? changes
+                : `${p?.text ?? ''}\n\n“${p?.quote ?? 'Your procedure is complete.'}”\n— Dr. Sutcher\n\nOne procedure per visit. Your hearts must support your new anatomy.`
+            }
+            label={section}
+          />
+          <p className="action-reason">
+            {reason ?? 'These consequences apply to the selected patient.'}
+          </p>
+        </Modal>
+      )}
     </main>
   );
 }

@@ -52,7 +52,11 @@ export function App({ initialSave }: { initialSave: Save }) {
     'help' | 'hall' | 'catalogue' | 'report' | 'new' | 'settings' | null
   >(null);
   const [selected, setSelected] = useState<Item | null>(null);
-  const [equipment, setEquipment] = useState<{ slot?: Slot; item?: Item } | null>(null);
+  const [equipment, setEquipment] = useState<{
+    slot?: Slot;
+    item?: Item;
+    view?: 'Slots' | 'Satchel';
+  } | null>(null);
   const { compact } = useDisplayMode();
   const [inspected, setInspected] = useState<Build | null>(null);
   const [paused, setPaused] = useState(false);
@@ -324,9 +328,9 @@ export function App({ initialSave }: { initialSave: Save }) {
     return () => window.removeEventListener('keydown', handle);
   });
   const battleView = flowStep !== 'shop' && flowStep !== 'lab';
-  const manage = (slot?: Slot, item?: Item) => {
+  const manage = (slot?: Slot, item?: Item, view: 'Slots' | 'Satchel' = 'Slots') => {
     setSelected(null);
-    setEquipment({ slot, item });
+    setEquipment({ slot, item, view });
   };
   return (
     <div
@@ -398,7 +402,7 @@ export function App({ initialSave }: { initialSave: Save }) {
         </div>
       </header>
       <div className="app-notice" role="status">
-        {toast || (compact ? platformStatus() : '')}
+        {toast}
       </div>
       {battleView && (
         <main className="battle-world">
@@ -597,6 +601,7 @@ export function App({ initialSave }: { initialSave: Save }) {
           onCatalogue={() => setModal('catalogue')}
           onFight={beginFight}
           onManage={manage}
+          onSatchel={() => manage(undefined, undefined, 'Satchel')}
           onBuild={() => setInspected(run.build)}
         />
       )}
@@ -632,6 +637,7 @@ export function App({ initialSave }: { initialSave: Save }) {
           run={run}
           initialSlot={equipment.slot}
           initialItem={equipment.item}
+          initialView={equipment.view}
           drag={itemDrag}
           onMove={dropItem}
           onChange={update}

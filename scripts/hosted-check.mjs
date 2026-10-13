@@ -92,15 +92,19 @@ try {
   await game.getByRole('button', { name: /Butcher’s Knife.*Choose/ }).click();
   await game.getByRole('button', { name: 'To the arena →' }).waitFor();
   const boughtName = await game.locator('.shop-card h3').first().innerText();
-  const boughtSlot = { Head: 'head', Hand: 'hand', Chest: 'chest', Heart: 'heart', Foot: 'foot' }[
-    (await game.locator('.offer-type').first().innerText()).split(' · ')[0]
-  ];
+  const boughtSlot = await game.locator('.shop-card').first().getAttribute('data-slot');
+  assert.ok(
+    ['head', 'hand', 'chest', 'heart', 'foot'].includes(boughtSlot),
+    'offer retains its real equipment slot',
+  );
   await game.locator('.buy-button').first().click();
   await game.getByText('Cloud save', { exact: true }).waitFor({ timeout: 30000 });
   await page.reload({ waitUntil: 'domcontentloaded' });
   game = await findGame();
   await game.getByRole('button', { name: 'To the arena →' }).waitFor();
-  await game.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await game
+    .locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible')
+    .click();
   await game.getByLabel('Equipment category').selectOption(boughtSlot);
   assert.ok(
     (await game.locator('.equipment-slot.filled').allTextContents()).some((text) =>
@@ -200,7 +204,9 @@ try {
   game = await findGame();
   await game.getByRole('button', { name: 'To the arena →' }).waitFor();
   await game.getByText('FLOOR 02', { exact: true }).waitFor();
-  await game.getByRole('button', { name: 'Equipment & satchel ↗' }).click();
+  await game
+    .locator('.equipment-category.socket-hand:visible, .short-equipment-summary:visible')
+    .click();
   await game.getByLabel('Equipment category').selectOption(boughtSlot);
   assert.ok(
     (await game.locator('.equipment-slot.filled').allTextContents()).some((text) =>

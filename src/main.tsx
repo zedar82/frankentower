@@ -5,6 +5,7 @@ import { InvalidSaveError, loadSave, resetSave, telemetry } from './platform';
 import { RULESET } from './game/types';
 import './styles.css';
 import './ui-materials.css';
+import './ui-workshop.css';
 import { PagedText } from './ui/Paging';
 
 const root = createRoot(document.getElementById('root')!);

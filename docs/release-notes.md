@@ -1,38 +1,25 @@
-# FRANKENTOWER — phone and desktop UI pass
+# FRANKENTOWER — composed shop and clinic
 
-The quartermaster now uses a textured dungeon scene, timber controls, iron fittings
-and parchment stock cards. Desktop places the creature between equipment and stock;
-phone uses a compact header and focused Patient, Stock, Gear and Services views.
+The quartermaster keeps your creature, patient record, equipment and satchel in
+one scene. All four offers are visible, with compact artwork, corner prices and
+cooldowns, and effect icons with amounts. Use the icon guide to learn symbols
+and inspect items for complete rules, conditions and signatures.
 
-Equipment expands into a touch-friendly workspace. Extra slots, complete item
-rules, surgery consequences, help, history and reports use tabs and explicit pages.
-Core views fit the usable viewport; only the combat transcript scrolls.
+Short phone layouts open equipment and the satchel through compact expand
+controls. The desktop satchel uses eight visible spaces in two rows. Purchases
+and inspection have separate touch targets.
 
-The satchel has eight spaces. Purchases, swaps and surgery check the complete
-result before spending or moving anything. A full satchel still permits valid
-swaps and purchases into empty compatible slots. Surgery previews the exact
-anatomy and displaced equipment before confirmation.
+Surgery keeps Current/Proposed anatomy visible beside a concise before/after
+comparison. Changes and procedure details open in a focused review. The clinic
+has its own lamps, bottles and instruments, and combat takes place in a richer
+stone chamber.
 
-Inventory pictures now match the accepted cleaver and crown silhouettes. Icons
-render at display density. The creature uses a RUN-generated stone plinth;
-controls use a RUN-generated timber texture.
+Wooden shields, horned circlets and bandaged caps now have distinct materials
+and matching equipped appearances. Iron and spiked armour have distinct stock
+illustrations. Patient inspection also corrects the displayed Crit percentage.
 
-Short landscape keeps blocked-purchase explanations beside the price and gives
-equipment selection clear space inside its frame. Touch controls retain a minimum
-44-pixel width. The creature display stays within its scene after rotation and
-does not intercept the arena action.
+Core views use focused workspaces and pages; the combat transcript remains the
+scrolling exception. Equipment rules, combat timing and the eight-space satchel
+are unchanged.
 
-This changes the development ruleset to frankentower-3. Incompatible development
-saves reset; no save migration is provided.
-
-This build remains private/unlisted. It is not a public release or jam submission.
-
-## Previous update: rendering quality and display density
-
-Creature cutouts, materials and torso boundaries now retain four bitmap pixels per assembly unit. This preserves facial lines, hand shapes and limb detail inside the existing frames and attachment envelopes.
-
-Room, arena and portrait canvases draw at their actual display size and device pixel ratio. Pixelated CSS scaling replaces smooth enlargement of a fixed small canvas. Portraits redraw when resized.
-
-The accepted body proportions, taper, grips and foreground attack-arm layers are preserved. Before/after quality captures use the actual DressingRoom at standard and high display density. The existing attachment check and production build pass; gameplay and combat timing are unchanged.
-
-This build remains private/unlisted. It is not a public release or jam submission.
+This is a private/unlisted development build, not a public release or jam entry.

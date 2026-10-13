@@ -14,8 +14,39 @@ import { puppetLayout } from '../art/puppet';
 import type { Build } from '../game/types';
 import { prepareCanvas } from '../art/canvas';
 
+const arenaScenery = new Image();
+arenaScenery.src = `${import.meta.env.BASE_URL}ui/arena-chamber-v1.png`;
+let arenaSceneryReady = false;
+void arenaScenery
+  .decode()
+  .then(() => {
+    arenaSceneryReady = true;
+  })
+  .catch(() => {});
+// Measured floor landmarks register generated scenery to the unchanged combat ellipse.
+const ARENA_ART_FLOOR = { cx: 0.5, cy: 0.604, rx: 0.395, ry: 0.307 };
+
 const displayStage = new Image();
-displayStage.src = `${import.meta.env.BASE_URL}ui/display-stage-v1.png`;
+displayStage.src = `${import.meta.env.BASE_URL}ui/display-step-v2.png`;
+const portraitAlcove = new Image();
+portraitAlcove.src = `${import.meta.env.BASE_URL}ui/quartermaster-alcove-v2.png`;
+const landscapeAlcove = new Image();
+landscapeAlcove.src = `${import.meta.env.BASE_URL}ui/quartermaster-alcove-landscape-v2.png`;
+const portraitClinic = new Image();
+portraitClinic.src = `${import.meta.env.BASE_URL}ui/clinic-alcove-v1.png`;
+const landscapeClinic = new Image();
+landscapeClinic.src = `${import.meta.env.BASE_URL}ui/clinic-alcove-landscape-v1.png`;
+let alcoveReady = false;
+void Promise.all([
+  portraitAlcove.decode(),
+  landscapeAlcove.decode(),
+  portraitClinic.decode(),
+  landscapeClinic.decode(),
+])
+  .then(() => {
+    alcoveReady = true;
+  })
+  .catch(() => {});
 let displayStageReady = false;
 void displayStage
   .decode()
@@ -149,12 +180,28 @@ export function Arena({
     backdrop.width = ARENA.width;
     backdrop.height = ARENA.height;
     room(backdrop.getContext('2d')!, floor);
+    let scenicBackdrop = false;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let frame = 0,
       doneAt = 0;
     function draw(now: number) {
       if (!canvas.current) return;
       const { combat: sim, paused: stopped } = latest.current;
+      if (arenaSceneryReady && !scenicBackdrop) {
+        const sx = ARENA.rx / (arenaScenery.naturalWidth * ARENA_ART_FLOOR.rx);
+        const sy = ARENA.ry / (arenaScenery.naturalHeight * ARENA_ART_FLOOR.ry);
+        const ctx = backdrop.getContext('2d')!;
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, ARENA.width, ARENA.height);
+        ctx.drawImage(
+          arenaScenery,
+          ARENA.cx - arenaScenery.naturalWidth * ARENA_ART_FLOOR.cx * sx,
+          ARENA.cy - arenaScenery.naturalHeight * ARENA_ART_FLOOR.cy * sy,
+          arenaScenery.naturalWidth * sx,
+          arenaScenery.naturalHeight * sy,
+        );
+        scenicBackdrop = true;
+      }
       if (sim.done && !doneAt) doneAt = now;
       const time = sim.time + (sim.done && !stopped ? (now - doneAt) / 1000 : 0);
       const small = canvas.current!.clientWidth < 680,
@@ -207,7 +254,7 @@ export function Arena({
       if (hit && !reduced && !stopped)
         c!.translate(Math.round(Math.sin(time * 80) * 2), Math.round(Math.cos(time * 75) * 1));
       c!.drawImage(backdrop, 0, 0);
-      roomLights(c!, reduced ? 0 : time);
+      if (!scenicBackdrop) roomLights(c!, reduced ? 0 : time);
       const actors = [...sim.actors].sort((a, b) => a.y - b.y);
       for (const a of actors) {
         const scale = renderScale(a);
@@ -364,19 +411,34 @@ export function DressingRoom({
       const height = embedded
         ? (320 * canvas.current.clientHeight) / Math.max(1, canvas.current.clientWidth)
         : 340;
-      const stageScale = embedded ? Math.min(1, height / 300) : 1;
-      const ground = embedded ? height - 83 * stageScale : 257;
+      const stageScale = embedded ? Math.min(1, height / 160) : 1;
+      const ground = embedded ? height - 40 * stageScale : 257;
       prepareCanvas(c!, 320, height);
       c!.clearRect(0, 0, 320, height);
       c!.imageSmoothingEnabled = false;
       if (embedded) {
+        if (alcoveReady) {
+          const alcove = surgery
+            ? height < 260
+              ? landscapeClinic
+              : portraitClinic
+            : height < 260
+              ? landscapeAlcove
+              : portraitAlcove;
+          const roomHeight = (320 * alcove.naturalHeight) / alcove.naturalWidth;
+          c!.drawImage(alcove, 0, ground + 35 * stageScale - roomHeight * 0.93, 320, roomHeight);
+        }
         if (displayStageReady)
           c!.drawImage(
             displayStage,
-            160 - 126 * stageScale,
-            ground - 71 * stageScale,
-            252 * stageScale,
-            169 * stageScale,
+            64,
+            303,
+            1136,
+            237,
+            160 - 150 * stageScale,
+            ground - 27 * stageScale,
+            300 * stageScale,
+            ((300 * 237) / 1136) * stageScale,
           );
         else {
           oval(c!, 160, ground + 13, 92, 23, '#4b3b42');
@@ -389,7 +451,7 @@ export function DressingRoom({
       const build = latest.current,
         b = puppetBounds(build, embedded),
         top = 20,
-        scale = Math.min(3, 280 / b.width, (ground - top) / -b.top);
+        scale = Math.min(3, (embedded ? 300 : 280) / b.width, (ground - top) / -b.top);
       monster(c!, build, 160 - ((b.left + b.right) * scale) / 2, ground, scale, {
         time: reduced ? 0 : now / 1000,
       });

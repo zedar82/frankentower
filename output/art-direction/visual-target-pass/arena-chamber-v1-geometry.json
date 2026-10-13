@@ -1,0 +1,6 @@
+{
+  "asset": "public/ui/arena-chamber-v1.png",
+  "floorLandmarksNormalized": { "cx": 0.5, "cy": 0.604, "rx": 0.395, "ry": 0.307 },
+  "measurement": "Visual landmarks on the accepted source: central clear flagstone fighting floor inside the peripheral ring. Runtime scales X/Y independently to register these landmarks to ARENA, without changing simulation geometry.",
+  "worldEllipse": { "cx": 320, "cy": 238, "rx": 268, "ry": 137 }
+}

@@ -1,0 +1,1364 @@
+/* Ordinary shopping keeps the creature, sockets, satchel and offers together. */
+.app-shell,
+.boot-screen {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.boot-screen > button {
+  background-image: url('/ui/button-timber-v1.png');
+  font:
+    bold 14px/1.2 Georgia,
+    serif;
+}
+.app-notice:empty {
+  display: none;
+}
+.combat-vitals > div {
+  padding: 4px 6px;
+  font-size: 13px;
+}
+.combat-vitals .health-label {
+  margin-top: 2px;
+  font-size: 11px;
+}
+.combat-vitals .meter.health {
+  height: 6px;
+  margin-top: 3px;
+}
+.combat-vitals .mana-line {
+  margin-top: 3px;
+  gap: 2px;
+}
+.combat-vitals .mana-line .meter {
+  height: 4px;
+  margin: 0;
+}
+.combat-belt {
+  background: transparent;
+  border-top: 1px solid #856440;
+}
+.workshop-shop {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 270px 52px;
+  gap: 10px;
+}
+.workshop-scene {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1.4fr) minmax(190px, 0.9fr);
+  grid-template-rows: minmax(0, 1fr) 100px;
+  gap: 12px;
+}
+.workshop-scene .patient-paper {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  color: #211912;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* The clinic keeps anatomy visible while detailed consequences open for review. */
+.clinic-scene .surgery-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 12px;
+}
+.clinic-scene .clinic-patient {
+  min-height: 0;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+}
+.clinic-scene .surgery-stage .procedure-content {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  padding: 16px;
+  gap: 8px;
+  color: #211912;
+}
+.clinic-scene .procedure-picker label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  font:
+    12px/1.1 Georgia,
+    serif;
+}
+.clinic-scene .procedure-picker select {
+  flex: none;
+  width: 100%;
+  font:
+    14px Georgia,
+    serif;
+}
+.clinic-scene .procedure-content button,
+.clinic-scene .procedure-content select {
+  color: var(--cream);
+}
+.procedure-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.procedure-overview h3 {
+  color: #211912;
+  font:
+    bold 20px/1.1 Georgia,
+    serif;
+}
+.procedure-anatomy-effects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 8px;
+  font:
+    bold 13px/1.2 Georgia,
+    serif;
+}
+.procedure-comparison {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  font:
+    13px/1.2 Georgia,
+    serif;
+}
+.procedure-comparison > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.procedure-comparison dt {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.procedure-comparison dd {
+  margin: 0;
+  text-align: right;
+  font-weight: bold;
+}
+.procedure-review-actions {
+  display: flex;
+  gap: 5px;
+}
+.procedure-review-actions button {
+  flex: 1;
+}
+.clinic-scene .procedure-reason {
+  margin: 0;
+  font:
+    12px/1.2 Georgia,
+    serif;
+  color: #753821;
+}
+@media (max-width: 680px) {
+  .clinic-scene .surgery-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+  .clinic-scene .surgery-stage .procedure-content {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    padding: 10px 12px;
+    gap: 4px;
+  }
+  .clinic-scene .procedure-content::before {
+    border-width: 12px;
+  }
+  .clinic-scene .procedure-picker label {
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+  }
+  .clinic-scene .procedure-picker select {
+    flex: 1;
+    font-size: 13px;
+  }
+  .clinic-scene .procedure-overview {
+    gap: 4px;
+  }
+  .clinic-scene .procedure-overview h3 {
+    font-size: 16px;
+  }
+  .clinic-scene .procedure-comparison {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px 10px;
+    font-size: 11px;
+  }
+  .clinic-scene .procedure-comparison > div {
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .clinic-scene .procedure-comparison .effect-icon {
+    width: 14px;
+    height: 14px;
+  }
+  .clinic-scene .clinic-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 4px;
+  }
+  .clinic-scene .clinic-actions button {
+    font-size: 13px;
+    padding: 3px;
+  }
+  .clinic-scene .clinic-actions .primary {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 681px) and (max-height: 499px) {
+  .clinic-scene .surgery-stage {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  .clinic-scene .surgery-stage .procedure-content {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: 44px auto 44px auto;
+    gap: 4px 7px;
+    padding: 6px 8px;
+  }
+  .clinic-scene .procedure-picker {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .clinic-scene .procedure-picker label {
+    font-size: 0;
+    gap: 0;
+  }
+  .clinic-scene .procedure-picker select {
+    font-size: 13px;
+  }
+  .clinic-scene .procedure-overview {
+    display: contents;
+  }
+  .clinic-scene .procedure-overview h3 {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    font-size: 16px;
+  }
+  .clinic-scene .procedure-anatomy-effects {
+    grid-column: 1;
+    grid-row: 2;
+    align-content: center;
+    font-size: 12px;
+  }
+  .clinic-scene .procedure-comparison {
+    grid-column: 2;
+    grid-row: 2;
+    gap: 2px;
+    font-size: 11px;
+  }
+  .clinic-scene .procedure-comparison .effect-icon {
+    width: 13px;
+    height: 13px;
+  }
+  .clinic-scene .procedure-review-actions {
+    grid-column: 1 / 3;
+    grid-row: 3;
+  }
+  .clinic-scene .procedure-reason {
+    grid-column: 1 / 3;
+    grid-row: 4;
+    font-size: 11px;
+  }
+}
+.workshop-scene .patient-name {
+  padding: 0;
+  width: 100%;
+  text-align: left;
+  min-height: 0;
+}
+.workshop-scene .patient-name h1 {
+  font-size: 29px;
+}
+.workshop-scene .patient-paper > p {
+  font-size: 15px;
+  margin: 4px 0 12px;
+}
+.workshop-scene .patient-meters {
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+}
+.workshop-scene .patient-meters strong {
+  float: right;
+}
+.workshop-scene .meter {
+  height: 12px;
+  margin-top: 4px;
+}
+.workshop-scene .patient-circulation {
+  display: none;
+}
+.workshop-scene .shop-creature {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  min-height: 0;
+}
+.workshop-scene .equipment-overview {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  padding: 12px;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(44px, 1fr));
+  gap: 3px;
+}
+.workshop-scene .equipment-overview .panel-heading {
+  min-width: 0;
+}
+.workshop-scene .equipment-overview .panel-heading h3 {
+  display: none;
+}
+.workshop-scene .equipment-overview .panel-heading button {
+  width: 100%;
+  font:
+    bold 18px Georgia,
+    serif;
+  padding: 4px;
+}
+.workshop-scene .equipment-category {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-rows: auto;
+  gap: 3px 5px;
+  padding: 4px 8px;
+  min-width: 0;
+  align-content: center;
+  height: 100%;
+}
+.workshop-scene .equipment-category > span:first-child {
+  font-size: 14px;
+  gap: 4px;
+}
+.workshop-scene .equipment-category > span:first-child .pixel-icon {
+  display: none;
+}
+.workshop-scene .equipment-category > strong {
+  font-size: 12px;
+}
+.workshop-scene .equipment-category > span:last-child {
+  display: none;
+}
+.workshop-scene .equipment-preview {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1;
+  justify-content: flex-start;
+  gap: 5px;
+}
+.workshop-scene .equipment-preview > span {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #967957;
+  background: #100e0dde;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.workshop-scene .equipment-preview .pixel-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+.satchel-overview {
+  line-height: 1.1;
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  text-align: left;
+  font-size: 14px;
+}
+.satchel-overview strong {
+  margin-left: 8px;
+}
+.satchel-cells {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 3px;
+  width: 100%;
+}
+.satchel-cells > span {
+  min-width: 0;
+  aspect-ratio: 1;
+  border: 1px solid #8a7153;
+  background: #110f0bde;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.satchel-cells .pixel-icon {
+  width: 100% !important;
+  height: 100% !important;
+}
+.workshop-stock {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  grid-column: auto;
+  grid-row: auto;
+}
+.workshop-stock > .panel-heading {
+  min-height: 44px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.workshop-stock > .panel-heading h3 {
+  font:
+    bold 23px Georgia,
+    serif;
+}
+.workshop-stock .stock-caption {
+  flex: 1;
+  font-size: 13px;
+}
+.workshop-stock .stock-freeze {
+  width: 44px;
+  padding: 2px;
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.workshop-stock .stock-freeze small {
+  font-size: 10px;
+}
+.workshop-stock .stock-freeze[aria-pressed='true'] {
+  border-color: #a9c2cf;
+  background-color: #304b53;
+}
+.workshop-stock .shop-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: 10px;
+}
+.workshop-stock .shop-card {
+  padding: 12px;
+  gap: 4px;
+  min-height: 0;
+}
+.workshop-stock .card-info {
+  flex-direction: row;
+  min-width: 0;
+  gap: 8px;
+  padding: 0;
+  min-height: 62px;
+}
+.workshop-stock .card-info > div {
+  min-width: 0;
+}
+.workshop-stock .card-info .pixel-icon {
+  width: 58px !important;
+  height: 58px !important;
+  flex: none;
+}
+.workshop-stock .card-info h3 {
+  font:
+    bold 20px/1.05 Georgia,
+    serif;
+}
+.workshop-stock .offer-type {
+  font:
+    11px/1.2 Georgia,
+    serif;
+  display: block;
+  margin-top: 3px;
+}
+.workshop-stock .text-copy {
+  font:
+    14px/1.25 Georgia,
+    serif;
+}
+.workshop-stock .paged-text {
+  flex: 1;
+}
+.workshop-stock .page-controls {
+  gap: 4px;
+}
+.workshop-stock .page-controls button {
+  padding: 2px;
+}
+.workshop-stock .page-controls span {
+  font-size: 12px;
+}
+.workshop-stock .buy-button {
+  min-height: 44px;
+  height: 44px;
+  padding: 3px 5px;
+  font-size: 14px;
+  flex-direction: column;
+  gap: 1px;
+}
+.workshop-stock .buy-button > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.workshop-stock .buy-button small {
+  font-size: 11px;
+}
+.workshop-stock .sold-card {
+  padding: 12px;
+  gap: 6px;
+  background: #1d171080;
+}
+.workshop-stock .sold-card h3 {
+  font:
+    bold 20px Georgia,
+    serif;
+}
+.workshop-stock .sold-card p {
+  font-size: 13px;
+}
+.workshop-actions {
+  display: flex;
+  padding: 0;
+  gap: 8px;
+  min-height: 44px;
+}
+.workshop-actions button {
+  flex: 1;
+  min-width: 0;
+  padding: 4px;
+  font-size: 15px;
+}
+.workshop-actions button small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+}
+.workshop-actions .primary {
+  flex: 1.6;
+  font:
+    bold 19px Georgia,
+    serif;
+}
+.workshop-services {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+}
+.workshop-services .paged-list {
+  width: 100%;
+}
+.workshop-stock .offer-type {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.workshop-actions > button:first-child {
+  border-color: #bd8844;
+  background-color: #684126;
+  background-blend-mode: soft-light;
+}
+@media (min-width: 1100px) and (min-height: 850px) {
+  .wide-workshop {
+    grid-template-rows: minmax(0, 1fr) 350px 52px;
+  }
+  .wide-workshop .card-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wide-workshop .card-info .pixel-icon {
+    width: 96px !important;
+    height: 96px !important;
+    align-self: center;
+  }
+}
+@media (min-width: 1100px) and (max-height: 849px) {
+  .wide-workshop .patient-paper {
+    padding: 12px 16px;
+  }
+  .wide-workshop .patient-name h1 {
+    font-size: 24px;
+  }
+  .wide-workshop .patient-paper > .eyebrow,
+  .wide-workshop .patient-paper > p {
+    display: none;
+  }
+  .wide-workshop .patient-meters {
+    font-size: 13px;
+    gap: 6px;
+  }
+}
+@media (max-width: 1099px), (max-height: 619px) {
+  .compact-workshop {
+    grid-template-rows: minmax(0, 1fr) 330px 48px;
+    gap: 7px;
+  }
+  .compact-workshop.single-offer {
+    grid-template-rows: minmax(0, 1fr) 184px 44px;
+  }
+  .compact-workshop .workshop-scene {
+    grid-template-columns: minmax(0, 1fr) 108px;
+    grid-template-rows: 58px minmax(0, 1fr) 44px;
+    gap: 6px;
+  }
+  .compact-workshop .patient-paper {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 4px 8px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: 6px;
+  }
+  .compact-workshop .patient-paper::before,
+  .compact-workshop .satchel-overview::before {
+    border-width: 10px;
+  }
+  .compact-workshop .equipment-overview::before {
+    border-width: 14px;
+  }
+  .compact-workshop .patient-paper > .eyebrow,
+  .compact-workshop .patient-paper > p,
+  .compact-workshop .patient-name > span,
+  .compact-workshop .patient-meters > span {
+    display: none;
+  }
+  .compact-workshop .patient-name {
+    gap: 0;
+  }
+  .compact-workshop .patient-name h1 {
+    font-size: clamp(13px, 4vw, 16px);
+    line-height: 1;
+  }
+  .compact-workshop .patient-circulation {
+    display: block;
+    font-size: 10px;
+    margin-top: 4px;
+    line-height: 1.05;
+  }
+  .compact-workshop .patient-meters {
+    font-size: 10px;
+    gap: 5px;
+  }
+  .compact-workshop .patient-meters > div {
+    display: grid;
+    grid-template-columns: 14px minmax(0, 1fr);
+    gap: 0 2px;
+    line-height: 1.1;
+  }
+  .compact-workshop .patient-meters strong {
+    float: none;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .compact-workshop .patient-meters .meter {
+    grid-column: 1 / -1;
+  }
+  .compact-workshop .meter {
+    height: 5px;
+    margin-top: 2px;
+  }
+  .compact-workshop .shop-creature {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .compact-workshop .equipment-overview {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    padding: 6px;
+    gap: 2px;
+  }
+  .compact-workshop .equipment-overview .panel-heading button {
+    font-size: 14px;
+    padding: 2px;
+  }
+  .compact-workshop .equipment-category {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    padding: 3px;
+    gap: 2px;
+  }
+  .compact-workshop .equipment-category > span:first-child {
+    font-size: 11px;
+  }
+  .compact-workshop .equipment-category > strong {
+    font-size: 10px;
+  }
+  .compact-workshop .equipment-preview {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    gap: 3px;
+  }
+  .compact-workshop .equipment-preview > span {
+    width: clamp(22px, 4vh, 32px);
+    height: clamp(22px, 4vh, 32px);
+    font-size: 20px;
+  }
+  .compact-workshop .equipment-preview .pixel-icon {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .compact-workshop .satchel-overview {
+    grid-column: 1;
+    grid-row: 3;
+    padding: 4px 8px;
+    flex-direction: row;
+    gap: 6px;
+    align-items: center;
+    font-size: 11px;
+  }
+  .compact-workshop .satchel-overview > span:first-child {
+    line-height: 1.1;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .compact-workshop .satchel-overview strong {
+    margin: 0;
+  }
+  .compact-workshop .satchel-cells {
+    gap: 2px;
+  }
+  .compact-workshop .workshop-stock > .panel-heading {
+    padding: 0 4px;
+    gap: 4px;
+  }
+  .compact-workshop .workshop-stock > .panel-heading h3 {
+    font-size: 17px;
+    flex: 1;
+  }
+  .compact-workshop .stock-caption {
+    display: none;
+  }
+  .compact-workshop .workshop-stock > .panel-heading .page-controls {
+    flex: none;
+  }
+  .compact-workshop .shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .compact-workshop .shop-card {
+    padding: 8px;
+    gap: 3px;
+  }
+  .compact-workshop .card-info {
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-start;
+    min-height: 64px;
+  }
+  .compact-workshop .card-info .pixel-icon {
+    width: 96px !important;
+    height: 96px !important;
+    align-self: center;
+  }
+  .compact-workshop .card-info h3 {
+    font-size: 16px;
+  }
+  .compact-workshop .offer-type {
+    font-size: 10px;
+    margin-top: 1px;
+  }
+  .compact-workshop .workshop-stock .text-copy {
+    font-size: 13px;
+  }
+  .compact-workshop .buy-button {
+    font-size: 13px;
+  }
+  .compact-workshop .workshop-actions {
+    gap: 5px;
+  }
+  .compact-workshop .workshop-actions button {
+    font-size: 12px;
+  }
+  .compact-workshop .workshop-actions button:first-child {
+    flex: 1.1;
+  }
+  .compact-workshop .workshop-actions .primary {
+    font-size: 15px;
+    flex: 1.55;
+  }
+  .single-offer .shop-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .single-offer .shop-card {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    grid-template-rows: minmax(0, 1fr) 44px;
+    gap: 4px 8px;
+  }
+  .single-offer .card-info {
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: row;
+    min-height: 44px;
+  }
+  .single-offer .card-info .pixel-icon {
+    width: 40px !important;
+    height: 40px !important;
+    align-self: center;
+  }
+  .single-offer .paged-text {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+  .single-offer .buy-button {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+@media (max-width: 680px) {
+  .app-shell {
+    gap: 5px;
+    padding: calc(5px + var(--safe-top)) calc(7px + var(--safe-right))
+      calc(5px + var(--safe-bottom)) calc(7px + var(--safe-left));
+  }
+  .main-header .save-status {
+    white-space: nowrap;
+    width: max-content;
+    display: block;
+    position: absolute;
+    right: 57px;
+    bottom: 1px;
+    font-size: 8px;
+    line-height: 1;
+  }
+  .main-header .gold {
+    transform: translateY(-4px);
+  }
+  .main-header::before {
+    border-width: 12px;
+  }
+}
+@media (min-width: 681px) {
+  .workshop-shop.landscape-workshop {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 44px;
+    gap: 7px;
+  }
+  .landscape-workshop .workshop-scene {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    grid-template-rows: 58px minmax(0, 1fr) 44px;
+    gap: 4px;
+  }
+  .landscape-workshop .equipment-overview {
+    grid-template-rows: repeat(2, minmax(44px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 5px;
+  }
+  .landscape-workshop .equipment-overview .panel-heading {
+    grid-column: 1 / -1;
+  }
+  .landscape-workshop .equipment-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .landscape-workshop .equipment-preview {
+    display: none;
+  }
+  .landscape-workshop .workshop-stock {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .landscape-workshop .workshop-actions {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+.compact-workshop.four-offers .shop-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (min-height: 500px) {
+  .landscape-workshop .equipment-overview {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, minmax(44px, 1fr));
+  }
+  .landscape-workshop .equipment-category {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    justify-content: stretch;
+  }
+  .landscape-workshop .equipment-preview {
+    display: flex;
+  }
+}
+
+/* Four compact offers: art, corner price/timer and rule-derived symbols. */
+.compact-offers.workshop-shop {
+  grid-template-rows: minmax(0, 1fr) auto 48px;
+}
+.wide-workshop .workshop-scene {
+  grid-template-rows: minmax(0, 1fr) 180px;
+}
+.wide-workshop .patient-paper {
+  align-self: start;
+}
+.wide-workshop .equipment-overview {
+  align-self: start;
+  grid-template-rows: repeat(5, minmax(52px, auto));
+}
+.wide-workshop .satchel-cells {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 256px;
+}
+.wide-workshop .satchel-cells > span {
+  max-height: 64px;
+}
+.compact-offers .workshop-stock .shop-grid {
+  flex: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: auto;
+  align-items: stretch;
+}
+.compact-offers .workshop-stock .shop-card {
+  position: relative;
+  padding: 8px 10px;
+  gap: 3px;
+}
+.compact-offers .shop-card::before {
+  border-width: 12px;
+}
+.compact-offers .shop-card .card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-height: 44px;
+  width: 100%;
+  padding: 0;
+  text-align: center;
+}
+.compact-offers .offer-topline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px;
+}
+.compact-offers .offer-artline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #211912;
+}
+.compact-offers .shop-card .offer-artline .pixel-icon {
+  width: 40px !important;
+  height: 40px !important;
+  align-self: center;
+  margin-inline: auto;
+}
+.compact-offers .offer-cooldown {
+  flex: none;
+}
+.compact-offers .offer-cooldown {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2px;
+  font:
+    bold 12px/1 Georgia,
+    serif;
+}
+.effect-icon {
+  display: inline-block;
+  flex: none;
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+}
+.compact-offers .shop-card .card-info h3 {
+  font:
+    bold 16px/1.1 Georgia,
+    serif;
+  width: 100%;
+  margin: 0;
+}
+.effect-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 6px;
+  width: 100%;
+  font:
+    bold 13px/1.2 Georgia,
+    serif;
+}
+.effect-chip,
+.effect-chip small {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+.effect-chip {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.effect-chip small {
+  font:
+    10px/1.2 Georgia,
+    serif;
+}
+.compact-offers .shop-card .buy-button {
+  min-width: 44px;
+  width: auto;
+  height: 44px;
+  padding: 3px 5px;
+  font:
+    bold 13px/1 Georgia,
+    serif;
+  border-width: 1px;
+  background-image: none;
+  border-radius: 2px 4px 3px 2px;
+}
+.compact-offers .buy-button > span {
+  gap: 2px;
+}
+.compact-offers .offer-blocked {
+  text-align: center;
+  font:
+    bold 11px/1.1 Georgia,
+    serif;
+  color: #753821;
+}
+.compact-offers .workshop-stock .sold-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96px;
+}
+.effect-guide-button {
+  width: 44px;
+  flex: none;
+  font:
+    bold 20px Georgia,
+    serif;
+}
+.short-inventory-tools {
+  display: none;
+}
+.compact-offers .workshop-stock .stock-freeze {
+  width: 48px;
+  flex: none;
+}
+.compact-offers .stock-freeze small {
+  white-space: nowrap;
+  font-size: 9px;
+}
+.icon-guide-caption {
+  font:
+    14px/1.25 Georgia,
+    serif;
+}
+.icon-guide-entry .effect-icon {
+  filter: brightness(2);
+}
+.icon-guide-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font:
+    14px/1.1 Georgia,
+    serif;
+}
+@media (max-width: 1099px), (max-height: 619px) {
+  .compact-offers .workshop-stock .shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+    gap: 5px;
+  }
+  .compact-offers .shop-card .card-info h3 {
+    font-size: 13px;
+  }
+  .compact-offers .effect-summary {
+    font-size: 12px;
+    gap: 2px 5px;
+  }
+  .compact-offers .effect-icon {
+    width: 15px;
+    height: 15px;
+  }
+  .compact-offers .shop-card .offer-artline .pixel-icon {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .compact-offers .satchel-cells > span {
+    max-height: 28px;
+  }
+}
+@media (min-width: 681px) and (max-height: 699px) {
+  .compact-offers.landscape-workshop {
+    grid-template-rows: minmax(0, 1fr) 44px;
+  }
+  .compact-offers.landscape-workshop .workshop-stock {
+    align-self: start;
+    width: 100%;
+  }
+}
+@media (max-width: 680px) and (max-height: 699px) {
+  .compact-offers .workshop-scene {
+    grid-template-columns: minmax(0, 1fr) 108px;
+    grid-template-rows: minmax(0, 1fr) 44px;
+    gap: 3px;
+  }
+  .compact-offers .shop-creature {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  .compact-offers .patient-paper {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    padding: 4px 6px;
+    gap: 3px;
+  }
+  .compact-offers .patient-name h1 {
+    font-size: 12px;
+  }
+  .compact-offers .patient-circulation {
+    font-size: 9px;
+    margin-top: 2px;
+  }
+  .compact-offers .patient-meters {
+    width: 100%;
+    gap: 2px;
+  }
+  .compact-offers .patient-meters .meter {
+    height: 3px;
+    margin-top: 1px;
+  }
+  .compact-offers .satchel-overview {
+    display: none;
+  }
+  .compact-offers .equipment-overview {
+    display: none;
+  }
+  .compact-offers .short-inventory-tools {
+    display: grid;
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .compact-offers .short-inventory-tools button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 2px;
+    gap: 2px;
+    font:
+      11px/1 Georgia,
+      serif;
+  }
+  .compact-offers .short-inventory-tools small {
+    font:
+      10px/1 Georgia,
+      serif;
+  }
+}
+@media (max-width: 680px) and (min-height: 700px) {
+  .compact-offers .workshop-scene {
+    container: phone-workshop / size;
+    grid-template-rows: 58px minmax(0, 1fr) 84px;
+  }
+  .compact-offers .shop-creature {
+    grid-row: 2 / 4;
+  }
+  .compact-offers .equipment-overview {
+    grid-row: 1 / 3;
+    align-self: start;
+    grid-template-rows: repeat(5, minmax(44px, auto));
+  }
+  .compact-offers .equipment-preview > span {
+    width: 22px;
+    height: 22px;
+  }
+  .compact-offers .satchel-overview {
+    grid-column: 2;
+    grid-row: 3;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: 5px 7px;
+    gap: 3px;
+  }
+  .compact-offers .satchel-overview > span:first-child {
+    flex-direction: row;
+    gap: 5px;
+  }
+  .compact-offers .satchel-cells {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  /* Long offers and host chrome can leave less room than the viewport suggests. */
+  @container phone-workshop (max-height: 326px) {
+    .compact-offers .shop-creature {
+      grid-row: 1 / 4;
+    }
+    .compact-offers .patient-paper {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      align-self: start;
+      display: flex;
+      padding: 4px 6px;
+      gap: 3px;
+    }
+    .compact-offers .patient-name h1 {
+      font-size: 12px;
+    }
+    .compact-offers .patient-circulation {
+      font-size: 9px;
+      margin-top: 2px;
+    }
+    .compact-offers .patient-meters {
+      width: 100%;
+      gap: 2px;
+    }
+    .compact-offers .patient-meters .meter {
+      height: 3px;
+      margin-top: 1px;
+    }
+    .compact-offers .equipment-overview,
+    .compact-offers .satchel-overview {
+      display: none;
+    }
+    .compact-offers .short-inventory-tools {
+      display: grid;
+      grid-column: 2;
+      grid-row: 3;
+      align-self: end;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px;
+    }
+    .compact-offers .short-inventory-tools button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 2px;
+      gap: 2px;
+      font:
+        11px/1 Georgia,
+        serif;
+    }
+    .compact-offers .short-inventory-tools small {
+      font:
+        10px/1 Georgia,
+        serif;
+    }
+  }
+}
+@media (min-width: 681px) and (max-height: 499px) {
+  .compact-offers.landscape-workshop {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(98px, 1fr) auto 44px;
+    gap: 4px;
+  }
+  .compact-offers.landscape-workshop .workshop-scene {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: 180px minmax(0, 1fr) 160px;
+    grid-template-rows: minmax(50px, 1fr) 44px;
+    gap: 4px;
+  }
+  .compact-offers.landscape-workshop .patient-paper {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 2px 5px;
+  }
+  .compact-offers.landscape-workshop .patient-name h1 {
+    font-size: 13px;
+  }
+  .compact-offers.landscape-workshop .patient-circulation {
+    font-size: 9px;
+    margin-top: 2px;
+  }
+  .compact-offers.landscape-workshop .patient-meters {
+    gap: 3px;
+  }
+  .compact-offers.landscape-workshop .patient-meters .meter {
+    height: 3px;
+    margin-top: 1px;
+  }
+  .compact-offers.landscape-workshop .shop-creature {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+  .compact-offers.landscape-workshop .equipment-overview {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    padding: 0;
+  }
+  .compact-offers.landscape-workshop .satchel-overview {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .compact-offers.landscape-workshop .workshop-stock {
+    grid-column: 1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 4px;
+  }
+  .compact-offers.landscape-workshop .workshop-stock > .panel-heading {
+    display: grid;
+    grid-template-columns: 44px 48px;
+    justify-content: center;
+    align-content: center;
+    gap: 3px;
+    padding: 0;
+  }
+  .compact-offers.landscape-workshop .panel-heading h3 {
+    grid-column: 1 / 3;
+    font-size: 13px;
+    text-align: center;
+  }
+  .compact-offers.landscape-workshop .workshop-stock .shop-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: auto;
+    gap: 4px;
+  }
+  .compact-offers.landscape-workshop .workshop-actions {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}

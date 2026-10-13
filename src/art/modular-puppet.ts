@@ -1,7 +1,13 @@
 import type { Build, Part } from '../game/types';
 import { ITEM_MAP } from '../game/content';
 import type { Joint, Pose, PuppetLayout } from './puppet';
-import { drawHeldItem, heldHandLayer, heldItemCorners, itemArtReady } from './item-assets';
+import {
+  drawCrownItem,
+  drawHeldItem,
+  heldHandLayer,
+  heldItemCorners,
+  itemArtReady,
+} from './item-assets';
 
 type Point = { x: number; y: number };
 type Contract = {
@@ -399,13 +405,11 @@ export function drawModularPuppet(
     if (!p.item) continue;
     const g = geometry[asset(p)],
       crown = g.crown!,
-      mount = geometry['gear-crown'].root;
-    sprite(
-      c,
-      'gear-crown',
-      j.pin.x + crown.x - g.root.x - mount.x,
-      j.pin.y + crown.y - g.root.y - mount.y,
-    );
+      envelope = geometry['gear-crown'],
+      mount = envelope.root,
+      x = j.pin.x + crown.x - g.root.x - mount.x,
+      y = j.pin.y + crown.y - g.root.y - mount.y;
+    if (!drawCrownItem(c, p.item.defId, x, y, envelope)) sprite(c, 'gear-crown', x, y);
   }
   for (const j of layout.legs) {
     const p = feet[j.index];

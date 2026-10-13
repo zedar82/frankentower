@@ -1,9 +1,37 @@
 # UI implementation review
 
-Updated 13 October 2026. The full UI pass has been implemented and reviewed in
-the local app and private RUN host. Physical-device performance and human
-playtesting remain release-roadmap work. The [11 October handoff](ui-pass-handoff.md)
-preserves the earlier checkpoint; this review records the newer verification.
+13 October 2026: **the visual target implementation and review are complete**. Comparing the mobile
+shop with Daniel's reference exposed composition and density shortfalls despite
+passing functional checks. The earlier completion claim was too strong.
+See [the visual target pass](visual-target-pass.md). The command results below
+record the earlier `b73b618` / private RUN `1.8.14` functional checkpoint;
+they do not certify the newer source. Current acceptance evidence follows.
+
+## Current visual pass — 13 October, late evening
+
+Private RUN **1.8.16** now contains the composed shop and clinic, four compact
+offers with rule-derived symbols, new scenery/material-specific gear, smaller
+phone record, responsive focus return and container-sized equipment fallback.
+See [the current visual review](visual-target-pass.md#visual-review) and
+[actual captures](../output/art-direction/visual-target-pass/review/).
+
+Current unit tests (61), production build and existing browser/arena/puppet/
+reliability checks pass. Browser coverage now includes twelve sizes, with
+390×796, 360×750 and 360×700 added to the earlier matrix. Scene-region overlap
+is checked explicitly. Actual 125%/200% local Chrome zoom checks also pass.
+Private **1.8.16** passes normal and actual 200% zoom hosted boot, purchase/cloud
+reload, SDK safe areas, display-density rendering, footer input after resize,
+combat, saved speed and floor-two/cloud reload. The composed UI also passed
+real RUN Playground persistence/safe-area verification; its grant is revoked.
+
+The visual review finds the reference's hierarchy and materials implemented:
+one composed ordinary shop, prominent real creature, compact patient record,
+separate equipment rail, eight-cell satchel, four content-sized offer tiles,
+corner costs/timers, and live effect iconography. Clinic, arena, outcomes and
+focused workspaces share that language. Refer to the portable screenshots;
+the historical results below must not be used in place of current evidence.
+
+## Historical functional checkpoint
 
 This records implementation evidence against [UI expectations](ui-expectations.md).
 The shop mockup remains the visual target. The pass replaces the former dashboard
