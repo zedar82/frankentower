@@ -299,15 +299,7 @@ canvas,
 .panel-heading > span {
   font-size: 12px;
 }
-.shop-stage {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  gap: 12px;
-}
 .patient-paper {
-  grid-column: 2;
-  grid-row: 1;
   min-width: 0;
 }
 .patient-paper p {
@@ -354,8 +346,6 @@ canvas,
   border-top-color: #a4bdd0;
 }
 .shop-creature {
-  grid-column: 2;
-  grid-row: 2;
   min-height: 0;
   min-width: 0;
   position: relative;
@@ -379,8 +369,6 @@ canvas,
   height: 100%;
 }
 .equipment-overview {
-  grid-column: 1;
-  grid-row: 1 / 3;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -408,25 +396,13 @@ canvas,
   margin-top: auto;
 }
 .stock-counter {
-  grid-column: 3;
-  grid-row: 1 / 3;
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
 }
-.stock-counter .panel-heading {
-  background: #362c23;
-  border: 2px solid #796047;
-  padding: 3px 8px;
-}
-.stock-state {
-  display: none;
-}
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 8px;
   flex: 1;
   min-height: 0;
@@ -508,15 +484,6 @@ canvas,
   flex-direction: column;
   justify-content: center;
   gap: 12px;
-}
-.shop-services {
-  grid-column: 3;
-  grid-row: 1 / 3;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-height: 0;
-  justify-content: center;
 }
 .service-option {
   display: flex;

@@ -408,7 +408,10 @@ browser suite passed after these changes, including the short-landscape report
 layout case and the ordered layers. The obsolete `.compact-shop` and
 `.desktop-shop` selector branches have now been removed after confirming the
 live Shop uses workshop-specific classes; shared selectors and responsive rules
-remain. Broader screen-by-screen regrouping is still open.
+remain. The obsolete generic shop composition was also removed from the base
+sheet: unused `.shop-stage`/`.shop-services` rules, old grid placement and the
+two-by-two offer grid no longer compete with the live workshop layout. Further
+screen-by-screen regrouping is still open.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's
