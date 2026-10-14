@@ -1,0 +1,162 @@
+{
+  "rasterScale": 4,
+  "parts": [
+    {
+      "name": "head-rat",
+      "width": 64,
+      "height": 64,
+      "root": [0.5, 0.9],
+      "pin": [32, 56],
+      "crown": [0.5, 0.15]
+    },
+    {
+      "name": "head-lizard",
+      "width": 64,
+      "height": 64,
+      "root": [0.5, 0.88],
+      "pin": [32, 56],
+      "crown": [0.5, 0.105]
+    },
+    {
+      "name": "head-flesh",
+      "width": 64,
+      "height": 64,
+      "root": [0.5, 0.91],
+      "pin": [32, 56],
+      "crown": [0.5, 0.11]
+    },
+    {
+      "name": "head-bone",
+      "width": 64,
+      "height": 64,
+      "root": [0.5, 0.93],
+      "pin": [32, 56],
+      "crown": [0.5, 0.09]
+    },
+    {
+      "name": "head-clockwork",
+      "width": 64,
+      "height": 64,
+      "root": [0.5, 0.9],
+      "pin": [32, 56],
+      "crown": [0.5, 0.1]
+    },
+    {
+      "name": "head-ganglion",
+      "width": 64,
+      "height": 64,
+      "root": [0.5, 0.93],
+      "pin": [32, 56],
+      "crown": [0.5, 0.1]
+    },
+    {
+      "name": "arm-flesh",
+      "width": 96,
+      "height": 112,
+      "root": [0.25, 0.19],
+      "pin": [24, 20],
+      "end": [0.79, 0.78],
+      "target": [64, 78]
+    },
+    {
+      "name": "arm-fur",
+      "width": 96,
+      "height": 112,
+      "root": [0.26, 0.18],
+      "pin": [24, 20],
+      "end": [0.79, 0.79],
+      "target": [64, 78]
+    },
+    {
+      "name": "arm-bone",
+      "width": 96,
+      "height": 112,
+      "root": [0.25, 0.19],
+      "pin": [24, 20],
+      "end": [0.79, 0.78],
+      "target": [64, 78]
+    },
+    {
+      "name": "arm-clockwork",
+      "width": 96,
+      "height": 112,
+      "root": [0.25, 0.19],
+      "pin": [24, 20],
+      "end": [0.79, 0.78],
+      "target": [64, 78]
+    },
+    {
+      "name": "arm-lizard",
+      "width": 96,
+      "height": 112,
+      "root": [0.25, 0.19],
+      "pin": [24, 20],
+      "end": [0.79, 0.78],
+      "target": [64, 78]
+    },
+    {
+      "name": "arm-ganglion",
+      "width": 96,
+      "height": 112,
+      "root": [0.2, 0.18],
+      "pin": [24, 20],
+      "end": [0.87, 0.79],
+      "target": [64, 78]
+    },
+    {
+      "name": "leg-bone",
+      "source": "leg-bone-v2",
+      "width": 32,
+      "height": 72,
+      "root": [0.5, 0.14],
+      "pin": [16, 10],
+      "end": [0.5, 0.962],
+      "target": [16, 65]
+    },
+    {
+      "name": "leg-lizard",
+      "width": 32,
+      "height": 72,
+      "root": [0.5, 0.14],
+      "pin": [16, 10],
+      "end": [0.5, 0.91],
+      "target": [16, 65]
+    },
+    {
+      "name": "leg-flesh",
+      "width": 32,
+      "height": 72,
+      "root": [0.5, 0.14],
+      "pin": [16, 10],
+      "end": [0.5, 0.963],
+      "target": [16, 65]
+    },
+    {
+      "name": "leg-fur",
+      "width": 32,
+      "height": 72,
+      "root": [0.5, 0.14],
+      "pin": [16, 10],
+      "end": [0.5, 0.96],
+      "target": [16, 65]
+    },
+    {
+      "name": "leg-clockwork",
+      "width": 32,
+      "height": 72,
+      "root": [0.5, 0.14],
+      "pin": [16, 10],
+      "end": [0.5, 0.96],
+      "target": [16, 65]
+    },
+    {
+      "name": "leg-ganglion",
+      "width": 32,
+      "height": 72,
+      "root": [0.5, 0.14],
+      "pin": [16, 10],
+      "end": [0.5, 0.94],
+      "target": [16, 65]
+    }
+  ]
+}

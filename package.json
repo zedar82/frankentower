@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "dev:offline": "vite --host 127.0.0.1 --mode offline",
-    "build": "tsc --noEmit && tsx scripts/validate-content.ts && vite build",
+    "dev": "vite --configLoader runner --host 127.0.0.1",
+    "dev:offline": "vite --configLoader runner --host 127.0.0.1 --mode offline",
+    "build": "tsc --noEmit && tsx scripts/validate-content.ts && vite build --configLoader runner",
     "preview": "vite preview --host 127.0.0.1",
     "test": "tsx --test tests/*.test.ts",
     "balance": "tsx scripts/balance.ts",

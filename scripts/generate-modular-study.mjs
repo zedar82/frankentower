@@ -1,8 +1,11 @@
 import { chromium } from '@playwright/test';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const base = process.env.FRANKENTOWER_LOCAL_URL ?? 'http://127.0.0.1:5174/';
-const destination = 'public/grotesque/modular-v2';
+const destination = process.env.FRANKENTOWER_ASSET_OUTPUT ?? 'public/grotesque/modular-v2';
+const sourceSpec = JSON.parse(
+  await readFile(new URL('./modular-v2-source-spec.json', import.meta.url), 'utf8'),
+);
 await mkdir(destination, { recursive: true });
 const browser = await chromium.launch({
   headless: true,
@@ -13,7 +16,7 @@ const browser = await chromium.launch({
 try {
   const page = await browser.newPage();
   await page.goto(base);
-  const result = await page.evaluate(async () => {
+  const result = await page.evaluate(async ({ rasterScale, parts: specs }) => {
     const source = '/output/art-direction/modular-v2/sources/';
     const load = async (name) => {
       const i = new Image();
@@ -23,7 +26,6 @@ try {
     };
     const files = {},
       contracts = {};
-    const rasterScale = 4;
     const canvas = (w, h, density = 1) => {
       const c = document.createElement('canvas');
       c.width = w * density;
@@ -34,28 +36,18 @@ try {
       return [c, p];
     };
     const save = (name, c) => (files[name] = c.toDataURL('image/png').split(',')[1]);
-    const specs = [
-      ['head-rat', 64, 64, [0.5, 0.9], [32, 56], null, null, [0.5, 0.15]],
-      ['head-lizard', 64, 64, [0.5, 0.88], [32, 56], null, null, [0.5, 0.105]],
-      ['head-flesh', 64, 64, [0.5, 0.91], [32, 56], null, null, [0.5, 0.11]],
-      ['head-bone', 64, 64, [0.5, 0.93], [32, 56], null, null, [0.5, 0.09]],
-      ['head-clockwork', 64, 64, [0.5, 0.9], [32, 56], null, null, [0.5, 0.1]],
-      ['head-ganglion', 64, 64, [0.5, 0.93], [32, 56], null, null, [0.5, 0.1]],
-      ['arm-flesh', 96, 112, [0.25, 0.19], [24, 20], [0.79, 0.78], [64, 78]],
-      ['arm-fur', 96, 112, [0.26, 0.18], [24, 20], [0.79, 0.79], [64, 78]],
-      ['arm-bone', 96, 112, [0.25, 0.19], [24, 20], [0.79, 0.78], [64, 78]],
-      ['arm-clockwork', 96, 112, [0.25, 0.19], [24, 20], [0.79, 0.78], [64, 78]],
-      ['arm-lizard', 96, 112, [0.25, 0.19], [24, 20], [0.79, 0.78], [64, 78]],
-      ['arm-ganglion', 96, 112, [0.2, 0.18], [24, 20], [0.87, 0.79], [64, 78]],
-      ['leg-bone', 32, 72, [0.5, 0.14], [16, 10], [0.5, 0.962], [16, 65]],
-      ['leg-lizard', 32, 72, [0.5, 0.14], [16, 10], [0.5, 0.91], [16, 65]],
-      ['leg-flesh', 32, 72, [0.5, 0.14], [16, 10], [0.5, 0.963], [16, 65]],
-      ['leg-fur', 32, 72, [0.5, 0.14], [16, 10], [0.5, 0.96], [16, 65]],
-      ['leg-clockwork', 32, 72, [0.5, 0.14], [16, 10], [0.5, 0.96], [16, 65]],
-      ['leg-ganglion', 32, 72, [0.5, 0.14], [16, 10], [0.5, 0.94], [16, 65]],
-    ];
-    for (const [name, w, h, root, pin, end, target, crown] of specs) {
-      const sourceName = name === 'leg-bone' ? 'leg-bone-v2' : name;
+    for (const {
+      name,
+      source = name,
+      width: w,
+      height: h,
+      root,
+      pin,
+      end,
+      target,
+      crown,
+    } of specs) {
+      const sourceName = source;
       const image = await load(sourceName),
         [raw, r] = canvas(image.width, image.height);
       r.drawImage(image, 0, 0);
@@ -237,7 +229,7 @@ try {
       paint('side', 20, 24, shape, line);
     }
     return { files, contracts };
-  });
+  }, sourceSpec);
   for (const [name, data] of Object.entries(result.files))
     await writeFile(`${destination}/${name}.png`, Buffer.from(data, 'base64'));
   await writeFile(`${destination}/geometry.json`, JSON.stringify(result.contracts, null, 2) + '\n');

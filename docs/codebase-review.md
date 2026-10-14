@@ -68,10 +68,9 @@ presentation catalogue now covers every equipment slot. Fight completion
 rejects duplicate terminal calls. Puppet layouts use a content-signature cache
 that detects in-place build edits and geometry readiness changes. Combat
 precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
-while paused or hidden. Remaining work includes physical-device profiling,
-generator metadata and worn torso/organ renderers. Poison uses one shared pool
-with latest-applicator actor credit; item-level tick attribution is deferred
-with item balance.
+while paused or hidden. Remaining work includes physical-device profiling and
+worn torso/organ renderers. Poison uses one shared pool with latest-applicator
+actor credit; item-level tick attribution is deferred with item balance.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -305,7 +304,12 @@ footwear profiles declare their front-facing coverage and attachment landmarks.
 Torso and organ profiles establish their slot interfaces and explicitly record
 that current art is icon-only. Build validation checks profile-to-slot roles,
 finite landmarks and crops against the dimensions of existing PNG files.
-Generator metadata and worn torso/organ renderers remain outstanding.
+Modular generation landmarks now live in `scripts/modular-v2-source-spec.json`;
+the content check validates roles, frame dimensions, source/output landmarks,
+raster scale and agreement with generated geometry. A full generator run into a
+temporary directory reproduced all 81 current files byte-for-byte. Worn
+torso/organ renderers remain outstanding because the registered assets are
+icons rather than fitted body overlays.
 
 ## 8. Asset loading and recovery — P2
 

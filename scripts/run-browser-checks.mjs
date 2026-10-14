@@ -16,6 +16,8 @@ const vite = spawn(
   process.execPath,
   [
     resolve('node_modules/vite/bin/vite.js'),
+    '--configLoader',
+    'runner',
     '--host',
     '127.0.0.1',
     '--port',
