@@ -419,6 +419,7 @@ export class Combat {
           const owner = this.actors.find((a) => a.id === actor.poisonOwner);
           if (owner) {
             owner.damage += amount;
+            // Generic pool tick: current reactions match poisonTick, not an item.
             this.emit(owner, { kind: 'poisonTick', ancestry: [], target: actor.id, value: amount });
           }
           this.log(

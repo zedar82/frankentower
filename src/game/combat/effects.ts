@@ -67,6 +67,8 @@ export function resolveEffect(
       case 'poison':
         for (const target of targets.filter((candidate) => candidate.hp > 0)) {
           target[effect.kind] += amount;
+          // Poison is one target-owned pool. The latest applicator owns its
+          // actor-level damage credit; ticks do not split by item source.
           if (effect.kind === 'poison') target.poisonOwner = actor.id;
           engine.log(
             'status',

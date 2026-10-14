@@ -69,8 +69,9 @@ rejects duplicate terminal calls. Puppet layouts use a content-signature cache
 that detects in-place build edits and geometry readiness changes. Combat
 precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
 while paused or hidden. Remaining work includes physical-device profiling,
-generator metadata, worn torso/organ renderers and source-credit policy for
-combined statuses.
+generator metadata and worn torso/organ renderers. Poison uses one shared pool
+with latest-applicator actor credit; item-level tick attribution is deferred
+with item balance.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -471,11 +472,13 @@ pool per affected creature, with combined damage and decay. The current numeric
 stacking already does this. Do not split gameplay pools or create extra ticks
 to implement source attribution.
 
-Poison stores only `poisonOwner`, not the contributing ability. Tick damage
-contributes to the actor total but not an item total; `poisonTick` has no source
-for source-filtered reactions. Ownership, damage/kill credit and multi-source
-reaction routing remain questions for the later status/report pass. Keep that
-bookkeeping separate from the agreed combined-pool gameplay.
+Poison remains one combined numeric pool per target. Existing poison items use
+generic `poisonTick` reactions; no current content filters a tick by the source
+ability, so per-source tick routing is not part of this pass. The latest poison
+applicator is the pool's actor owner for tick damage and kill credit. Ticks count
+toward actor damage but not item contribution; item-balance and item-level
+attribution remain deferred with the temporary item set. Keep report
+bookkeeping separate if that later balance pass needs it.
 
 ### Authoring and tool consistency
 
