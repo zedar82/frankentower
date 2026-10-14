@@ -9,7 +9,7 @@ import { RULESET, SATCHEL_CAPACITY, clone } from '../src/game/types';
 import { PROCEDURES } from '../src/game/content';
 import { count, equipped, stats } from '../src/game/anatomy';
 import { Combat } from '../src/game/combat';
-import { canMoveItem, moveItem } from '../src/game/inventory';
+import { canMoveItem, moveItem, moveItemResult, purchaseItemResult } from '../src/game/inventory';
 
 test('inventory moves validate ownership and targets before spending or removing items', () => {
   const run = newRun(12);
@@ -17,6 +17,11 @@ test('inventory moves validate ownership and targets before spending or removing
   const offer = run.offers[0]!,
     wrong = run.build.parts.find((part) => part.slot !== ITEM_MAP[offer.defId].slot)!;
   const before = clone(run);
+  assert.deepEqual(moveItemResult(run, offer.uid, wrong.uid), {
+    ok: false,
+    code: 'wrong_slot',
+    message: 'Choose a matching equipment slot.',
+  });
   assert.equal(moveItem(run, offer.uid, wrong.uid), false);
   assert.deepEqual(run, before);
   assert.equal(canMoveItem(run, 'not-owned'), false);
@@ -65,6 +70,11 @@ test('full satchel permits atomic swaps and direct purchases into empty slots', 
   assert.equal(run.stash.length, SATCHEL_CAPACITY);
   run.offers[1] = { uid: 'no-room', defId: 'knife', level: 1 };
   const full = clone(run);
+  assert.deepEqual(purchaseItemResult(run, 1), {
+    ok: false,
+    code: 'satchel_full',
+    message: 'Satchel full. Equip, combine, or sell an item to make room.',
+  });
   assert.equal(purchaseItem(run, 1), false);
   assert.equal(moveItem(run, 'no-room', hands[0].uid), false);
   assert.deepEqual(run, full);

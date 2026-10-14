@@ -7,6 +7,40 @@ type ItemLocation =
   | { kind: 'stash'; item: Item }
   | { kind: 'equipped'; part: Part; item: Item };
 
+export type InventoryFailureCode =
+  | 'wrong_phase'
+  | 'missing_item'
+  | 'missing_offer'
+  | 'insufficient_gold'
+  | 'wrong_slot'
+  | 'anatomy_requirement'
+  | 'already_equipped'
+  | 'already_in_satchel'
+  | 'satchel_full'
+  | 'missing_pair';
+export type InventoryResult =
+  | { ok: true; itemUid: string }
+  | { ok: false; code: InventoryFailureCode; message: string };
+
+function failedMove(reason: string): Extract<InventoryResult, { ok: false }> {
+  const code: InventoryFailureCode = reason.startsWith('Equipment can only')
+    ? 'wrong_phase'
+    : reason === 'Insufficient gold.'
+      ? 'insufficient_gold'
+      : reason === 'Choose a matching equipment slot.'
+        ? 'wrong_slot'
+        : reason.startsWith('Your anatomy')
+          ? 'anatomy_requirement'
+          : reason === 'Already equipped here.'
+            ? 'already_equipped'
+            : reason === 'Already in the satchel.'
+              ? 'already_in_satchel'
+              : reason.startsWith('Satchel full')
+                ? 'satchel_full'
+                : 'missing_item';
+  return { ok: false, code, message: reason };
+}
+
 function locateItem(run: Run, uid: string): ItemLocation | undefined {
   const index = run.offers.findIndex((item) => item?.uid === uid);
   if (index >= 0) return { kind: 'offer', index, item: run.offers[index]! };
@@ -61,6 +95,14 @@ export function moveItem(run: Run, uid: string, partUid?: string) {
   return true;
 }
 
+export function moveItemResult(run: Run, uid: string, partUid?: string): InventoryResult {
+  const reason = itemMoveReason(run, uid, partUid);
+  if (reason) return failedMove(reason);
+  return moveItem(run, uid, partUid)
+    ? { ok: true, itemUid: uid }
+    : failedMove('This item is no longer available.');
+}
+
 export function purchaseDestination(run: Run, index: number) {
   const offer = run.offers[index];
   return offer && usable(run.build, offer)
@@ -76,6 +118,11 @@ export function purchaseReason(run: Run, index: number) {
 export function purchaseItem(run: Run, index: number) {
   const offer = run.offers[index];
   return !!offer && moveItem(run, offer.uid, purchaseDestination(run, index));
+}
+export function purchaseItemResult(run: Run, index: number): InventoryResult {
+  const offer = run.offers[index];
+  if (!offer) return { ok: false, code: 'missing_offer', message: 'Already purchased.' };
+  return moveItemResult(run, offer.uid, purchaseDestination(run, index));
 }
 
 export function buy(run: Run, index: number) {

@@ -416,8 +416,11 @@ message and operation consume the same projected removal set. Procedure stock
 uses an explicit `stock` access context that skips visit, phase, gold and satchel
 constraints while preserving anatomical validity checks. `operateResult` gives
 the caller a clear failure message or the removed and displaced IDs; the App
-shows failed command reasons. Inventory command results and shared plan objects
-remain open.
+shows failed command reasons. Inventory moves and purchases now have structured
+result APIs with stable failure codes and messages, and the App displays a
+rejected move's reason. Existing boolean wrappers remain for the remaining UI
+and diagnostic callers. Item sale/combining results and shared inventory plan
+objects remain open.
 
 ### Events, reports and attribution
 

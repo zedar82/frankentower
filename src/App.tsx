@@ -3,7 +3,7 @@ import { ITEM_MAP } from './game/content';
 import { equipped, stats } from './game/anatomy';
 import { advance, finishFight, floorReward, newRun, retire, startRun } from './game/run';
 import { recover, reroll, toggleShopFreeze, upgradeShop } from './game/shop';
-import { canMoveItem, moveItem, purchaseItem } from './game/inventory';
+import { canMoveItem, moveItemResult, purchaseItemResult } from './game/inventory';
 import { operateResult } from './game/surgery';
 import { encounter } from './game/encounters';
 import { type Build, type Item, type Save, type Slot } from './game/types';
@@ -159,7 +159,12 @@ export function App({ initialSave }: { initialSave: Save }) {
   }
   function purchase(index: number) {
     const offer = run.offers[index];
-    if (!offer || !purchaseItem(run, index)) return;
+    const result = purchaseItemResult(run, index);
+    if (!result.ok) {
+      notify(result.message);
+      return;
+    }
+    if (!offer) return;
     sound('buy', save.settings.sound);
     notify(
       ITEM_MAP[offer.defId].name +
@@ -171,7 +176,11 @@ export function App({ initialSave }: { initialSave: Save }) {
   const canDrop = (item: Item, partUid?: string) => canMoveItem(run, item.uid, partUid);
   function dropItem(item: Item, partUid?: string) {
     const purchased = run.offers.some((offer) => offer?.uid === item.uid);
-    if (!moveItem(run, item.uid, partUid)) return;
+    const result = moveItemResult(run, item.uid, partUid);
+    if (!result.ok) {
+      notify(result.message);
+      return;
+    }
     sound(purchased ? 'buy' : 'equip', save.settings.sound);
     notify(ITEM_MAP[item.defId].name + (partUid ? ' equipped.' : ' added to the satchel.'));
     update(purchased ? 'item_purchased' : 'item_equipped');
