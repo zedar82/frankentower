@@ -8,26 +8,19 @@ import {
   type HeldGeometry,
   type ItemPresentation,
 } from './presentation-catalog';
+import { imageAssetReady, isImageAssetReady, requestImageAsset } from './asset-loader';
 
 type Point = { x: number; y: number };
 const base = `${import.meta.env.BASE_URL}grotesque/items/`;
 const modularBase = `${import.meta.env.BASE_URL}grotesque/modular-v2/`;
-const imagesByAsset = new Map<string, HTMLImageElement>();
-function assetKey(asset: AssetRef) {
-  return `${asset.area}/${asset.file}`;
-}
 function assetUrl(asset: AssetRef) {
   return `${asset.area === 'items' ? base : modularBase}${asset.file}`;
 }
 function imageFor(asset: AssetRef) {
-  const key = assetKey(asset);
-  let image = imagesByAsset.get(key);
-  if (!image) {
-    image = new Image();
-    image.src = assetUrl(asset);
-    imagesByAsset.set(key, image);
-  }
-  return image;
+  return requestImageAsset(assetUrl(asset), `${asset.area}/${asset.file}`);
+}
+function imageReady(asset: AssetRef) {
+  return isImageAssetReady(assetUrl(asset));
 }
 function sourceRect(asset: AssetRef, image: HTMLImageElement): [number, number, number, number] {
   return asset.crop ? [...asset.crop] : [0, 0, image.naturalWidth, image.naturalHeight];
@@ -35,12 +28,12 @@ function sourceRect(asset: AssetRef, image: HTMLImageElement): [number, number, 
 function resolvedProfile(id: string): ItemPresentation | undefined {
   return itemPresentation(id);
 }
-for (const asset of Object.values(ITEM_ICON_ASSETS)) imageFor(asset);
-for (const profile of Object.values(ITEM_PRESENTATION)) imageFor(profile.asset);
+const itemAssets = new Map<string, AssetRef>();
+for (const asset of Object.values(ITEM_ICON_ASSETS)) itemAssets.set(assetUrl(asset), asset);
+for (const profile of Object.values(ITEM_PRESENTATION)) itemAssets.set(assetUrl(profile.asset), profile.asset);
+for (const asset of itemAssets.values()) imageFor(asset);
 // Images are shared by URL and settle independently; drawing uses local fallbacks.
-export const itemArtReady = Promise.allSettled(
-  [...imagesByAsset.values()].map((image) => image.decode()),
-).then(() => undefined);
+export const itemArtReady = Promise.all([...itemAssets.keys()].map((url) => imageAssetReady(url))).then(() => undefined);
 
 function footwearProfile(id: string) {
   const profile = resolvedProfile(id);
@@ -50,7 +43,7 @@ function footwearProfile(id: string) {
 }
 export function footwearArtReady(variant: string) {
   const profile = footwearProfile(variant);
-  return !!profile && !!imageFor(profile.asset).naturalWidth;
+  return !!profile && imageReady(profile.asset);
 }
 export function drawFootwearItem(
   c: CanvasRenderingContext2D,
@@ -61,7 +54,7 @@ export function drawFootwearItem(
   const profile = footwearProfile(variant);
   if (!profile) return false;
   const image = imageFor(profile.asset);
-  if (!image.complete || !image.naturalWidth) return false;
+  if (!imageReady(profile.asset) || !image.complete || !image.naturalWidth) return false;
   const [sx, sy, sw, sh] = sourceRect(profile.asset, image);
   const scale = Math.min(profile.envelope.width / sw, profile.envelope.height / sh);
   c.save();
@@ -93,7 +86,7 @@ export function drawCrownItem(
   const profile = resolvedProfile(variant);
   if (profile?.kind !== 'crown' || !profile.seat) return false;
   const image = imageFor(profile.asset);
-  if (!image.complete || !image.naturalWidth) return false;
+  if (!imageReady(profile.asset) || !image.complete || !image.naturalWidth) return false;
   const [sx, sy, sw, sh] = sourceRect(profile.asset, image);
   const scale = Math.min(envelope.width / sw, envelope.height / sh);
   c.save();
@@ -158,7 +151,7 @@ export function drawHeldItem(
   const presentation = heldProfile(name, variant);
   if (!presentation) return false;
   const { geometry, image, asset } = presentation;
-  if (!image.complete || !image.naturalWidth) return false;
+  if (!imageReady(asset) || !image.complete || !image.naturalWidth) return false;
   const { grip, angle, scale } = heldTransform(geometry);
   const profile = resolvedProfile(variant);
   c.save();
@@ -191,7 +184,7 @@ export function drawGrotesqueItem(
     asset = profile?.asset ?? iconAsset(name);
   if (!asset) return false;
   const image = imageFor(asset);
-  if (!image.complete || !image.naturalWidth) return false;
+  if (!imageReady(asset) || !image.complete || !image.naturalWidth) return false;
   const source = sourceRect(asset, image),
     scale = size / Math.max(source[2], source[3]),
     width = source[2] * scale,

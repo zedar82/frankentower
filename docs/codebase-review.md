@@ -62,7 +62,7 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-Session/controller ownership, shared retryable asset loading, CSS consolidation,
+Session/controller ownership, CSS consolidation,
 full compiled combat stats and structured command results remain planned work.
 The item presentation catalogue now covers every equipment slot. Fight
 completion now rejects repeated calls after the combat phase. Puppet layout has
@@ -321,8 +321,15 @@ arm grip, leg sole/ankle and root landmarks. A failed optional body sprite logs
 its asset name and draws a material-colored fallback block; the geometry file
 remains essential. Presentation images now deduplicate by art path within the
 item-art catalogue, and build validation checks every catalogue PNG and crop.
-A shared loader across body, arena and item assets, explicit load/error state
-and targeted retry remain future work.
+A URL-keyed loader now owns item, modular-body, geometry and arena-scene requests.
+It exposes loading/ready/error status, shares duplicate image requests, keeps
+optional image failures isolated, and gives required geometry a targeted retry
+action in recovery. Retry URLs bypass stale browser cache entries. Scene drawing
+checks the readiness of the individual backdrop it needs; body and item drawing
+retain their local fallbacks. A focused loader test verifies the original URL,
+failure state, cache-busted retry and successful reuse. The loader does not yet
+prioritize only the currently visible screen; all registered body and item art
+is still requested during startup.
 
 ## 9. Responsive styling and display modes — P2
 

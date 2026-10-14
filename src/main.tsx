@@ -7,13 +7,16 @@ import './styles.css';
 import './ui-materials.css';
 import './ui-workshop.css';
 import { PagedText } from './ui/Paging';
+import { AssetLoadError, retryFailedAssets } from './art/asset-loader';
 
 const root = createRoot(document.getElementById('root')!);
 function Recovery({ error, runtime = false }: { error: unknown; runtime?: boolean }) {
   const [confirmReset, setConfirmReset] = useState(false);
   const [busy, setBusy] = useState(false);
   const [resetError, setResetError] = useState('');
+  const [assetRetryError, setAssetRetryError] = useState('');
   const invalid = error instanceof InvalidSaveError;
+  const assetFailure = error instanceof AssetLoadError;
   return (
     <div className="boot-screen" role="alert">
       <span className="eyebrow">PATIENT RECORDS {runtime ? 'PAUSED' : 'UNAVAILABLE'}</span>
@@ -34,13 +37,32 @@ function Recovery({ error, runtime = false }: { error: unknown; runtime?: boolea
             : error instanceof Error
               ? error.message
               : 'Please check your connection.') +
-          (resetError ? '\n\n' + resetError : '')
+          (resetError ? '\n\n' + resetError : '') +
+          (assetRetryError ? '\n\n' + assetRetryError : '')
         }
         label="Recovery"
       />
       <button disabled={busy} onClick={() => location.reload()}>
         Reconnect
       </button>
+      {assetFailure && (
+        <button
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            setAssetRetryError('');
+            try {
+              await retryFailedAssets();
+              location.reload();
+            } catch (retryError) {
+              setAssetRetryError(retryError instanceof Error ? retryError.message : 'Asset retry failed.');
+              setBusy(false);
+            }
+          }}
+        >
+          Retry art assets
+        </button>
+      )}
       {invalid && !confirmReset && (
         <button onClick={() => setConfirmReset(true)}>Reset damaged records…</button>
       )}

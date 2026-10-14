@@ -10,6 +10,7 @@ import {
   heldItemCorners,
   itemArtReady,
 } from './item-assets';
+import { imageAssetReady, loadJsonAsset, requestImageAsset } from './asset-loader';
 
 type Point = { x: number; y: number };
 type Contract = {
@@ -94,21 +95,15 @@ function validateGeometry(value: unknown): asserts value is Record<string, Contr
     }
   }
 }
-const geometryReady = fetch(`${base}geometry.json`).then((r) => {
-  if (!r.ok) throw new Error(`Unable to load modular geometry (${r.status}).`);
-  return r.json();
-}).then((value: unknown) => {
-  validateGeometry(value);
+const geometryReady = loadJsonAsset(`${base}geometry.json`, 'modular geometry', validateGeometry).then((value) => {
   geometry = value;
   geometryRevision++;
 });
 const imageReady = names.map((name) => {
-  const image = new Image();
+  const url = `${base}${name}.png`;
+  const image = requestImageAsset(url, `modular/${name}`);
   images.set(name, image);
-  image.src = `${base}${name}.png`;
-  return image.decode().catch(() => {
-    console.warn(`Optional modular image failed to load: ${name}.`);
-  });
+  return imageAssetReady(url);
 });
 export const modularReady = Promise.all([itemArtReady, geometryReady, ...imageReady]).then(() => {
   ready = true;

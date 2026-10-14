@@ -14,44 +14,24 @@ import {
 import { puppetLayout } from '../art/puppet';
 import type { Build } from '../game/types';
 import { prepareCanvas } from '../art/canvas';
+import { isImageAssetReady, requestImageAsset } from '../art/asset-loader';
 
-const arenaScenery = new Image();
-arenaScenery.src = `${import.meta.env.BASE_URL}ui/arena-chamber-v1.png`;
-let arenaSceneryReady = false;
-void arenaScenery
-  .decode()
-  .then(() => {
-    arenaSceneryReady = true;
-  })
-  .catch(() => {});
+const assetUrl = (path: string) => `${import.meta.env.BASE_URL}ui/${path}`;
+const arenaSceneryUrl = assetUrl('arena-chamber-v1.png');
+const arenaScenery = requestImageAsset(arenaSceneryUrl, 'arena scenery');
 // Measured floor landmarks register generated scenery to the unchanged combat ellipse.
 const ARENA_ART_FLOOR = { cx: 0.5, cy: 0.604, rx: 0.395, ry: 0.307 };
 
-const displayStage = new Image();
-displayStage.src = `${import.meta.env.BASE_URL}ui/display-step-v2.png`;
-const portraitAlcove = new Image();
-portraitAlcove.src = `${import.meta.env.BASE_URL}ui/quartermaster-alcove-v2.png`;
-const landscapeAlcove = new Image();
-landscapeAlcove.src = `${import.meta.env.BASE_URL}ui/quartermaster-alcove-landscape-v2.png`;
-const portraitClinic = new Image();
-portraitClinic.src = `${import.meta.env.BASE_URL}ui/clinic-alcove-v1.png`;
-const landscapeClinic = new Image();
-landscapeClinic.src = `${import.meta.env.BASE_URL}ui/clinic-alcove-landscape-v1.png`;
-let portraitAlcoveReady = false,
-  landscapeAlcoveReady = false,
-  portraitClinicReady = false,
-  landscapeClinicReady = false;
-void portraitAlcove.decode().then(() => (portraitAlcoveReady = true)).catch(() => {});
-void landscapeAlcove.decode().then(() => (landscapeAlcoveReady = true)).catch(() => {});
-void portraitClinic.decode().then(() => (portraitClinicReady = true)).catch(() => {});
-void landscapeClinic.decode().then(() => (landscapeClinicReady = true)).catch(() => {});
-let displayStageReady = false;
-void displayStage
-  .decode()
-  .then(() => {
-    displayStageReady = true;
-  })
-  .catch(() => {});
+const displayStageUrl = assetUrl('display-step-v2.png');
+const displayStage = requestImageAsset(displayStageUrl, 'display stage');
+const portraitAlcoveUrl = assetUrl('quartermaster-alcove-v2.png');
+const portraitAlcove = requestImageAsset(portraitAlcoveUrl, 'quartermaster portrait alcove');
+const landscapeAlcoveUrl = assetUrl('quartermaster-alcove-landscape-v2.png');
+const landscapeAlcove = requestImageAsset(landscapeAlcoveUrl, 'quartermaster landscape alcove');
+const portraitClinicUrl = assetUrl('clinic-alcove-v1.png');
+const portraitClinic = requestImageAsset(portraitClinicUrl, 'clinic portrait alcove');
+const landscapeClinicUrl = assetUrl('clinic-alcove-landscape-v1.png');
+const landscapeClinic = requestImageAsset(landscapeClinicUrl, 'clinic landscape alcove');
 
 function text(c: Pen, value: string, x: number, y: number, colour: string, size = 10) {
   c.font = `bold ${size}px monospace`;
@@ -185,7 +165,7 @@ export function Arena({
     function draw(now: number) {
       if (!canvas.current) return;
       const { combat: sim, paused: stopped } = latest.current;
-      if (arenaSceneryReady && !scenicBackdrop) {
+      if (isImageAssetReady(arenaSceneryUrl) && !scenicBackdrop) {
         const sx = ARENA.rx / (arenaScenery.naturalWidth * ARENA_ART_FLOOR.rx);
         const sy = ARENA.ry / (arenaScenery.naturalHeight * ARENA_ART_FLOOR.ry);
         const ctx = backdrop.getContext('2d')!;
@@ -425,16 +405,16 @@ export function DressingRoom({
             : portraitAlcove;
         const alcoveReady = surgery
           ? landscape
-            ? landscapeClinicReady
-            : portraitClinicReady
+            ? isImageAssetReady(landscapeClinicUrl)
+            : isImageAssetReady(portraitClinicUrl)
           : landscape
-            ? landscapeAlcoveReady
-            : portraitAlcoveReady;
+            ? isImageAssetReady(landscapeAlcoveUrl)
+            : isImageAssetReady(portraitAlcoveUrl);
         if (alcoveReady) {
           const roomHeight = (320 * alcove.naturalHeight) / alcove.naturalWidth;
           c!.drawImage(alcove, 0, ground + 35 * stageScale - roomHeight * 0.93, 320, roomHeight);
         }
-        if (displayStageReady)
+        if (isImageAssetReady(displayStageUrl))
           c!.drawImage(
             displayStage,
             64,
