@@ -133,6 +133,10 @@ completion. All hostile effects in that action use that target set; a dead
 target is not replaced, and actors entering an area later are not added.
 Whirlwinds centred on the wielder and magical explosions around a chosen impact
 point are desired examples. Owner-directed support effects retain their owner.
+Attacks cannot miss: moving out of the original range/area after selection does
+not invalidate a hit on a living locked target. Skip remaining hostile effects
+on targets that die during resolution, without replacement; continue resolving
+other living targets in the set. Normal Armour/Shield rules still apply.
 
 **Recommendation:** add the targeting contract to shared ability definitions so
 equipment, limbs and sets stay on one engine. Store an action context containing
@@ -141,15 +145,16 @@ Use that context for effects, pending strikes, feedback and reports. A newly
 triggered action acquires its own targets without mutating its parent's set or
 ancestry. Separate hostile-target queries from ability selectors.
 
-The exact commitment moment relative to windup/contact, acquisition ordering,
-available-count behavior, and reach/movement checks remain to be settled during
-implementation. A range check may invalidate a hit according to that policy;
-it must not substitute a different actor. Runtime behavior has not yet changed.
+The exact commitment moment relative to windup/contact, acquisition ordering
+and available-count behavior remain to be settled during implementation. Reach
+determines eligibility at selection; do not add impact-time misses or retargeting.
+Runtime behavior has not yet changed.
 
 **Future regression:** a damage-plus-status ability kills A and does not apply
 its follow-up to B. Fixed-count and area attacks retain their selected sets when
 targets die or other actors enter the area. New triggered actions acquire their
-own sets. Preserve sibling ancestry and own-hit behavior through these changes.
+own sets. Living locked targets still receive their attacks after moving out of
+the original reach/area. Preserve sibling ancestry and own-hit behavior.
 
 ## 4. Balance output needs correction before tuning — P2
 
@@ -180,8 +185,10 @@ Treat bot performance as diagnostic evidence rather than a difficulty verdict.
 
 Osseous graft says “Replace 10 Chest” and “add 10 Hand”; its remove/add counts
 are one. Its quote also claims no circulation, while the bone variant has no
-load multiplier and receives normal slot load. Resolve that design/prose
-contradiction without silently changing bone physiology.
+load multiplier and receives normal slot load. Record this contradiction.
+Daniel has deferred skeletal circulation and item-balance decisions because all
+item definitions are temporary. Preserve current values during structural work;
+factual prose/count errors and content validation can be addressed separately.
 
 More generally, timers, amounts, requirements, signatures and procedure
 consequences have separately authored prose. The effect summary already derives
@@ -340,11 +347,16 @@ human-readable transcripts currently inspect the same mutable log. A sequenced
 structured feedback stream and an independently bounded transcript would give
 each consumer clear ownership without making telemetry part of combat.
 
-Poison stores only `poisonOwner`, not the contributing ability or stacks from
-different sources. Tick damage contributes to the actor total but not an item
-total; `poisonTick` has no source for source-filtered reactions. Define the
-attribution policy before adding more status-heavy enemies, contribution views
-or source-specific status passives. Do not invent a stacking policy silently.
+**Agreed stacking policy — 14 October:** Poison applications combine into one
+pool per affected creature, with combined damage and decay. The current numeric
+stacking already does this. Do not split gameplay pools or create extra ticks
+to implement source attribution.
+
+Poison stores only `poisonOwner`, not the contributing ability. Tick damage
+contributes to the actor total but not an item total; `poisonTick` has no source
+for source-filtered reactions. Ownership, damage/kill credit and multi-source
+reaction routing remain questions for the later status/report pass. Keep that
+bookkeeping separate from the agreed combined-pool gameplay.
 
 ### Authoring and tool consistency
 

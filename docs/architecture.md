@@ -92,14 +92,22 @@ or area/radius targeting. Select a target set once when an action is made and
 keep it through completion. Damage/status follow-ups never replace a dead target
 or add actors that enter an already selected area. Owner-directed support
 effects retain their owner. New triggered actions acquire their own target sets.
+Attacks cannot miss: range/area checks select eligible targets, and subsequent
+movement does not invalidate a hit on a living locked target. Skip remaining
+hostile effects on dead targets without replacement. Normal defenses still apply.
 
 Implement this in the shared ability vocabulary for equipment, limbs and sets,
 with an action context holding selected actor IDs and any spatial area origin.
 Actor targeting and ability selectors are separate concepts. Resolve effects,
 pending strikes and visual feedback from the same context. Whirlwinds around
 the actor and explosions around an impact point are intended area examples.
-Commitment timing, acquisition rules and impact-time reach checks still need
-explicit decisions; none should silently retarget an action.
+Commitment timing and acquisition rules still need explicit decisions. Do not
+introduce impact-time misses or retargeting.
+
+Poison applications share one combined pool per affected creature, with common
+damage and decay. Source attribution for reports/reactions must preserve those
+pool semantics. Item content and skeletal balance are temporary and deferred;
+retain current values while restructuring.
 
 ## Invariants and verification
 

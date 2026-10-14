@@ -30,11 +30,29 @@ cause its remaining effects to move to another creature; creatures entering an
 area later do not join the already selected set. A new action selects its own
 targets. Owner-directed healing, Shield and Mana continue to affect the owner.
 
+Attacks cannot miss. Range and area govern eligibility when targets are selected;
+movement after selection does not invalidate a hit against a living locked target.
+If a target dies during resolution, skip its remaining hostile effects without
+replacing it. Other living targets in the locked set continue to resolve.
+Armour and Shield retain their normal defensive effects.
+
 Whirlwind attacks around the wielder and magical explosions around a chosen
 impact point are desired examples of area targeting. Their radii, acquisition
-rules, exact selection moment relative to windup/impact, and reach or movement
-checks during resolution remain implementation decisions. Keep enemy selection
+rules and exact selection moment relative to windup/impact remain implementation
+decisions. Keep enemy selection
 distinct from selectors that choose abilities to trigger or reduce cooldowns.
+
+Poison stacking and temporary content — 14 October 2026
+
+Poison applications combine into one pool on each affected creature. Resolve
+the combined pool's damage and decay together; source tracking for reports
+does not create separate gameplay stacks or ticks. The current engine already
+combines Poison amounts. Multi-source ownership and credit remain bookkeeping
+questions for the later status/report pass.
+
+All item definitions are temporary. Defer skeletal circulation and item-balance
+decisions to a later content/balance pass; preserve their current values while
+restructuring. Factual authoring errors can be recorded and corrected separately.
 
 Shop stock refreshes for free on every new floor. The player may freeze stock
 to preserve the remaining offers, including empty purchased positions, until
