@@ -516,7 +516,7 @@ export class Combat {
       this.outcome = this.won ? 'stalemate' : 'defeat';
     }
   }
-  runToEnd(maxTime = 160) {
+  runToEnd(maxTime = COMBAT_STALEMATE_SECONDS) {
     while (!this.done && this.time < maxTime) this.step();
     return this.won;
   }

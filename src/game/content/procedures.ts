@@ -122,8 +122,8 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'bonegraft',
     name: 'Osseous graft',
-    text: 'Replace 10 Chest and 1 Head; add 10 Hand and 2 Feet. Grafted parts use skeletal anatomy.',
-    quote: 'The tissue is stable and requires no circulation.',
+    text: 'Replace 1 Chest and 1 Head; add 1 Hand and 2 Feet. Grafted parts use skeletal anatomy.',
+    quote: 'The joints creak in a language the surgeon does not speak.',
     price: 48,
     remove: [
       { slot: 'chest', count: 1 },

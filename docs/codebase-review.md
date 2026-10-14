@@ -55,6 +55,14 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 | P3 | Separate combat events, reports and status attribution | One truncated log currently serves several consumers; Poison remembers only an actor. |
 | P3 | Consolidate review tools and current documentation | Recent capture scripts bypass the portable browser helper; some prose describes obsolete art. |
 
+### Implementation status
+
+Implemented and committed locally: terminal stalemate victories, locked action
+targeting, and saved completed-fight reports. The development ruleset is now
+`frankentower-4`. The balance runner and content validator are in progress.
+Session/controller ownership, art catalogues/readiness, responsive styling and
+render/stat performance remain planned work.
+
 ## 1. Combat can continue indefinitely — P1
 
 **Evidence:** `src/game/combat.ts:410`, `src/game/combat.ts:423`,
@@ -177,31 +185,37 @@ reporting. Record blocked purchases, satchel occupancy, spending, enemy
 composition and the actual termination reason. Preserve seeded reproducibility.
 Treat bot performance as diagnostic evidence rather than a difficulty verdict.
 
+**Implementation in progress:** the runner now iterates the actual offer list,
+records blocked purchases/transfers, sells a lower-value stash item when a full
+satchel would otherwise block an intended acquisition, and uses direct
+purchases for empty compatible slots. It reports gross gold spent, satchel
+occupancy, deaths, true final-floor completions, stalemates, unresolved runs and
+engine failures separately. Failed and unresolved simulations no longer become
+player deaths.
+
 ## 5. Content validation and factual prose — P2
 
 **Evidence:** `src/game/content/procedures.ts:125–140`,
 `src/game/anatomy-content.ts:51`, `src/game/content.ts:9`,
 `src/game/content/helpers.ts:22`, `src/ui/ItemDetails.tsx:39`.
 
-Osseous graft says “Replace 10 Chest” and “add 10 Hand”; its remove/add counts
-are one. Its quote also claims no circulation, while the bone variant has no
-load multiplier and receives normal slot load. Record this contradiction.
-Daniel has deferred skeletal circulation and item-balance decisions because all
-item definitions are temporary. Preserve current values during structural work;
-factual prose/count errors and content validation can be addressed separately.
-
+Osseous graft previously said "Replace 10 Chest" and "add 10 Hand" while its
+counts were one. Its quote also claimed no circulation, while the bone variant
+receives normal slot load. The count text now matches its data and the
+circulation claim has been removed. Skeletal circulation and item-balance
+decisions remain deferred; current rules and values were preserved.
 More generally, timers, amounts, requirements, signatures and procedure
 consequences have separately authored prose. The effect summary already derives
 much of its information from rules; extend that pattern for factual details.
 Keep names, flavor quotes and deliberate explanations authored by hand.
 
-Add a development/build content validator for duplicate IDs before creating
-`ITEM_MAP`, valid rarities/prices/levels, finite amounts, valid cooldowns,
-selector contradictions, duplicate explicit reaction IDs, set thresholds and
-procedure counts. TypeScript's `number` and string-indexed records do not enforce
-those invariants. Prefer readonly definitions; tests that currently patch global
-catalogues will need explicit fixture support before freezing them.
-
+Duplicate item IDs now fail before ITEM_MAP creation. validateContent() is part
+of the build and checks item rarity/price/slot/type, finite rule values,
+cooldowns, target shapes, selector contradictions, duplicate explicit reaction
+IDs, set thresholds and procedure counts/variants. Item definitions default to
+explicit single-target metadata. The catalogue remains mutable because existing
+combat tests add definitions directly; fixture injection should precede any
+future move to readonly/frozen definitions.
 ## 6. Extract application ownership — P2
 
 **Evidence:** `src/App.tsx:37–106`, `src/App.tsx:184–307`,

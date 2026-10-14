@@ -5,7 +5,14 @@ export { ITEMS } from './content/items';
 export { ENEMY_ITEMS } from './content/enemies';
 export { PROCEDURES } from './content/procedures';
 
-// Build the complete catalogue once, without registration side effects.
+// Build the complete catalogue once, without registration side effects. Fail
+// loudly instead of silently replacing an earlier definition with a duplicate.
+const definitions = [...ITEMS, ...ENEMY_ITEMS];
+const itemIds = new Set<string>();
+for (const definition of definitions) {
+  if (itemIds.has(definition.id)) throw new Error(`Duplicate item definition: ${definition.id}`);
+  itemIds.add(definition.id);
+}
 export const ITEM_MAP: Record<string, ItemDef> = Object.fromEntries(
-  [...ITEMS, ...ENEMY_ITEMS].map((item) => [item.id, item]),
+  definitions.map((item) => [item.id, item]),
 );

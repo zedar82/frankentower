@@ -14,7 +14,7 @@ const HELP = {
   Surgery:
     'Surgery opens every five floors. Choose one procedure per visit. New anatomy gives HP and slots; it also asks your hearts for more circulation. Under-supported bodies activate equipment more slowly.\n\nReview changes before performing a procedure. Equipment displaced by anatomy removal needs room in your satchel. Manage equipment to make room before surgery.',
   Combat:
-    'Combat is automatic and spatial. Melee attackers approach their targets; ranged attackers try to keep their distance. Use 1×, 2× or 4× speed, and pause to inspect opponents. Space starts combat or pauses it when no workspace is open.\n\nAfter a fight, optionally read its combat log, visit the doctor on appointment floors, and shop before the next room. Long battles lose 2% maximum HP/s after 90 seconds.',
+    'Combat is automatic and spatial. Melee attackers approach their targets; ranged attackers try to keep their distance. Use 1×, 2× or 4× speed, and pause to inspect opponents. Space starts combat or pauses it when no workspace is open.\n\nAfter a fight, optionally read its combat log, visit the doctor on appointment floors, and shop before the next room. Unresolved fights drain 2% maximum HP/s after 90 seconds; a patient still alive at 160 seconds wins by stalemate.',
   Defence:
     'Armour subtracts a flat amount from each attack.\n\nShield absorbs one direct attack. All remaining Shield is then lost.\n\nBleed adds damage when a direct attack penetrates defence. It does not tick by itself or trigger more Bleed.\n\nPoison deals damage once per second and loses 10 per tick. Status damage bypasses Armour and Shield.',
   Engines:
@@ -228,7 +228,7 @@ export function Report({ report }: { report: CompletedFightReport | null }) {
       </label>
       {section === 'Summary' ? (
         <PagedText
-          text={`${report.patient.build.name} · Floor ${report.floor}\n${outcome}\n\nDuration ${report.duration.toFixed(1)}s\nDamage ${Math.round(report.patient.damage)}\nHealing ${Math.round(report.patient.healing)}\n\n${report.suppressed} recursive activations prevented.\n\n${report.transcriptTruncated ? 'The transcript contains the most recent 400 entries.' : 'The complete combat transcript is available.'}`}
+          text={`${report.patient.build.name} · Floor ${report.floor}\n${outcome}\n\nDuration ${report.duration.toFixed(1)}s\nHP ${Math.round(report.patient.hp)} / ${Math.round(report.patient.maxHp)}\nDamage ${Math.round(report.patient.damage)}\nHealing ${Math.round(report.patient.healing)}\n\n${report.suppressed} recursive activations prevented.\n\n${report.transcriptTruncated ? 'The transcript contains the most recent 400 entries.' : 'The complete combat transcript is available.'}`}
           label="Summary"
         />
       ) : section === 'Contribution' ? (
@@ -247,14 +247,20 @@ export function Report({ report }: { report: CompletedFightReport | null }) {
                 </strong>
                 <span>
                   {ability.activations} acts · {Math.round(ability.damage)} damage ·{' '}
-                  {Math.round(ability.healing)} healing
+                  {Math.round(ability.healing)} healing · {Math.round(ability.shielding)} shield
                 </span>
               </div>
             )}
           />
         </>
       ) : section === 'Patient' ? (
-        <PatientSummary build={report.patient.build} />
+        <>
+          <PatientSummary build={report.patient.build} />
+          <p>
+            End of fight: {Math.round(report.patient.hp)} / {Math.round(report.patient.maxHp)} HP ·{' '}
+            {Math.round(report.patient.mana)} / {Math.round(report.patient.maxMana)} Mana
+          </p>
+        </>
       ) : section === 'Enemies' ? (
         build ? (
           <>
@@ -263,13 +269,17 @@ export function Report({ report }: { report: CompletedFightReport | null }) {
           </>
         ) : (
           <PagedList
-            items={report.enemies.map((enemy) => enemy.build)}
+            items={report.enemies}
             empty="No final encounter recorded."
             render={(enemy, index) => (
-              <button key={index} className="hall-entry" onClick={() => setBuild(enemy)}>
-                <Creature build={enemy} compact />
+              <button key={index} className="hall-entry" onClick={() => setBuild(enemy.build)}>
+                <Creature build={enemy.build} compact />
                 <span>
-                  {enemy.name}
+                  {enemy.build.name}
+                  <small>
+                    {Math.round(enemy.hp)} / {Math.round(enemy.maxHp)} HP
+                    {enemy.diedAt === undefined ? '' : ` · died at ${enemy.diedAt.toFixed(1)}s`}
+                  </small>
                   <small>Inspect →</small>
                 </span>
               </button>

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "dev:offline": "vite --host 127.0.0.1 --mode offline",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && tsx scripts/validate-content.ts && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "tsx --test tests/*.test.ts",
     "balance": "tsx scripts/balance.ts",
