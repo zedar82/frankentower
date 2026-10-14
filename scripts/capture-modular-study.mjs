@@ -1,17 +1,12 @@
-import { chromium } from '@playwright/test';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-const directory = 'output/art-direction/modular-v2/review';
+import { readFile, writeFile } from 'node:fs/promises';
+import { artifact, launchBrowser, localUrl } from './browser-support.mjs';
+const directory = 'art-direction/modular-v2/review';
+const output = (name) => artifact(`${directory}/${name}`);
 const weaponOnly = process.argv.includes('--weapons-only');
 const qualityOnly = process.argv.includes('--quality-only');
 const suffix = process.env.FRANKENTOWER_CAPTURE_SUFFIX ?? '';
-await mkdir(directory, { recursive: true });
-const base = process.env.FRANKENTOWER_LOCAL_URL ?? 'http://127.0.0.1:5174/';
-const browser = await chromium.launch({
-  headless: true,
-  executablePath:
-    process.env.FRANKENTOWER_BROWSER_EXECUTABLE ??
-    'C:/Program Files/Google/Chrome/Application/chrome.exe',
-});
+const base = localUrl;
+const browser = await launchBrowser();
 try {
   const page = await browser.newPage({
     viewport: { width: 1120, height: 1600 },
@@ -39,7 +34,7 @@ try {
       await quality.waitForTimeout(300);
       await quality
         .locator('.quality canvas')
-        .screenshot({ path: `${directory}/quality-room-${density}x${suffix}.png` });
+        .screenshot({ path: output(`quality-room-${density}x${suffix}.png`) });
       console.log(
         JSON.stringify(
           await quality.locator('.quality canvas').evaluate((c) => ({
@@ -55,7 +50,11 @@ try {
       await quality.close();
     }
     if (!suffix) {
-      const data = await page.evaluate(async () => {
+      const [before, after] = await Promise.all([
+        readFile(output('quality-room-2x-before.png'), 'base64'),
+        readFile(output('quality-room-2x.png'), 'base64'),
+      ]);
+      const data = await page.evaluate(async ([beforeImage, afterImage]) => {
         const canvas = document.createElement('canvas');
         canvas.width = 1400;
         canvas.height = 790;
@@ -63,9 +62,9 @@ try {
         c.imageSmoothingEnabled = false;
         c.fillStyle = '#17181e';
         c.fillRect(0, 0, canvas.width, canvas.height);
-        for (const [column, revision] of ['-before', ''].entries()) {
+        for (const [column, encoded] of [beforeImage, afterImage].entries()) {
           const image = new Image();
-          image.src = `/output/art-direction/modular-v2/review/quality-room-2x${revision}.png`;
+          image.src = `data:image/png;base64,${encoded}`;
           await image.decode();
           c.drawImage(image, 630, 850, 690, 735, column * 700 + 5, 45, 690, 735);
           c.fillStyle = '#e5cca5';
@@ -77,8 +76,8 @@ try {
           );
         }
         return canvas.toDataURL().split(',')[1];
-      });
-      await writeFile(`${directory}/quality-comparison.png`, Buffer.from(data, 'base64'));
+      }, [before, after]);
+      await writeFile(output('quality-comparison.png'), Buffer.from(data, 'base64'));
     }
     if (errors.length) throw new Error(errors.join('\n'));
     console.log('Captured actual DressingRoom quality at standard and high display density');
@@ -269,11 +268,11 @@ try {
   for (const [name, data] of Object.entries(results)) {
     if (weaponOnly && !name.startsWith('weapon-')) continue;
     await writeFile(
-      `${directory}/${name.replace('.png', `${suffix}.png`)}`,
+      output(name.replace('.png', `${suffix}.png`)),
       Buffer.from(data, 'base64'),
     );
   }
-  if (!weaponOnly) await page.screenshot({ path: `${directory}/review-page.png`, fullPage: true });
+  if (!weaponOnly) await page.screenshot({ path: output('review-page.png'), fullPage: true });
   if (errors.length) throw new Error(errors.join('\n'));
   const count = Object.keys(results).filter(
     (name) => !weaponOnly || name.startsWith('weapon-'),

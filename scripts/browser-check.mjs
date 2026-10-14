@@ -272,6 +272,26 @@ try {
         run.floor = kind === 'complete' ? 100 : 20;
         run.highest = run.floor;
         run.phase = kind;
+        run.lastReport = {
+          floor: run.floor,
+          seed: run.seed,
+          outcome: kind === 'dead' ? 'defeat' : 'victory',
+          duration: 1,
+          patient: {
+            build: structuredClone(run.build),
+            hp: run.hp,
+            maxHp: stats(run.build).maxHp,
+            mana: stats(run.build).maxMana,
+            maxMana: stats(run.build).maxMana,
+            damage: 0,
+            healing: 0,
+          },
+          enemies: [],
+          contributions: [],
+          suppressed: 0,
+          transcript: [],
+          transcriptTruncated: false,
+        };
       }
       save.run = run;
       save.settings.sound = false;

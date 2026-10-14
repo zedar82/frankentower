@@ -1,16 +1,11 @@
-import { chromium } from '@playwright/test';
-import { writeFileSync, mkdirSync } from 'node:fs';
-const destination = 'output/art-direction/visual-target-pass/review';
-mkdirSync(destination, { recursive: true });
-const browser = await chromium.launch({
-  headless: true,
-  executablePath:
-    process.env.FRANKENTOWER_BROWSER_EXECUTABLE ??
-    'C:/Program Files/Google/Chrome/Application/chrome.exe',
-});
+import { writeFileSync } from 'node:fs';
+import { artifact, launchBrowser, localUrl } from './browser-support.mjs';
+const destination = 'art-direction/visual-target-pass/review';
+const output = (name) => artifact(`${destination}/${name}`);
+const browser = await launchBrowser();
 try {
   const page = await browser.newPage();
-  await page.goto(process.env.FRANKENTOWER_LOCAL_URL ?? 'http://127.0.0.1:5190/');
+  await page.goto(localUrl);
   for (const walking of [false, true]) {
     const png = await page.evaluate(async (walking) => {
       const { drawPuppet, puppetReady } = await import('/src/art/puppet.ts');
@@ -63,7 +58,7 @@ try {
       return canvas.toDataURL('image/png').split(',')[1];
     }, walking);
     writeFileSync(
-      destination + '/footwear-' + (walking ? 'walking' : 'materials') + '.png',
+      output('footwear-' + (walking ? 'walking' : 'materials') + '.png'),
       Buffer.from(png, 'base64'),
     );
   }
@@ -111,7 +106,7 @@ try {
     ids.forEach((id, i) => c.fillText(id, 298 + i * 56, 475 + (i % 2) * 16));
     return canvas.toDataURL('image/png').split(',')[1];
   });
-  writeFileSync(destination + '/footwear-all-items.png', Buffer.from(png, 'base64'));
+  writeFileSync(output('footwear-all-items.png'), Buffer.from(png, 'base64'));
 } finally {
   await browser.close();
 }

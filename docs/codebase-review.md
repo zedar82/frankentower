@@ -365,7 +365,12 @@ Retain deliberate phone/desktop modes and the existing no-scroll rules.
 uses one resize subscription for all consumers. The shop's landscape threshold
 is part of that snapshot. Unused single-offer and four-offer layout overrides
 were removed after checking that the live shop uses the compact-offers layout.
-The broader style ownership cleanup and responsive rule consolidation remain.
+Short-landscape build summaries now constrain the creature pane while preserving
+the paged text region's stretch sizing. The browser fixture now supplies a
+validated report snapshot when it exercises saved report sections. The existing
+browser suite passed after these changes, including the short-landscape report
+layout case. The broader style ownership cleanup and responsive rule
+consolidation remain.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's
@@ -474,6 +479,12 @@ one current status/handoff instead of accumulating conflicting completion
 claims. Existing offline and manual private-host CI workflows are present and
 worth retaining. Extend them with catalogue validation and the targeted cases
 above when implementing; no replacement test framework is necessary.
+
+**Implementation:** modular-body and footwear capture scripts now share
+`browser-support.mjs` for browser selection, local URL configuration and
+artifact-directory configuration. Their prior fixed Chrome executable paths
+and separate default Vite ports are removed. The RUN generator runner/manifest
+and README/roadmap cleanup remain.
 
 ## Suggested implementation sequence
 

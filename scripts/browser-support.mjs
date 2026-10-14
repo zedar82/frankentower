@@ -1,11 +1,12 @@
 import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+import { resolve, join, dirname } from 'node:path';
 export const localUrl = process.env.FRANKENTOWER_LOCAL_URL ?? 'http://127.0.0.1:5173/';
 export function artifact(name) {
   const directory = resolve(process.env.FRANKENTOWER_ARTIFACT_DIR ?? 'test-results');
-  mkdirSync(directory, { recursive: true });
-  return join(directory, name);
+  const path = join(directory, name);
+  mkdirSync(dirname(path), { recursive: true });
+  return path;
 }
 export async function launchBrowser() {
   const executablePath = process.env.FRANKENTOWER_BROWSER_EXECUTABLE;

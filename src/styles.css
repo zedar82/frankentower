@@ -1469,10 +1469,11 @@ canvas,
   }
   .build-summary {
     flex-direction: row;
+    gap: 8px;
   }
   .build-summary > .creature {
-    max-height: 120px;
-    width: 110px;
+    max-height: 76px;
+    width: 72px;
   }
   .compact-shop .stock-counter .panel-heading {
     display: none;
