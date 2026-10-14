@@ -1,5 +1,5 @@
 import { LEVEL_SCALE } from '../abilities';
-import { count, stats } from '../anatomy';
+import { count, statsFromCompiled } from '../anatomy';
 import { ARM_STRIKE_TIME } from '../attack-motion';
 import { successes, type Random } from '../random';
 import type { Effect, Selector } from '../types';
@@ -133,7 +133,7 @@ export function resolveEffect(
       }
       case 'stat':
         actor.modifiers[effect.stat] = (actor.modifiers[effect.stat] ?? 0) + amount;
-        actor.stats = stats(actor.build, actor.mana, actor.modifiers);
+        actor.stats = statsFromCompiled(actor.compiledStats, actor.mana, actor.modifiers);
         actor.hp = Math.min(actor.hp, actor.stats.maxHp);
         actor.mana = Math.min(actor.mana, actor.stats.maxMana);
         break;

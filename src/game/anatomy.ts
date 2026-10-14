@@ -19,11 +19,16 @@ export const SLOT_PLURAL: Record<Slot, string> = {
   chest: 'Chests',
   heart: 'Hearts',
 };
-export function stats(
-  build: Build,
-  mana = Infinity,
-  modifiers: Partial<Record<Stat, number>> = {},
-): Stats {
+export interface CompiledBuildStats {
+  base: Stats;
+  capacityWithMana: number;
+  capacityWithoutMana: number;
+  footCount: number;
+  healthFactor: number;
+}
+
+/** Compile anatomy and equipment facts that stay fixed throughout a fight. */
+export function compileBuildStats(build: Build): CompiledBuildStats {
   const result: Stats = {
     maxHp: 0,
     maxMana: 0,
@@ -38,6 +43,7 @@ export function stats(
     manaPerSecond: 0,
     sets: {},
   };
+  let capacityWithoutMana = 0;
   for (const part of build.parts) {
     const slot = SLOT_DEFINITIONS[part.slot],
       variant = VARIANT_DEFINITIONS[part.variant];
@@ -47,24 +53,66 @@ export function stats(
     result.load += slot.load * (variant.loadMultiplier ?? 1);
     if (part.slot === 'heart' && variant.heart) {
       const heart = variant.heart;
-      if (!heart.requiresMana || mana > 0) result.capacity += heart.capacity;
+      result.capacity += heart.capacity;
+      if (!heart.requiresMana) capacityWithoutMana += heart.capacity;
       result.manaPerSecond += heart.manaPerSecond ?? 0;
-    } else result.capacity += slot.capacity ?? 0;
+    } else {
+      const capacity = slot.capacity ?? 0;
+      result.capacity += capacity;
+      capacityWithoutMana += capacity;
+    }
   }
   for (const ability of buildAbilities(build)) {
     for (const [key, value] of Object.entries(ability.def.stats ?? {})) {
-      result[key as Stat] += value * LEVEL_SCALE[ability.level];
+      const scaled = value * LEVEL_SCALE[ability.level];
+      result[key as Stat] += scaled;
+      if (key === 'capacity') capacityWithoutMana += scaled;
     }
   }
   for (const { def, pieces } of activeSets(build)) result.sets[def.id] = pieces;
-  for (const [key, value] of Object.entries(modifiers)) result[key as Stat] += value;
-  result.maxHp = Math.round(result.maxHp * (build.healthFactor ?? 1));
   result.efficiency = circulationEfficiency(result.capacity, result.load);
-  const feet = count(build, 'foot');
-  result.movementSpeed =
-    (feet === 0 ? 14 : feet === 1 ? 30 : 58 + Math.min(10, feet - 2) * 14) *
-    (1 + (result.speed - 1) * 0.5);
+  const footCount = count(build, 'foot');
+  result.movementSpeed = movementSpeed(footCount, result.speed);
+  return {
+    base: result,
+    capacityWithMana: result.capacity,
+    capacityWithoutMana,
+    footCount,
+    healthFactor: build.healthFactor ?? 1,
+  };
+}
+
+export function statsFromCompiled(
+  compiled: CompiledBuildStats,
+  mana = Infinity,
+  modifiers: Partial<Record<Stat, number>> = {},
+): Stats {
+  const result: Stats = {
+    ...compiled.base,
+    sets: { ...compiled.base.sets },
+    capacity: (mana > 0 ? compiled.capacityWithMana : compiled.capacityWithoutMana) +
+      (modifiers.capacity ?? 0),
+  };
+  for (const [key, value] of Object.entries(modifiers)) {
+    if (key !== 'capacity') result[key as Stat] += value;
+  }
+  result.maxHp = Math.round(result.maxHp * compiled.healthFactor);
+  result.efficiency = circulationEfficiency(result.capacity, result.load);
+  result.movementSpeed = movementSpeed(compiled.footCount, result.speed);
   return result;
+}
+
+export function stats(
+  build: Build,
+  mana = Infinity,
+  modifiers: Partial<Record<Stat, number>> = {},
+): Stats {
+  return statsFromCompiled(compileBuildStats(build), mana, modifiers);
+}
+
+function movementSpeed(feet: number, speed: number) {
+  return (feet === 0 ? 14 : feet === 1 ? 30 : 58 + Math.min(10, feet - 2) * 14) *
+    (1 + (speed - 1) * 0.5);
 }
 
 export function circulationEfficiency(capacity: number, load: number) {

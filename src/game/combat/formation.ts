@@ -1,13 +1,13 @@
 import { buildAbilities } from '../abilities';
-import { circulationEfficiency, count, stats } from '../anatomy';
+import { circulationEfficiency, compileBuildStats, count, statsFromCompiled } from '../anatomy';
 import { clone, type Build } from '../types';
 import type { Actor, CombatAbility } from './types';
 
 function makeActor(build: Build, side: Actor['side'], id: string, hp?: number): Actor {
   build = clone(build);
-  const actorStats = stats(build),
-    capacityWithMana = actorStats.capacity,
-    capacityWithoutMana = stats(build, 0).capacity;
+  const compiledStats = compileBuildStats(build);
+  const actorStats = statsFromCompiled(compiledStats);
+  const { capacityWithMana, capacityWithoutMana } = compiledStats;
   const abilities: CombatAbility[] = buildAbilities(build).map((ability) => ({
     ...ability,
     remaining: ability.def.cooldown ?? Infinity,
@@ -21,6 +21,7 @@ function makeActor(build: Build, side: Actor['side'], id: string, hp?: number): 
     id,
     side,
     build,
+    compiledStats,
     stats: actorStats,
     capacityWithMana,
     capacityWithoutMana,

@@ -1,4 +1,5 @@
 import type { BuildAbility } from '../abilities';
+import type { CompiledBuildStats } from '../anatomy';
 import type { Build, Effect, EventKind, Stat, Stats } from '../types';
 
 export interface ArmStrike {
@@ -22,6 +23,7 @@ export interface Actor {
   id: string;
   side: 'player' | 'enemy';
   build: Build;
+  compiledStats: CompiledBuildStats;
   stats: Stats;
   capacityWithMana: number;
   capacityWithoutMana: number;
