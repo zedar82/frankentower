@@ -19,7 +19,13 @@ export type InventoryFailureCode =
   | 'satchel_full'
   | 'missing_pair';
 export type InventoryResult =
-  | { ok: true; itemUid: string }
+  | {
+      ok: true;
+      itemUid: string;
+      affectedItemUids?: string[];
+      displacedItemUid?: string;
+      goldChanged?: number;
+    }
   | { ok: false; code: InventoryFailureCode; message: string };
 
 function failedMove(reason: string): Extract<InventoryResult, { ok: false }> {
@@ -126,25 +132,46 @@ export function purchaseItemResult(run: Run, index: number): InventoryResult {
 }
 
 export function buy(run: Run, index: number) {
+  return buyResult(run, index).ok;
+}
+export function buyResult(run: Run, index: number): InventoryResult {
   const item = run.offers[index];
-  return !!item && moveItem(run, item.uid);
+  return item
+    ? moveItemResult(run, item.uid)
+    : { ok: false, code: 'missing_offer', message: 'Already purchased.' };
 }
 export function equip(run: Run, itemUid: string, partUid: string) {
-  return run.stash.some((item) => item.uid === itemUid) && moveItem(run, itemUid, partUid);
+  return equipResult(run, itemUid, partUid).ok;
+}
+export function equipResult(run: Run, itemUid: string, partUid: string): InventoryResult {
+  if (!run.stash.some((item) => item.uid === itemUid))
+    return { ok: false, code: 'missing_item', message: 'This item is no longer in the satchel.' };
+  return moveItemResult(run, itemUid, partUid);
 }
 export function unequip(run: Run, partUid: string) {
+  return unequipResult(run, partUid).ok;
+}
+export function unequipResult(run: Run, partUid: string): InventoryResult {
   const part = run.build.parts.find((p) => p.uid === partUid);
-  return !!part?.item && moveItem(run, part.item.uid);
+  return part?.item
+    ? moveItemResult(run, part.item.uid)
+    : { ok: false, code: 'missing_item', message: 'There is no item equipped here.' };
 }
 export function sell(run: Run, itemUid: string) {
-  if (run.phase !== 'build') return false;
+  return sellResult(run, itemUid).ok;
+}
+export function sellResult(run: Run, itemUid: string): InventoryResult {
+  if (run.phase !== 'build')
+    return { ok: false, code: 'wrong_phase', message: 'Items can only be sold between fights.' };
   const i = run.stash.findIndex((x) => x.uid === itemUid);
-  if (i < 0) return false;
-  run.gold += Math.floor(
+  if (i < 0)
+    return { ok: false, code: 'missing_item', message: 'This item is no longer in the satchel.' };
+  const goldChanged = Math.floor(
     ITEM_MAP[run.stash[i].defId].price * 0.5 * [0, 1, 2, 4][run.stash[i].level],
   );
+  run.gold += goldChanged;
   run.stash.splice(i, 1);
-  return true;
+  return { ok: true, itemUid, affectedItemUids: [itemUid], goldChanged };
 }
 export function combineCandidate(run: Run, item: Item) {
   return item.level < 3
@@ -154,18 +181,29 @@ export function combineCandidate(run: Run, item: Item) {
     : undefined;
 }
 export function combine(run: Run, itemUid: string) {
-  if (run.phase !== 'build') return false;
+  return combineResult(run, itemUid).ok;
+}
+export function combineResult(run: Run, itemUid: string): InventoryResult {
+  if (run.phase !== 'build')
+    return { ok: false, code: 'wrong_phase', message: 'Items can only be combined between fights.' };
   const target = [...run.stash, ...equipped(run.build).map((x) => x.item)].find(
     (x) => x.uid === itemUid,
   );
-  if (!target) return false;
+  if (!target)
+    return { ok: false, code: 'missing_item', message: 'This item is no longer available.' };
   const donor = combineCandidate(run, target);
-  if (!donor) return false;
+  if (!donor)
+    return { ok: false, code: 'missing_pair', message: 'A matching item at the same level is required.' };
   run.stash = run.stash.filter((x) => x.uid !== donor.uid);
   run.build.parts.forEach((p) => {
     if (p.item?.uid === donor.uid) delete p.item;
   });
   target.level++;
   run.hp = Math.min(run.hp, stats(run.build).maxHp);
-  return true;
+  return {
+    ok: true,
+    itemUid,
+    affectedItemUids: [itemUid, donor.uid],
+    displacedItemUid: donor.uid,
+  };
 }

@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { ITEM_MAP } from '../game/content';
 import { LEVEL_SCALE, SLOT_LABEL } from '../game/anatomy';
 import {
-  combine,
+  combineResult,
   combineCandidate,
+  unequipResult,
   itemMoveReason,
   purchaseReason,
-  sell,
-  unequip,
+  sellResult,
 } from '../game/inventory';
+import type { InventoryResult } from '../game/inventory';
 import type { Item, Run } from '../game/types';
 import { Modal } from './Modal';
 import { Icon } from './Icon';
@@ -22,6 +23,7 @@ interface Props {
   onEquip(): void;
   onChange(event?: string): void;
   onTargets(item: Item): void;
+  onMessage?(message: string): void;
 }
 
 export function ItemInspector({
@@ -32,6 +34,7 @@ export function ItemInspector({
   onEquip,
   onChange,
   onTargets,
+  onMessage,
 }: Props) {
   const [section, setSection] = useState<'Rules' | 'Signature' | 'About'>('Rules');
   const def = ITEM_MAP[selected.defId];
@@ -50,8 +53,12 @@ export function ItemInspector({
       : section === 'Signature'
         ? `Level 3 signature${selected.level === 3 ? ' — active' : ' — unlock by combining'}\n\n${def.signature}`
         : `${def.type} · ${SLOT_LABEL[def.slot]} equipment\nRarity ${def.rarity} · Level ${selected.level}\nTags: ${def.tags.join(', ') || 'None'}\n\nTwo identical items at the same level combine into the next level. Each instance activates once per causal branch; separate branches are independent.`;
-  const act = (action: () => boolean, event: string) => {
-    if (!action()) return;
+  const act = (action: () => InventoryResult, event: string) => {
+    const result = action();
+    if (!result.ok) {
+      onMessage?.(result.message);
+      return;
+    }
     onChange(event);
     onEquip();
     onClose();
@@ -94,7 +101,7 @@ export function ItemInspector({
           {owner && (
             <button
               disabled={!!reason}
-              onClick={() => act(() => unequip(run, owner.uid), 'item_unequipped')}
+              onClick={() => act(() => unequipResult(run, owner.uid), 'item_unequipped')}
             >
               Move to satchel
             </button>
@@ -102,7 +109,7 @@ export function ItemInspector({
           {inTray && (
             <button
               disabled={run.phase !== 'build'}
-              onClick={() => act(() => sell(run, selected.uid), 'item_sold')}
+              onClick={() => act(() => sellResult(run, selected.uid), 'item_sold')}
             >
               Sell for {Math.floor(def.price * 0.5 * [0, 1, 2, 4][selected.level])} gold
             </button>
@@ -110,7 +117,7 @@ export function ItemInspector({
           {combineCandidate(run, selected) && (
             <button
               disabled={run.phase !== 'build'}
-              onClick={() => act(() => combine(run, selected.uid), 'item_combined')}
+              onClick={() => act(() => combineResult(run, selected.uid), 'item_combined')}
             >
               Combine → Lv{selected.level + 1}
             </button>

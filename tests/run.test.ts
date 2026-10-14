@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { advance, defaultSave, finishFight, newRun, retire, startRun } from '../src/game/run';
 import { reroll, toggleShopFreeze } from '../src/game/shop';
-import { buy, combine, equip, purchaseItem, unequip } from '../src/game/inventory';
+import { buy, combine, combineResult, equip, purchaseItem, sellResult, unequip, unequipResult } from '../src/game/inventory';
 import { operate, operateResult, procedurePlan, procedurePreview, procedureReason } from '../src/game/surgery';
 import { encounter } from '../src/game/encounters';
 import { RULESET, SATCHEL_CAPACITY, clone } from '../src/game/types';
@@ -78,6 +78,38 @@ test('full satchel permits atomic swaps and direct purchases into empty slots', 
   assert.equal(purchaseItem(run, 1), false);
   assert.equal(moveItem(run, 'no-room', hands[0].uid), false);
   assert.deepEqual(run, full);
+});
+
+test('inventory commands report affected instances and stable failure reasons', () => {
+  const run = newRun(18);
+  startRun(run, 'dagger');
+  run.stash = [
+    { uid: 'combine-target', defId: 'knife', level: 1 },
+    { uid: 'combine-donor', defId: 'knife', level: 1 },
+    { uid: 'sell-item', defId: 'club', level: 1 },
+  ];
+  assert.deepEqual(combineResult(run, 'combine-target'), {
+    ok: true,
+    itemUid: 'combine-target',
+    affectedItemUids: ['combine-target', 'combine-donor'],
+    displacedItemUid: 'combine-donor',
+  });
+  const sale = sellResult(run, 'sell-item');
+  assert.equal(sale.ok, true);
+  if (sale.ok) {
+    assert.deepEqual(sale.affectedItemUids, ['sell-item']);
+    assert.ok((sale.goldChanged ?? 0) > 0);
+  }
+  assert.deepEqual(combineResult(run, 'combine-target'), {
+    ok: false,
+    code: 'missing_pair',
+    message: 'A matching item at the same level is required.',
+  });
+  assert.deepEqual(unequipResult(run, 'missing-part'), {
+    ok: false,
+    code: 'missing_item',
+    message: 'There is no item equipped here.',
+  });
 });
 
 test('surgery preview and capacity validation use the same removal selection', () => {

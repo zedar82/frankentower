@@ -63,7 +63,7 @@ build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
 Recovery/completion ownership, CSS consolidation, full compiled combat stats,
-and complete inventory command results/plans remain planned work.
+and a reusable inventory preview plan remain planned work.
 The item presentation catalogue now covers every equipment slot. Fight
 completion now rejects repeated calls after the combat phase. Puppet layout has
 a content-signature cache that handles in-place
@@ -428,11 +428,12 @@ message and operation consume the same projected removal set. Procedure stock
 uses an explicit `stock` access context that skips visit, phase, gold and satchel
 constraints while preserving anatomical validity checks. `operateResult` gives
 the caller a clear failure message or the removed and displaced IDs; the App
-shows failed command reasons. Inventory moves and purchases now have structured
-result APIs with stable failure codes and messages, and the App displays a
-rejected move's reason. Existing boolean wrappers remain for the remaining UI
-and diagnostic callers. Item sale/combining results and shared inventory plan
-objects remain open.
+shows failed command reasons. Inventory move, purchase, equip, unequip, sale and
+combine operations now have structured result APIs with stable failure codes
+and messages. Successful results report affected item IDs and gold deltas where
+applicable; the item inspector displays rejected actions. Boolean wrappers stay
+for existing diagnostic callers. A shared preview plan across inventory UI and
+commands remains open.
 
 ### Events, reports and attribution
 

@@ -131,6 +131,7 @@ interface Props {
   onMove(item: Item, partUid?: string): void;
   onChange(event?: string): void;
   onPurchase(index: number): void;
+  onMessage?(message: string): void;
   onClose(): void;
 }
 export function EquipmentWorkspace({
@@ -142,6 +143,7 @@ export function EquipmentWorkspace({
   onMove,
   onChange,
   onPurchase,
+  onMessage,
   onClose,
 }: Props) {
   const [slot, setSlot] = useState(initialItem ? ITEM_MAP[initialItem.defId].slot : initialSlot);
@@ -188,6 +190,7 @@ export function EquipmentWorkspace({
               selected={selected}
               onClose={back}
               onChange={onChange}
+              onMessage={onMessage}
               onEquip={() => {}}
               onPurchase={(index) => {
                 onPurchase(index);

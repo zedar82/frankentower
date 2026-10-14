@@ -533,6 +533,7 @@ export function App({ initialSave }: { initialSave: Save }) {
           onMove={dropItem}
           onChange={update}
           onPurchase={purchase}
+          onMessage={notify}
           onClose={() => setEquipment(null)}
         />
       )}
@@ -544,6 +545,7 @@ export function App({ initialSave }: { initialSave: Save }) {
           onPurchase={purchase}
           onEquip={() => sound('equip', save.settings.sound)}
           onChange={update}
+          onMessage={notify}
           onTargets={(item) => manage(ITEM_MAP[item.defId].slot, item)}
         />
       )}
