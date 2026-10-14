@@ -35,26 +35,17 @@ import { Help, Hall, Catalogue, Report, Starter } from './ui/Reference';
 import { PagedText, useDisplayMode } from './ui/Paging';
 import { useRunSession } from './useRunSession';
 import { useCombatSession } from './useCombatSession';
+import { useRunNavigation } from './ui/useRunNavigation';
 
 const SHOP_ACTIONS = { reroll, upgrade: upgradeShop, recover, freeze: toggleShopFreeze };
-type FlowStep = 'log' | 'lab' | 'shop' | null;
 export function App({ initialSave }: { initialSave: Save }) {
   const combatRef = useRef<Combat | null>(null);
   const previewRef = useRef<{ floor: number; build: Build; combat: CombatView } | null>(null);
   const { saveRef, save, run, refresh, update } = useRunSession(initialSave, () => {
     if (!combatRef.current) previewRef.current = null;
   });
-  const [flowStep, setFlowStep] = useState<FlowStep>(() =>
-    initialSave.run?.phase === 'result' ||
-    initialSave.run?.phase === 'checkpoint' ||
-    initialSave.run?.phase === 'dead' ||
-    initialSave.run?.phase === 'retired' ||
-    initialSave.run?.phase === 'complete'
-      ? 'log'
-      : initialSave.run?.phase === 'build'
-        ? 'shop'
-        : null,
-  );
+  const { screen: flowStep, enterCombat, enterNextFloor, finishClinic, resetForNewRun, returnToShop } =
+    useRunNavigation(run.phase, run.floor, initialSave.run?.phase);
   const [modal, setModal] = useState<
     'help' | 'hall' | 'catalogue' | 'report' | 'new' | 'settings' | null
   >(null);
@@ -103,7 +94,7 @@ export function App({ initialSave }: { initialSave: Save }) {
       current.hp,
     );
     current.phase = 'combat';
-    setFlowStep(null);
+    enterCombat();
     setPaused(false);
     setSelected(null);
     setEquipment(null);
@@ -112,7 +103,7 @@ export function App({ initialSave }: { initialSave: Save }) {
   function advanceFlow() {
     if (!advance(run)) return;
     combatRef.current = null;
-    setFlowStep(run.floor % 5 === 0 ? 'lab' : 'shop');
+    enterNextFloor(run.floor);
     update();
   }
   function continueFromLog() {
@@ -128,13 +119,13 @@ export function App({ initialSave }: { initialSave: Save }) {
     update('retired');
   }
   function finishLab() {
-    setFlowStep('shop');
+    finishClinic();
   }
   function fresh() {
     saveRef.current.run = newRun();
     combatRef.current = null;
     previewRef.current = null;
-    setFlowStep(null);
+    resetForNewRun();
     setModal(null);
     setSelected(null);
     update('run_start');
@@ -186,7 +177,7 @@ export function App({ initialSave }: { initialSave: Save }) {
     combatRef.current = null;
     previewRef.current = null;
     setPaused(false);
-    setFlowStep('shop');
+    returnToShop();
     setFightError(message);
     void persist(saveRef.current);
     refresh();
@@ -215,17 +206,6 @@ export function App({ initialSave }: { initialSave: Save }) {
     refresh();
   };
   useCombatSession({ combatRef, saveRef, paused, refresh, onFailure: recoverFight, onComplete: completeFight });
-  useEffect(() => {
-    if (
-      run.phase === 'result' ||
-      run.phase === 'checkpoint' ||
-      run.phase === 'dead' ||
-      run.phase === 'complete'
-    )
-      setFlowStep('log');
-    else if (run.phase === 'combat') setFlowStep(null);
-    else if (run.phase === 'build' && !flowStep) setFlowStep('shop');
-  }, [run.phase, run.floor]);
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
       if (
@@ -537,7 +517,7 @@ export function App({ initialSave }: { initialSave: Save }) {
             run={run}
             onChoose={(id) => {
               startRun(run, id);
-              setFlowStep('shop');
+              returnToShop();
               sound('equip', save.settings.sound);
               update('weapon_chosen');
             }}

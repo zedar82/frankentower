@@ -46,7 +46,7 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 | P2 | Define targeting across an activation | Follow-up effects can silently switch opponents after a kill. |
 | P2 | Correct balance diagnostics | Floor 100 losses count as completions; failures and blocked purchases skew results. |
 | P2 | Validate content and derive factual descriptions | Procedure prose already contradicts its data. |
-| P2 | Extract run/session and combat controllers | App still owns navigation and game-specific recovery/completion transitions. |
+| P2 | Extract run/session and combat controllers | App still owns overlay state and game-specific recovery/completion callbacks. |
 | P2 | Create one validated presentation catalogue | Drawing, bounds, loading and generators currently maintain overlapping contracts. |
 | P2 | Handle asset readiness per asset/group | One failed image can disable unrelated artwork or abort the game UI. |
 | P2 | Consolidate responsive styling and display modes | Successive overrides and duplicate breakpoint logic make changes hard to reason about. |
@@ -258,8 +258,12 @@ constructs the combat engine or runs start reactions. `useRunSession` now owns
 the mutable save/run reference, missing-run initialization, React refresh,
 persistence scheduling and common action analytics. `useCombatSession` owns the
 fixed-step clock, pause/visibility checks and hit feedback. App still owns
-navigation and game-specific recovery/completion callbacks; those transitions
-remain the next controller boundary.
+game-specific recovery/completion callbacks. `useRunNavigation` owns the
+primary-screen state and phase synchronization. It deliberately restores a
+saved build to the shop after reload; clinic navigation remains transient, and
+the saved `operated` rule still prevents repeating surgery. App continues to
+connect user intents to these boundaries; consolidating overlay ownership and
+moving recovery/completion callbacks remain open.
 
 ## 7. One presentation catalogue — P2
 
