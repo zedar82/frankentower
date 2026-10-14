@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ITEM_MAP } from '../game/content';
 import { SLOT_LABEL, SLOT_PLURAL, usable } from '../game/anatomy';
-import { canMoveItem, itemMoveReason } from '../game/inventory';
+import { canMoveItem, itemMoveReason, planItemMove } from '../game/inventory';
 import { SATCHEL_CAPACITY, type Item, type Run, type Slot } from '../game/types';
 import { Icon } from './Icon';
 import { Modal } from './Modal';
@@ -259,7 +259,8 @@ export function EquipmentWorkspace({
                 label={`${SLOT_PLURAL[slot]} page`}
                 empty={`No ${SLOT_PLURAL[slot].toLowerCase()} in this anatomy.`}
                 render={(part, index) => {
-                  const reason = selected ? itemMoveReason(run, selected.uid, part.uid) : null;
+                  const movePlan = selected ? planItemMove(run, selected.uid, part.uid) : null;
+                  const reason = movePlan && !movePlan.ok ? movePlan.message : null;
                   return (
                     <button
                       key={part.uid}
@@ -294,6 +295,14 @@ export function EquipmentWorkspace({
                             ? `Lv${part.item.level}${!usable(run.build, part.item) ? ' · Inactive' : ''}`
                             : 'Empty +'}
                         </small>
+                        {movePlan?.ok && (movePlan.displacedItem || movePlan.goldCost > 0) && (
+                          <small>
+                            {movePlan.displacedItem &&
+                              `Swap ${ITEM_MAP[movePlan.displacedItem.defId].name} to satchel`}
+                            {movePlan.displacedItem && movePlan.goldCost > 0 ? ' · ' : ''}
+                            {movePlan.goldCost > 0 && `Cost ${movePlan.goldCost} gold`}
+                          </small>
+                        )}
                         <span>
                           {part.item ? ITEM_MAP[part.item.defId].name : 'Choose equipment'}
                         </span>

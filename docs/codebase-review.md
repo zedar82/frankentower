@@ -62,8 +62,7 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-CSS consolidation, full compiled combat stats, and a reusable inventory preview
-plan remain planned work.
+CSS consolidation and full compiled combat stats remain planned work.
 The item presentation catalogue now covers every equipment slot. Fight
 completion now rejects repeated calls after the combat phase. Puppet layout has
 a content-signature cache that handles in-place
@@ -438,8 +437,9 @@ shows failed command reasons. Inventory move, purchase, equip, unequip, sale and
 combine operations now have structured result APIs with stable failure codes
 and messages. Successful results report affected item IDs and gold deltas where
 applicable; the item inspector displays rejected actions. Boolean wrappers stay
-for existing diagnostic callers. A shared preview plan across inventory UI and
-commands remains open.
+for existing diagnostic callers. `planItemMove` now resolves eligibility, gold
+cost, displaced equipment and final satchel count. The equipment UI uses that
+plan for slot feedback, while commands reapply a fresh plan before mutation.
 
 ### Events, reports and attribution
 

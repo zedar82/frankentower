@@ -9,7 +9,7 @@ import { RULESET, SATCHEL_CAPACITY, clone } from '../src/game/types';
 import { PROCEDURES } from '../src/game/content';
 import { count, equipped, stats } from '../src/game/anatomy';
 import { Combat } from '../src/game/combat';
-import { canMoveItem, moveItem, moveItemResult, purchaseItemResult } from '../src/game/inventory';
+import { canMoveItem, moveItem, moveItemResult, planItemMove, purchaseItemResult } from '../src/game/inventory';
 
 test('inventory moves validate ownership and targets before spending or removing items', () => {
   const run = newRun(12);
@@ -59,12 +59,24 @@ test('full satchel permits atomic swaps and direct purchases into empty slots', 
     level: 1,
   }));
   const hands = run.build.parts.filter((part) => part.slot === 'hand');
+  const swapPlan = planItemMove(run, 'bag-0', hands[0].uid);
+  assert.equal(swapPlan.ok, true);
+  if (swapPlan.ok) {
+    assert.equal(swapPlan.satchelCountAfter, SATCHEL_CAPACITY);
+    assert.equal(swapPlan.displacedItem?.uid, hands[0].item?.uid);
+  }
   assert.equal(equip(run, 'bag-0', hands[0].uid), true);
   assert.equal(run.stash.length, SATCHEL_CAPACITY);
   const before = clone(run);
   assert.equal(unequip(run, hands[0].uid), false);
   assert.deepEqual(run, before);
   run.offers[0] = { uid: 'purchase-knife', defId: 'knife', level: 1 };
+  const purchasePlan = planItemMove(run, 'purchase-knife', hands[1].uid);
+  assert.equal(purchasePlan.ok, true);
+  if (purchasePlan.ok) {
+    assert.equal(purchasePlan.goldCost > 0, true);
+    assert.equal(purchasePlan.satchelCountAfter, SATCHEL_CAPACITY);
+  }
   assert.equal(purchaseItem(run, 0), true);
   assert.equal(hands[1].item?.uid, 'purchase-knife');
   assert.equal(run.stash.length, SATCHEL_CAPACITY);

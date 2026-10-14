@@ -18,6 +18,17 @@ export type InventoryFailureCode =
   | 'already_in_satchel'
   | 'satchel_full'
   | 'missing_pair';
+export type InventoryMovePlan =
+  | {
+      ok: true;
+      itemUid: string;
+      source: ItemLocation;
+      destination?: Part;
+      displacedItem?: Item;
+      goldCost: number;
+      satchelCountAfter: number;
+    }
+  | { ok: false; code: InventoryFailureCode; message: string };
 export type InventoryResult =
   | {
       ok: true;
@@ -76,17 +87,35 @@ export function itemMoveReason(run: Run, uid: string, partUid?: string): string 
     : null;
 }
 
-export function canMoveItem(run: Run, uid: string, partUid?: string) {
-  return itemMoveReason(run, uid, partUid) === null;
+/** Describes the complete result of a move without mutating the run. */
+export function planItemMove(run: Run, uid: string, partUid?: string): InventoryMovePlan {
+  const reason = itemMoveReason(run, uid, partUid);
+  if (reason) return failedMove(reason);
+  const source = locateItem(run, uid)!;
+  const destination = partUid ? run.build.parts.find((part) => part.uid === partUid) : undefined;
+  const finalSize =
+    run.stash.length - (source.kind === 'stash' ? 1 : 0) +
+    (destination ? (destination.item ? 1 : 0) : 1);
+  return {
+    ok: true,
+    itemUid: uid,
+    source,
+    destination,
+    displacedItem: destination?.item,
+    goldCost: source.kind === 'offer' ? ITEM_MAP[source.item.defId].price : 0,
+    satchelCountAfter: finalSize,
+  };
 }
 
-export function moveItem(run: Run, uid: string, partUid?: string) {
-  if (!canMoveItem(run, uid, partUid)) return false;
-  const location = locateItem(run, uid)!;
-  const part = partUid ? run.build.parts.find((part) => part.uid === partUid)! : undefined;
+export function canMoveItem(run: Run, uid: string, partUid?: string) {
+  return planItemMove(run, uid, partUid).ok;
+}
+
+function applyMovePlan(run: Run, plan: Extract<InventoryMovePlan, { ok: true }>) {
+  const { source: location, destination: part, itemUid: uid } = plan;
   // Validate final occupancy before spending or mutating. No intermediate stash overflow.
   if (location.kind === 'offer') {
-    run.gold -= ITEM_MAP[location.item.defId].price;
+    run.gold -= plan.goldCost;
     run.purchases++;
     run.offers[location.index] = null;
   }
@@ -98,15 +127,26 @@ export function moveItem(run: Run, uid: string, partUid?: string) {
   } else run.stash.push(location.item);
   // Clamp only after the complete operation, including HP equipment swaps.
   run.hp = Math.min(run.hp, stats(run.build).maxHp);
+}
+
+export function moveItem(run: Run, uid: string, partUid?: string) {
+  const plan = planItemMove(run, uid, partUid);
+  if (!plan.ok) return false;
+  applyMovePlan(run, plan);
   return true;
 }
 
 export function moveItemResult(run: Run, uid: string, partUid?: string): InventoryResult {
-  const reason = itemMoveReason(run, uid, partUid);
-  if (reason) return failedMove(reason);
-  return moveItem(run, uid, partUid)
-    ? { ok: true, itemUid: uid }
-    : failedMove('This item is no longer available.');
+  const plan = planItemMove(run, uid, partUid);
+  if (!plan.ok) return plan;
+  applyMovePlan(run, plan);
+  return {
+    ok: true,
+    itemUid: uid,
+    affectedItemUids: plan.displacedItem ? [uid, plan.displacedItem.uid] : [uid],
+    displacedItemUid: plan.displacedItem?.uid,
+    goldChanged: plan.goldCost ? -plan.goldCost : undefined,
+  };
 }
 
 export function purchaseDestination(run: Run, index: number) {
