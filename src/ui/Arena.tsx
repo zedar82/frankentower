@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { ARENA, armMotion, type LogEntry } from '../game/combat';
+import { ARENA, armMotion, type CombatFeedback } from '../game/combat';
 import type { CombatView } from '../game/combat/types';
 import { ENEMY_PROFILE_BY_ID } from '../game/content/enemies';
 import {
@@ -36,7 +36,7 @@ function text(c: Pen, value: string, x: number, y: number, colour: string, size 
   c.fillStyle = colour;
   c.fillText(value, Math.round(x), Math.round(y));
 }
-function effect(c: Pen, e: LogEntry, time: number, reduced: boolean) {
+function effect(c: Pen, e: CombatFeedback, time: number, reduced: boolean) {
   const age = time - e.time;
   if (age < 0 || age > 1) return;
   const x = e.tx ?? e.x,
@@ -241,7 +241,7 @@ export function Arena({
             button.style.height = `${((b.h * s * zoom) / h) * 100}%`;
           }
         });
-      const hit = [...sim.logs]
+      const hit = [...sim.feedback]
         .reverse()
         .find((e) => e.attack === 'heavy' && (e.value ?? 0) > 1000 && time - e.time < 0.18);
       if (hit && !reduced && !stopped)
@@ -310,9 +310,7 @@ export function Arena({
           text(c!, '!', a.x + 30, a.y - 54, '#efb268', 14);
         }
       }
-      for (const e of sim.logs
-        .filter((e) => time - e.time < 1 && e.kind !== 'activation')
-        .slice(-32))
+      for (const e of sim.feedback.filter((e) => time - e.time < 1).slice(-32))
         effect(c!, e, time, reduced);
       c!.restore();
       // A paused fight needs one fresh frame, then no cosmetic RAF churn.

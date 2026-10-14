@@ -61,6 +61,14 @@ test('combat preview shares formation data without running combat start reaction
   const combat = new Combat(build, [human('Actual enemy')], 700);
   assert.equal(combat.player.shield, 10);
 });
+test('visual combat feedback is bounded and separate from transcript entries', () => {
+  const sim = duel();
+  for (let i = 0; i < 100; i++) sim.hit(sim.player, sim.enemies[0], sim.player.abilities[0], 1);
+  assert.ok(sim.feedback.some((entry) => entry.kind === 'damage'));
+  assert.ok(sim.logs.some((entry) => typeof entry.text === 'string'));
+  assert.ok(sim.feedback.every((entry) => !('text' in entry)));
+  assert.ok(sim.feedback.length <= 64);
+});
 test('Shield absorbs one attack and discards its unused remainder', () => {
   const sim = duel(),
     node = sim.player.abilities[0],
@@ -146,7 +154,11 @@ test('fixed-count targeting selects the nearest eligible targets once', () => {
   });
   const sim = new Combat(
     armed('test-count-targeting'),
-    [armed('skeletonblade', 'First'), armed('skeletonblade', 'Second'), armed('skeletonblade', 'Third')],
+    [
+      armed('skeletonblade', 'First'),
+      armed('skeletonblade', 'Second'),
+      armed('skeletonblade', 'Third'),
+    ],
     1234,
   );
   sim.enemies[0].x = sim.player.x + 35;
@@ -168,7 +180,11 @@ test('area targeting resolves against its selected impact point', () => {
   });
   const sim = new Combat(
     armed('test-area-targeting'),
-    [armed('skeletonblade', 'Center'), armed('skeletonblade', 'Inside'), armed('skeletonblade', 'Outside')],
+    [
+      armed('skeletonblade', 'Center'),
+      armed('skeletonblade', 'Inside'),
+      armed('skeletonblade', 'Outside'),
+    ],
     1234,
   );
   sim.enemies[0].x = sim.player.x + 35;

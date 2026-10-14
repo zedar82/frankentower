@@ -72,7 +72,9 @@ precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
 while paused or hidden. Remaining scoped follow-ups are physical-device
 profiling, fitted torso/organ art and renderers, and further screen-specific CSS
 regrouping. Poison uses one shared pool with latest-applicator actor credit;
-item-level tick attribution is deferred with item balance.
+item-level tick attribution is deferred with item balance. Arena effects now
+use a separate 64-entry visual feedback buffer; the report transcript retains
+its independent 400-entry text-bearing history and truncation flag.
 
 ### Verification and remaining scope
 
@@ -512,6 +514,13 @@ applicator is the pool's actor owner for tick damage and kill credit. Ticks coun
 toward actor damage but not item contribution; item-balance and item-level
 attribution remain deferred with the temporary item set. Keep report
 bookkeeping separate if that later balance pass needs it.
+
+**Implementation:** combat now retains a bounded 64-entry visual feedback
+buffer containing only damage, healing, shield and status events. Arena hit
+effects and screen shake read this buffer; the bounded transcript keeps its
+human-readable text and remains the source for saved reports. The static combat
+preview exposes an empty feedback buffer. A regression test verifies that the
+feedback is bounded and does not retain transcript text.
 
 ### Authoring and tool consistency
 

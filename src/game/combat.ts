@@ -10,7 +10,14 @@ import {
   type Selector,
   type Targeting,
 } from './types';
-import type { Actor, CombatAbility, CombatEvent, Job, LogEntry } from './combat/types';
+import type {
+  Actor,
+  CombatAbility,
+  CombatEvent,
+  CombatFeedback,
+  Job,
+  LogEntry,
+} from './combat/types';
 import { createCombatActors, refreshCirculation } from './combat/formation';
 import { matchesReaction, matchesSelector, reactionsFor } from './combat/reactions';
 import { resolveEffect } from './combat/effects';
@@ -22,7 +29,7 @@ import {
   hostile,
   usesArmStrike,
 } from './combat/spatial';
-export type { Actor, CombatAbility, LogEntry } from './combat/types';
+export type { Actor, CombatAbility, CombatFeedback, LogEntry } from './combat/types';
 export {
   ARENA,
   armMotion,
@@ -38,6 +45,7 @@ export class Combat {
   actors: Actor[];
   time = 0;
   logs: LogEntry[] = [];
+  feedback: CombatFeedback[] = [];
   logTruncated = false;
   rng: Random;
   done = false;
@@ -81,12 +89,15 @@ export class Combat {
     const inReach = (candidate: Actor) =>
       distance(actor, candidate) <= attackRange(actor, candidate, node.def);
     const preferredActor = preferred
-      ? this.actors.find((a) => a.id === preferred && a.side !== actor.side && (includeDeadCenter || a.hp > 0))
+      ? this.actors.find(
+          (a) => a.id === preferred && a.side !== actor.side && (includeDeadCenter || a.hp > 0),
+        )
       : undefined;
     if (targeting.kind === 'single') {
-      const selected = preferredActor && (includeDeadCenter || inReach(preferredActor))
-        ? preferredActor
-        : ordered.find(inReach);
+      const selected =
+        preferredActor && (includeDeadCenter || inReach(preferredActor))
+          ? preferredActor
+          : ordered.find(inReach);
       return selected ? [selected] : [];
     }
     if (targeting.kind === 'count') {
@@ -129,6 +140,31 @@ export class Combat {
     if (this.logs.length > 400) {
       this.logs.shift();
       this.logTruncated = true;
+    }
+    if (
+      entry.kind === 'damage' ||
+      entry.kind === 'heal' ||
+      entry.kind === 'shield' ||
+      entry.kind === 'status'
+    ) {
+      const { id, time, kind, actor, value, crit, x, y, tx, ty, shieldBreak, attack, status } =
+        entry;
+      this.feedback.push({
+        id,
+        time,
+        kind,
+        actor,
+        value,
+        crit,
+        x,
+        y,
+        tx,
+        ty,
+        shieldBreak,
+        attack,
+        status,
+      });
+      if (this.feedback.length > 64) this.feedback.shift();
     }
   }
   private emit(actor: Actor, event: CombatEvent) {
@@ -253,7 +289,12 @@ export class Combat {
     for (const effect of actions)
       resolveEffect(engine, actor, node, effect, branch, selected, primaryTarget);
     if (!supplemental)
-      this.emit(actor, { kind: 'activated', source: node, ancestry: branch, target: primaryTarget });
+      this.emit(actor, {
+        kind: 'activated',
+        source: node,
+        ancestry: branch,
+        target: primaryTarget,
+      });
   }
   hit(
     actor: Actor,

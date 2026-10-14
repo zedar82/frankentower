@@ -70,10 +70,27 @@ export interface LogEntry {
   attack?: 'slash' | 'heavy' | 'bolt' | 'arrow';
   status?: 'bleed' | 'poison';
 }
+export type CombatFeedback = Pick<
+  LogEntry,
+  | 'id'
+  | 'time'
+  | 'kind'
+  | 'actor'
+  | 'value'
+  | 'crit'
+  | 'x'
+  | 'y'
+  | 'tx'
+  | 'ty'
+  | 'shieldBreak'
+  | 'attack'
+  | 'status'
+>;
 export interface CombatView {
   actors: Actor[];
   time: number;
   logs: LogEntry[];
+  feedback: CombatFeedback[];
   done: boolean;
   failure?: string;
   player: Actor;

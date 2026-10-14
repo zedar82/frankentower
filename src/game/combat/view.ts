@@ -8,6 +8,7 @@ export function createCombatPreview(player: Build, enemies: Build[], hp?: number
     actors,
     time: 0,
     logs: [] as LogEntry[],
+    feedback: [],
     done: false,
     player: actors[0],
     enemies: actors.slice(1),
