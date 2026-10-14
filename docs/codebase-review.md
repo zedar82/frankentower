@@ -62,8 +62,8 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-Recovery/completion ownership, CSS consolidation, full compiled combat stats,
-and a reusable inventory preview plan remain planned work.
+CSS consolidation, full compiled combat stats, and a reusable inventory preview
+plan remain planned work.
 The item presentation catalogue now covers every equipment slot. Fight
 completion now rejects repeated calls after the combat phase. Puppet layout has
 a content-signature cache that handles in-place
@@ -257,15 +257,16 @@ are exposed through a read-only `CombatView`. Rendering a preview no longer
 constructs the combat engine or runs start reactions. `useRunSession` now owns
 the mutable save/run reference, missing-run initialization, React refresh,
 persistence scheduling and common action analytics. `useCombatSession` owns the
-fixed-step clock, pause/visibility checks and hit feedback. App still owns
-game-specific recovery/completion callbacks. `useRunNavigation` owns the
+fixed-step clock, pause/visibility checks and hit feedback. `useFightLifecycle`
+owns simulation failure recovery and completion, including report capture, rule
+transition, sound, telemetry and persistence. `useRunNavigation` owns the
 primary-screen state and phase synchronization. It deliberately restores a
 saved build to the shop after reload; clinic navigation remains transient, and
 the saved `operated` rule still prevents repeating surgery. App continues to
-connect user intents to these boundaries. `useAppOverlay` stores modal, item,
-equipment, build-inspection and fight-recovery views as one exclusive union;
-item paging remains local to its inspector. Moving recovery/completion callbacks
-out of App remains open.
+connect user intents to these boundaries. App supplies the lifecycle's
+navigation, error UI and preview invalidation callbacks. `useAppOverlay` stores
+modal, item, equipment, build-inspection and fight-recovery views as one
+exclusive union; item paging remains local to its inspector.
 
 ## 7. One presentation catalogue — P2
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ITEM_MAP } from './game/content';
-import { equipped, stats } from './game/anatomy';
-import { advance, finishFight, floorReward, newRun, retire, startRun } from './game/run';
+import { stats } from './game/anatomy';
+import { advance, floorReward, newRun, retire, startRun } from './game/run';
 import { recover, reroll, toggleShopFreeze, upgradeShop } from './game/shop';
 import { canMoveItem, moveItemResult, purchaseItemResult } from './game/inventory';
 import { operateResult } from './game/surgery';
@@ -13,10 +13,8 @@ import { createCombatPreview } from './game/combat/view';
 import type { CombatView } from './game/combat/types';
 import {
   hostPaused,
-  persist,
   platformStatus,
   subscribePlatform,
-  telemetry,
   retrySave,
   savePending,
 } from './platform';
@@ -35,6 +33,7 @@ import { Help, Hall, Catalogue, Report, Starter } from './ui/Reference';
 import { PagedText, useDisplayMode } from './ui/Paging';
 import { useRunSession } from './useRunSession';
 import { useCombatSession } from './useCombatSession';
+import { useFightLifecycle } from './useFightLifecycle';
 import { useRunNavigation } from './ui/useRunNavigation';
 import { useAppOverlay } from './ui/useAppOverlay';
 
@@ -168,47 +167,18 @@ export function App({ initialSave }: { initialSave: Save }) {
     const timer = setTimeout(() => setToast(''), 3200);
     return () => clearTimeout(timer);
   }, [toast]);
-  const recoverFight = (message: string) => {
-    const current = saveRef.current.run!;
-    telemetry('simulation_failed', {
-      seed: current.seed,
-      floor: current.floor,
-      message: message.slice(0, 256),
-    });
-    // The run still contains the pre-fight HP, inventory, and currency.
-    current.phase = 'build';
-    combatRef.current = null;
-    previewRef.current = null;
-    setPaused(false);
-    returnToShop();
-    setFightError(message);
-    void persist(saveRef.current);
-    refresh();
-  };
-  const completeFight = (combat: Combat) => {
-    const current = saveRef.current.run!;
-    current.lastReport = combat.completedReport(
-      current.floor,
-      current.seed ^ (current.floor * 15485863),
-    );
-    finishFight(current, combat.player.hp, combat.won, saveRef.current);
-    sound(combat.won ? 'win' : 'lose', saveRef.current.settings.sound);
-    telemetry('fight_complete', {
-      floor: current.floor,
-      won: combat.won,
-      duration: combat.time,
-      damage: combat.player.damage,
-      healing: combat.player.healing,
-      suppressed: combat.suppressed,
-      equipment: equipped(current.build)
-        .map((entry) => `${entry.item.defId}:${entry.item.level}`)
-        .join(','),
-      anatomy: current.build.parts.map((part) => `${part.slot}:${part.variant}`).join(','),
-    });
-    void persist(saveRef.current);
-    refresh();
-  };
-  useCombatSession({ combatRef, saveRef, paused, refresh, onFailure: recoverFight, onComplete: completeFight });
+  const fightLifecycle = useFightLifecycle({
+    combatRef,
+    saveRef,
+    refresh,
+    invalidatePreview: () => {
+      previewRef.current = null;
+    },
+    returnToShop,
+    setPaused,
+    setFightError,
+  });
+  useCombatSession({ combatRef, saveRef, paused, refresh, ...fightLifecycle });
   useEffect(() => {
     const handle = (e: KeyboardEvent) => {
       if (
