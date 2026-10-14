@@ -1,4 +1,52 @@
 /* Clinic screen composition and its phone/short-landscape layouts. */
+@layer base {
+.surgery-screen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.surgery-stage {
+  flex: 1;
+  min-height: 0;
+}
+.clinic-patient {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #17181e;
+}
+.clinic-patient > .view-tabs {
+  align-self: stretch;
+}
+.clinic-patient .dressing-room {
+  min-height: 0;
+  flex: 1;
+}
+.patient-label {
+  padding: 8px;
+  text-align: center;
+}
+.procedure-content {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.procedure-picker label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.procedure-picker select {
+  flex: 1;
+}
+.procedure-reason {
+  font-size: 13px;
+}
+}
 @layer workshop {
 /* Keep anatomy visible while detailed procedure consequences open for review. */
 .clinic-scene .surgery-stage {
@@ -7,6 +55,7 @@
   grid-template-rows: minmax(0, 1fr);
   gap: 12px;
 }
+
 .clinic-scene .clinic-patient {
   min-height: 0;
   grid-column: 1;
@@ -213,6 +262,35 @@
     grid-column: 1 / 3;
     grid-row: 4;
     font-size: 11px;
+  }
+}
+}
+
+@layer materials {
+.clinic-patient {
+  background: transparent;
+}
+@media (max-width: 680px) {
+  .station-title {
+    min-height: 17px;
+    padding: 1px 5px;
+  }
+  .station-title .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+}
+@media (max-height: 499px) and (min-width: 681px) {
+  .surgery-screen > .station-title {
+    display: none;
+  }
+  .procedure-content > .view-tabs button {
+    font-size: 11px;
+    padding: 3px;
+    white-space: nowrap;
+  }
+  .clinic-patient .patient-label {
+    display: none;
   }
 }
 }

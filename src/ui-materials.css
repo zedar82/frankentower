@@ -83,9 +83,7 @@ button:hover:not(:disabled) {
   background-blend-mode: soft-light;
   border-color: #aeb775;
 }
-.quiet,
-.card-info,
-.patient-name {
+.quiet {
   background: transparent;
   box-shadow: none;
 }
@@ -98,116 +96,6 @@ button:hover:not(:disabled) {
   font-size: var(--type-h3);
   color: #cdb48e;
 }
-.patient-circulation {
-  display: none;
-}
-.patient-name {
-  min-height: var(--control-min-hit);
-  gap: 8px;
-}
-.patient-name h1 {
-  overflow-wrap: anywhere;
-}
-.patient-name:hover:not(:disabled) {
-  background: #9b73351a;
-}
-.card-info:hover:not(:disabled) {
-  background: #9b73351a;
-}
-.shop-creature {
-  background: transparent;
-}
-.equipment-category {
-  border-width: 0 0 1px;
-  border-color: #8b74555c;
-  background: #0b0a0d77;
-  border-radius: 3px 5px 2px 4px;
-  box-shadow: inset 0 1px #9a846124;
-  padding: 4px 6px;
-  gap: 6px;
-}
-.equipment-category > span:first-child {
-  gap: 5px;
-  font-size: 12px;
-}
-.equipment-category > span:first-child > .pixel-icon {
-  display: none;
-}
-.equipment-category strong {
-  font-size: 12px;
-  margin-left: auto;
-  white-space: nowrap;
-}
-.equipment-category strong small {
-  display: block;
-  font-size: 10px;
-}
-.equipment-preview {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-.equipment-preview > span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid #977c58;
-  background: #09080c8c;
-  color: #dcc58d;
-  font-size: 21px;
-}
-.equipment-preview small {
-  font-size: 10px;
-}
-.satchel-access {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: space-between;
-  padding: 4px 7px;
-  font-size: 12px;
-}
-.satchel-preview {
-  display: flex;
-  gap: 3px;
-}
-.satchel-preview > span {
-  display: grid;
-  place-items: center;
-  width: 23px;
-  height: 25px;
-  border: 1px solid #947b56;
-  background: #100e128c;
-}
-.equipment-overview .panel-heading h3 {
-  font-size: 17px;
-}
-.equipment-overview .panel-heading button {
-  font-size: 12px;
-  padding: 3px 7px;
-}
-.shop-card {
-  padding: 12px;
-  gap: 5px;
-}
-.shop-card .card-info {
-  gap: 9px;
-}
-.shop-card .text-copy {
-  font-size: 13px;
-  line-height: 1.45;
-}
-.stock-counter > .panel-heading {
-  padding: 5px 10px;
-}
-.stock-counter > .panel-heading h3 {
-  font-size: 17px;
-}
-.stock-counter > .panel-heading button {
-  padding: 3px 6px;
-  font-size: 12px;
-}
 .view-tabs button {
   background-image: url('/ui/button-timber-v1.png');
   border-width: 0 0 2px;
@@ -219,12 +107,6 @@ button:hover:not(:disabled) {
 }
 .screen-actions {
   padding: 3px 4px;
-}
-.clinic-patient {
-  background: transparent;
-}
-.procedure-content {
-  padding: 16px;
 }
 .item-detail-art,
 .build-summary {
@@ -242,98 +124,19 @@ button:hover:not(:disabled) {
   padding-bottom: 7px;
   border-bottom: 1px solid #91785966;
 }
-.arena-header .vitals-bars {
-  text-shadow: 1px 1px #08070d;
-}
 /* A short desktop window gives the equipment grid priority over a tall record. */
 .app-notice {
   text-shadow: 1px 1px #09070c;
 }
 
-@media (min-height: 850px) and (min-width: 1100px) {
-  .shop-card .card-info {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .shop-card .card-info .pixel-icon {
-    align-self: center;
-    width: 96px !important;
-    height: 96px !important;
-  }
-  .shop-card .card-info h3 {
-    font-size: 21px;
-  }
-}
 @media (max-width: 1099px), (max-height: 619px) {
   .modal {
     padding: 14px;
   }
 }
 @media (max-width: 680px) {
-  .main-header {
-    display: flex;
-    gap: 6px;
-    padding: 1px 7px;
-    min-height: 48px;
-    grid-template-columns: none;
-    grid-template-rows: none;
-  }
-  .main-header::before {
-    border-width: 12px;
-  }
-  .main-header .journey {
-    display: flex;
-    margin-left: auto;
-    gap: 0;
-    font-size: 11px;
-  }
-  .journey > span {
-    display: none;
-  }
-  .floor-label {
-    font-size: 0;
-  }
-  .floor-label::before {
-    content: 'F';
-    font-size: 11px;
-  }
-  .header-tools {
-    display: flex;
-    gap: 5px;
-  }
-  .header-tools .gold {
-    position: static;
-    font-size: 13px;
-    gap: 3px;
-  }
-  .header-tools .gold .pixel-icon {
-    width: 15px !important;
-    height: 15px !important;
-  }
-  .header-tools .header-shortcut {
-    display: none;
-  }
-  .header-tools .icon-button {
-    width: 44px;
-    height: 44px;
-  }
   .station-title h2 {
     display: none;
-  }
-  .station-title {
-    min-height: 17px;
-    padding: 1px 5px;
-  }
-  .station-title .eyebrow {
-    font-size: 10px;
-    letter-spacing: 0.5px;
-  }
-  .equipment-preview > span {
-    width: 38px;
-    height: 38px;
-  }
-  .equipment-category > span:first-child {
-    font-size: 13px;
   }
   .modal::before {
     border-width: 18px;
@@ -347,68 +150,18 @@ button:hover:not(:disabled) {
   .flow-card {
     padding: 16px;
   }
-  .procedure-content {
-    padding: 12px;
-  }
 }
 @media (max-height: 619px) {
-  .shop-card::before {
-    border-width: 15px;
-  }
   .modal {
     padding: 10px;
   }
   .modal-heading {
     padding-bottom: 2px;
   }
-  .procedure-content {
-    padding: 10px;
-  }
-  .equipment-preview,
-  .satchel-preview {
-    display: none;
-  }
-}
-@media (max-height: 499px) {
-  .service-option {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 6px;
-    height: 100%;
-  }
-  .service-option button {
-    padding: 4px;
-    font-size: 12px;
-  }
-  .service-option small {
-    font-size: 11px;
-  }
 }
 @media (max-height: 499px) and (min-width: 681px) {
   .modal:has(.equipment-workspace) {
     padding: 18px;
-  }
-  .surgery-stage:not(:has(.clinic-patient)) .procedure-content {
-    grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.4fr);
-  }
-  .surgery-stage:not(:has(.clinic-patient)) .procedure-picker {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .surgery-stage:not(:has(.clinic-patient)) .procedure-content > .view-tabs {
-    grid-column: 1;
-    grid-row: 2;
-    align-self: start;
-  }
-  .surgery-stage:not(:has(.clinic-patient)) .procedure-card {
-    grid-column: 2;
-    grid-row: 1 / 4;
-  }
-  .surgery-stage:not(:has(.clinic-patient)) .procedure-reason {
-    grid-column: 1;
-    grid-row: 3;
-    font-size: 11px;
   }
   .boot-screen {
     display: grid;
@@ -465,39 +218,6 @@ button:hover:not(:disabled) {
   .item-inspector .detail-actions button {
     min-width: 0;
     padding: 4px;
-    font-size: 12px;
-  }
-  .surgery-screen > .station-title {
-    display: none;
-  }
-  .surgery-stage:has(.clinic-patient) .procedure-card {
-    display: flex;
-  }
-  .surgery-stage:has(.clinic-patient) .procedure-content {
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  }
-  .procedure-content > .view-tabs button {
-    font-size: 11px;
-    padding: 3px;
-    white-space: nowrap;
-  }
-  .clinic-patient .patient-label {
-    display: none;
-  }
-}
-@media (max-width: 359px) {
-  .main-header {
-    gap: 4px;
-    padding: 1px 5px;
-  }
-  .header-tools {
-    gap: 4px;
-  }
-  .equipment-preview > span {
-    width: 29px;
-    height: 31px;
-  }
-  .equipment-category > span:first-child {
     font-size: 12px;
   }
 }

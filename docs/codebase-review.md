@@ -64,36 +64,35 @@ controllers and a shared display-mode subscription. The development ruleset is
 now `frankentower-4`. Per-asset readiness, modular geometry validation and
 visible-screen image loading are implemented. Obsolete shop selector branches
 are removed. HUD, shop and clinic composition now have separate stylesheets;
-further responsive/material regrouping remains. The item
+global styles retain shared foundations and cross-screen materials. The item
 presentation catalogue now covers every equipment slot. Fight completion
 rejects duplicate terminal calls. Puppet layouts use a content-signature cache
 that detects in-place build edits and geometry readiness changes. Combat
 precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
 while paused or hidden. Remaining scoped follow-ups are physical-device
-profiling, fitted torso/organ art and renderers, and further screen-specific CSS
-regrouping. Poison uses one shared pool with latest-applicator actor credit;
+profiling and fitted torso/organ art and renderers. Poison uses one shared pool
+with latest-applicator actor credit;
 item-level tick attribution is deferred with item balance. Arena effects now
 use a separate 64-entry visual feedback buffer; the report transcript retains
 its independent 400-entry text-bearing history and truncation flag.
 
 ### Verification and remaining scope
 
-The implementation checkpoint was re-verified on 14 October 2026: all 76 unit
-tests pass, `npm run build` passes TypeScript/content validation/production
-bundling, and `npm run test:browser` passes its browser, arena, puppet and
-reliability suites. Those browser checks cover desktop and phone layouts,
-short-landscape views, spatial combat, dense anatomy poses, pause/resume,
-dialogs, saved reports and recovery paths. They are regression checks, not a
-substitute for profiling on physical phones.
+After the final implementation changes, all 77 unit tests and `npm run build`
+pass; the existing browser and arena suites also pass. The earlier full browser
+run passed browser, arena, puppet and reliability suites. Together those checks
+cover desktop and phone layouts, short-landscape views, spatial combat, dense
+anatomy poses, pause/resume, dialogs, saved reports and recovery paths. They
+are regression checks, not a substitute for profiling on physical phones.
 
 The remaining review items need inputs or scope beyond this implementation
 pass: measure performance on representative physical devices before setting a
-budget or prefetch thresholds; author fitted torso/organ overlays before
-building their worn renderers; and regroup screen CSS further when a specific
-screen change makes the extraction reviewable. Current cascade layers,
-shared display modes and removed obsolete shop branches address the immediate
-precedence/duplication risks. These follow-ups do not block the completed
-correctness and architecture changes above.
+budget or prefetch thresholds; and author fitted torso/organ overlays before
+building their worn renderers. Current arena, shop, clinic and HUD composition
+now has screen-owned stylesheets; shared primitives and materials remain
+global. This CSS extraction improves maintainability but is not visual
+acceptance. The device and art/rendering work remains open; the review is not
+fully closed until those are assessed or deliberately deferred.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -414,12 +413,16 @@ live Shop uses workshop-specific classes; shared selectors and responsive rules
 remain. The obsolete generic shop composition was also removed from the base
 sheet: unused `.shop-stage`/`.shop-services` rules, old grid placement and the
 two-by-two offer grid no longer compete with the live workshop layout. Further
-screen-by-screen regrouping is still open. Clinic layout and clinic-specific
-phone/short-landscape compositions now live in `src/ui-clinic.css`, loaded in
-the same `workshop` cascade layer; the shop-specific screen rules remain in
-`src/ui-shop.css`. The shared in-game header and combat HUD overrides are now
-isolated in `src/ui-hud.css`; shell typography and boot-button material rules
-live with the base and material layers.
+screen-by-screen regrouping is complete for the current arena, shop, clinic and
+HUD screens. Arena geometry and responsive combat overlays live in
+`src/ui-arena.css`; shop geometry and its material refinements live in
+`src/ui-shop.css`; clinic base anatomy,
+procedure layout and phone/short-landscape composition live in
+`src/ui-clinic.css`; HUD geometry and phone sizing live in `src/ui-hud.css`.
+`src/ui-materials.css` now owns shared frames, buttons, modals and other
+cross-screen material treatment. The obsolete clinic selectors and responsive
+rules were removed from the global sheet. The browser and arena suites pass
+after this extraction; this verifies regression behavior, not visual acceptance.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's

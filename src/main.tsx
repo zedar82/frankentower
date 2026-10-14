@@ -6,6 +6,7 @@ import { RULESET } from './game/types';
 import './styles.css';
 import './ui-materials.css';
 import './ui-hud.css';
+import './ui-arena.css';
 import './ui-shop.css';
 import './ui-clinic.css';
 import { PagedText } from './ui/Paging';

@@ -239,14 +239,6 @@ canvas,
   color: #d0d9a5;
   text-align: center;
 }
-.shop-screen,
-.surgery-screen {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 .station-title {
   flex: none;
   display: flex;
@@ -303,36 +295,6 @@ canvas,
 .panel-heading > span {
   font-size: 12px;
 }
-.patient-paper {
-  min-width: 0;
-}
-.patient-paper p {
-  font-size: 15px;
-  margin: 6px 0 15px;
-}
-.patient-name {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  color: #241a13;
-  padding: 0;
-  text-align: left;
-}
-.patient-name > span {
-  font-size: 11px;
-}
-.patient-meters {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.patient-meters strong {
-  float: right;
-}
 .meter {
   height: 12px;
   background: #1d1919;
@@ -349,14 +311,6 @@ canvas,
   background: #7896b0;
   border-top-color: #a4bdd0;
 }
-.shop-creature {
-  min-height: 0;
-  min-width: 0;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  background: #17181e;
-}
 .dressing-room {
   display: block;
   max-width: 100%;
@@ -365,142 +319,6 @@ canvas,
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-}
-.shop-creature > .dressing-room {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.equipment-overview {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.equipment-overview .panel-heading h3 {
-  font-size: 17px;
-}
-.equipment-category {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-align: left;
-  padding: 4px 8px;
-}
-.equipment-category > span:first-child {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.equipment-category strong {
-  margin-left: auto;
-}
-.satchel-access {
-  margin-top: auto;
-}
-.stock-counter {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 0;
-}
-.shop-grid {
-  display: grid;
-  gap: 8px;
-  flex: 1;
-  min-height: 0;
-}
-.offer-position {
-  min-height: 0;
-  min-width: 0;
-  display: flex;
-}
-.shop-card {
-  width: 100%;
-  min-height: 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background-color: #c6a16e;
-  background-image: repeating-linear-gradient(0deg, transparent 0 3px, #75502c0a 3px 4px);
-  color: #211912;
-  border: 3px solid #796047;
-  padding: 6px;
-  box-shadow: inset 0 0 0 1px #eac38d;
-}
-.card-info {
-  display: flex;
-  flex: none;
-  text-align: left;
-  align-items: center;
-  gap: 7px;
-  border: 0;
-  box-shadow: none;
-  padding: 2px;
-  color: #211912;
-  background: transparent;
-}
-.card-info:hover:not(:disabled) {
-  background: #dbb77f;
-}
-.card-info h3 {
-  color: #211912;
-  font-size: 16px;
-}
-.card-info .pixel-icon {
-  width: 48px !important;
-  height: 48px !important;
-}
-.offer-type {
-  font-size: 11px;
-}
-.shop-card .text-copy {
-  font-size: 13px;
-  line-height: 1.4;
-}
-.shop-card .page-controls {
-  font-size: 11px;
-}
-.shop-card .page-controls button {
-  min-width: 44px;
-  width: 44px;
-  padding: 0;
-}
-.buy-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: #3b2c1c;
-  color: #f6d595;
-  flex: none;
-}
-.purchase-reason {
-  font-size: 11px;
-}
-.sold-card {
-  width: 100%;
-  padding: 16px;
-  border: 2px dashed #705747;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
-}
-.service-option {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.service-option button {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-}
-.service-option small {
-  color: #c7b394;
 }
 .view-tabs {
   display: flex;
@@ -511,55 +329,6 @@ canvas,
   flex: 1;
   padding: 5px;
   min-width: 0;
-}
-.surgery-stage {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 16px;
-}
-.clinic-patient {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #17181e;
-}
-.clinic-patient > .view-tabs {
-  align-self: stretch;
-}
-.clinic-patient .dressing-room {
-  min-height: 0;
-  flex: 1;
-}
-.patient-label {
-  padding: 8px;
-  text-align: center;
-}
-.procedure-content {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.procedure-picker label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.procedure-picker select {
-  flex: 1;
-}
-.procedure-card {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.procedure-reason {
-  font-size: 13px;
 }
 .modal-overlay {
   position: fixed;
@@ -918,140 +687,6 @@ canvas,
   grid-template-columns: 1fr 1fr;
   align-content: start;
 }
-.battle-world {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-.arena-scene {
-  position: relative;
-  min-height: 0;
-  flex: 1;
-}
-.arena-scene > canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.arena-header {
-  position: absolute;
-  top: 10px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  justify-content: space-between;
-  z-index: 3;
-  pointer-events: none;
-}
-.combat-vitals {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.portrait-button {
-  pointer-events: auto;
-  width: 55px;
-  height: 60px;
-  padding: 0;
-}
-.portrait-button .creature {
-  width: 100%;
-  height: 100%;
-}
-.combat-vitals > div {
-  width: 190px;
-  background: #17151cb0;
-  padding: 5px;
-}
-.health-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-top: 4px;
-}
-.mana-line {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 11px;
-  margin-top: 3px;
-}
-.mana-line .meter {
-  height: 5px;
-}
-.battle-heading {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  text-align: right;
-}
-.actor-target {
-  position: absolute;
-  min-height: 44px;
-  min-width: 44px;
-  border: 0;
-  box-shadow: none;
-  background: transparent !important;
-  padding: 0;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-}
-.actor-target:hover:not(:disabled) {
-  outline: 1px dashed #d8c18c;
-}
-.paused-banner {
-  position: absolute;
-  top: 45%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #17151ce0;
-  padding: 12px 20px;
-  letter-spacing: 5px;
-  pointer-events: none;
-}
-.combat-belt {
-  flex: none;
-  padding: 8px;
-  border-top: 2px solid #705847;
-  background: #201c23;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.activation-belt,
-.combat-controls {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-.activation-belt > button {
-  padding: 4px;
-}
-.equipment-pulse {
-  background: #8b6a35 !important;
-  border-color: #e6c98b;
-}
-.combat-controls button {
-  padding: 5px 8px;
-}
-.combat-controls .active {
-  border-color: #c7bc74;
-  background: #524530;
-}
-.station-layer:not(.station-shop):not(.station-lab) {
-  position: absolute;
-  bottom: 85px;
-  left: 16px;
-  right: 16px;
-  pointer-events: none;
-  z-index: 5;
-  display: flex;
-  justify-content: center;
-}
 .flow-card {
   pointer-events: auto;
   background: #211d24ef;
@@ -1097,16 +732,6 @@ canvas,
     padding: 5px 8px;
     gap: 8px;
   }
-  .surgery-stage {
-    display: flex;
-    flex-direction: column;
-  }
-  .procedure-content {
-    flex: 1;
-  }
-  .surgery-stage .clinic-patient {
-    flex: 1;
-  }
   .workspace-toolbar label {
     font-size: 12px;
   }
@@ -1125,12 +750,6 @@ canvas,
   }
   .modal {
     padding: 12px;
-  }
-  .surgery-stage:has(.clinic-patient) .procedure-content {
-    flex: none;
-  }
-  .surgery-stage:has(.clinic-patient) .procedure-card {
-    display: none;
   }
 }
 @media (max-width: 680px) {
@@ -1259,45 +878,6 @@ canvas,
     font-size: 12px;
     gap: 8px;
   }
-  .procedure-picker label {
-    font-size: 0;
-  }
-  .procedure-picker select {
-    font-size: 14px;
-  }
-  .combat-vitals > div {
-    width: 150px;
-  }
-  .combat-vitals .portrait-button {
-    display: none;
-  }
-  .arena-header {
-    top: 6px;
-    left: 6px;
-    right: 6px;
-  }
-  .battle-heading {
-    font-size: 11px;
-  }
-  .battle-heading .eyebrow {
-    font-size: 9px;
-  }
-  .combat-belt {
-    flex-direction: column;
-    gap: 5px;
-    align-items: stretch;
-  }
-  .activation-belt {
-    justify-content: space-between;
-  }
-  .combat-controls {
-    justify-content: space-between;
-  }
-  .station-layer:not(.station-shop):not(.station-lab) {
-    left: 8px;
-    right: 8px;
-    bottom: 125px;
-  }
   .flow-card {
     padding: 10px;
   }
@@ -1373,70 +953,6 @@ canvas,
     max-height: 76px;
     width: 72px;
   }
-  .surgery-stage {
-    flex-direction: row;
-  }
-  .surgery-stage .clinic-patient {
-    width: 40%;
-  }
-  .surgery-stage:has(.clinic-patient) .procedure-content {
-    flex: 1;
-  }
-  .procedure-card > h3 {
-    font-size: 17px;
-  }
-  .procedure-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 44px minmax(0, 1fr) auto;
-    gap: 4px 8px;
-    padding: 8px;
-  }
-  .procedure-picker {
-    grid-column: 1;
-    grid-row: 1;
-    min-width: 0;
-  }
-  .procedure-content > .view-tabs {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .procedure-picker label {
-    font-size: 0;
-  }
-  .procedure-picker select {
-    font-size: 13px;
-    width: 100%;
-  }
-  .procedure-content > .procedure-card {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-  .procedure-card > h3 {
-    display: none;
-  }
-  .procedure-content > .procedure-reason {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
-  .procedure-content > .detail-actions {
-    grid-column: 1 / -1;
-    grid-row: 4;
-  }
-  .detail-actions button {
-    padding: 4px;
-    font-size: 12px;
-  }
-  .procedure-reason {
-    font-size: 12px;
-  }
-  .combat-belt {
-    padding: 4px;
-  }
-  .activation-belt .pixel-icon {
-    width: 22px !important;
-    height: 22px !important;
-  }
   .flow-card {
     padding: 8px;
     gap: 4px;
@@ -1446,11 +962,6 @@ canvas,
   }
   .flow-card p {
     font-size: 12px;
-  }
-  .station-layer:not(.station-shop):not(.station-lab) {
-    bottom: 75px;
-    max-width: 600px;
-    margin: auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {

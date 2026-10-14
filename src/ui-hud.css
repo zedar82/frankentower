@@ -70,3 +70,64 @@
   border-top: 1px solid #856440;
 }
 }
+
+@layer workshop {
+@media (max-width: 680px) {
+  .main-header {
+    display: flex;
+    gap: 6px;
+    padding: 1px 7px;
+    min-height: 48px;
+    grid-template-columns: none;
+    grid-template-rows: none;
+  }
+  .main-header::before {
+    border-width: 12px;
+  }
+  .main-header .journey {
+    display: flex;
+    margin-left: auto;
+    gap: 0;
+    font-size: 11px;
+  }
+  .journey > span {
+    display: none;
+  }
+  .floor-label {
+    font-size: 0;
+  }
+  .floor-label::before {
+    content: 'F';
+    font-size: 11px;
+  }
+  .header-tools {
+    display: flex;
+    gap: 5px;
+  }
+  .header-tools .gold {
+    position: static;
+    font-size: 13px;
+    gap: 3px;
+  }
+  .header-tools .gold .pixel-icon {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  .header-tools .header-shortcut {
+    display: none;
+  }
+  .header-tools .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (max-width: 359px) {
+  .main-header {
+    gap: 4px;
+    padding: 1px 5px;
+  }
+  .header-tools {
+    gap: 4px;
+  }
+}
+}

@@ -1,0 +1,195 @@
+/* Spatial fight surface, player controls and responsive combat overlays. */
+@layer base {
+.battle-world {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.arena-scene {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+}
+.arena-scene > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.arena-header {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 3;
+  pointer-events: none;
+}
+.combat-vitals {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.portrait-button {
+  pointer-events: auto;
+  width: 55px;
+  height: 60px;
+  padding: 0;
+}
+.portrait-button .creature {
+  width: 100%;
+  height: 100%;
+}
+.combat-vitals > div {
+  width: 190px;
+  background: #17151cb0;
+  padding: 5px;
+}
+.health-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.mana-line {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  margin-top: 3px;
+}
+.mana-line .meter {
+  height: 5px;
+}
+.battle-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: right;
+}
+.actor-target {
+  position: absolute;
+  min-height: 44px;
+  min-width: 44px;
+  border: 0;
+  box-shadow: none;
+  background: transparent !important;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.actor-target:hover:not(:disabled) {
+  outline: 1px dashed #d8c18c;
+}
+.paused-banner {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #17151ce0;
+  padding: 12px 20px;
+  letter-spacing: 5px;
+  pointer-events: none;
+}
+.combat-belt {
+  flex: none;
+  padding: 8px;
+  border-top: 2px solid #705847;
+  background: #201c23;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.activation-belt,
+.combat-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.activation-belt > button {
+  padding: 4px;
+}
+.equipment-pulse {
+  background: #8b6a35 !important;
+  border-color: #e6c98b;
+}
+.combat-controls button {
+  padding: 5px 8px;
+}
+.combat-controls .active {
+  border-color: #c7bc74;
+  background: #524530;
+}
+.station-layer:not(.station-shop):not(.station-lab) {
+  position: absolute;
+  bottom: 85px;
+  left: 16px;
+  right: 16px;
+  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+}
+}
+
+@layer materials {
+.arena-header .vitals-bars {
+  text-shadow: 1px 1px #08070d;
+}
+}
+
+@layer base {
+@media (max-width: 680px) {
+  .combat-vitals > div {
+    width: 150px;
+  }
+  .combat-vitals .portrait-button {
+    display: none;
+  }
+  .arena-header {
+    top: 6px;
+    left: 6px;
+    right: 6px;
+  }
+  .battle-heading {
+    font-size: 11px;
+  }
+  .battle-heading .eyebrow {
+    font-size: 9px;
+  }
+  .combat-belt {
+    flex-direction: column;
+    gap: 5px;
+    align-items: stretch;
+  }
+  .activation-belt {
+    justify-content: space-between;
+  }
+  .combat-controls {
+    justify-content: space-between;
+  }
+  .station-layer:not(.station-shop):not(.station-lab) {
+    left: 8px;
+    right: 8px;
+    bottom: 125px;
+  }
+}
+@media (max-height: 499px) {
+  .combat-belt {
+    padding: 4px;
+  }
+  .activation-belt .pixel-icon {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .station-layer:not(.station-shop):not(.station-lab) {
+    bottom: 75px;
+    max-width: 600px;
+    margin: auto;
+  }
+}
+}
