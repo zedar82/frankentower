@@ -72,15 +72,23 @@ opponents with player-style healing a real supported case.
 not mark an unresolved simulation as a terminal outcome. The interactive loop
 has no corresponding horizon and waits for `combat.done` indefinitely.
 
-**Recommendation:** make the terminal policy explicit and shared by interactive
-play and diagnostic runners. Define a maximum duration and its game outcome;
-escalating attrition can support that policy, but should not be its only
-guarantee. Keep a stalemate/timeout policy distinct from a simulation-budget
-error, which must preserve pre-fight progress. Return a discriminated outcome
-such as victory, defeat, unresolved horizon or engine failure from runners.
+**Agreed policy — 14 October:** Daniel considers an extended unresolved fight a
+player win if the player is still alive. Resolve it through normal victory
+rewards, recovery and progression, including checkpoint/final-floor behavior.
+The duration threshold and any progress detection are not yet agreed; the
+current diagnostic runner's 160-second horizon is not an agreed game timeout.
 
-**Future regression:** mutually blocked healing builds must terminate under the
-agreed policy, and engine failure must still recover without recording defeat.
+**Recommendation:** implement that policy in the shared engine for interactive
+play and diagnostic runners. Distinguish a stalemate victory from an ordinary
+victory in diagnostic/report metadata. Simulation-budget failures and engine
+exceptions retain their separate pre-fight recovery behavior. A deliberately
+short diagnostic horizon may still return an unresolved result before the game
+timeout. This policy is recorded here and in the design brief; runtime behavior
+has not yet changed.
+
+**Future regression:** mutually blocked healing builds award a normal victory
+at the agreed threshold. Engine failure still recovers without recording a win
+or defeat, and a prior player death remains a defeat.
 
 ## 2. Completed reports become fresh previews after reload — P1
 

@@ -12,6 +12,14 @@ suggestions and does not change item effects or shop prices.
 
 Prototype update — October 2026
 
+Combat stalemate policy — 14 October 2026
+
+An extended unresolved fight counts as a player victory if the player is still
+alive. Award the normal floor reward, victory recovery and progression, including
+the usual checkpoint and final-floor outcomes. The duration threshold and any
+progress detection remain to be defined during implementation. Simulation-budget
+failures and engine exceptions retain their separate pre-fight recovery behavior.
+
 Shop stock refreshes for free on every new floor. The player may freeze stock
 to preserve the remaining offers, including empty purchased positions, until
 they unfreeze it. Manual paid refresh and shop upgrades still replace stock.
