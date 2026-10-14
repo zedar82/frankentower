@@ -657,9 +657,6 @@
     grid-template-rows: minmax(0, 1fr) 330px 48px;
     gap: 7px;
   }
-  .compact-workshop.single-offer {
-    grid-template-rows: minmax(0, 1fr) 184px 44px;
-  }
   .compact-workshop .workshop-scene {
     grid-template-columns: minmax(0, 1fr) 108px;
     grid-template-rows: 58px minmax(0, 1fr) 44px;
@@ -843,34 +840,6 @@
     font-size: 15px;
     flex: 1.55;
   }
-  .single-offer .shop-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .single-offer .shop-card {
-    display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-    grid-template-rows: minmax(0, 1fr) 44px;
-    gap: 4px 8px;
-  }
-  .single-offer .card-info {
-    grid-column: 1;
-    grid-row: 1;
-    flex-direction: row;
-    min-height: 44px;
-  }
-  .single-offer .card-info .pixel-icon {
-    width: 40px !important;
-    height: 40px !important;
-    align-self: center;
-  }
-  .single-offer .paged-text {
-    grid-column: 2;
-    grid-row: 1 / 3;
-  }
-  .single-offer .buy-button {
-    grid-column: 1;
-    grid-row: 2;
-  }
 }
 @media (max-width: 680px) {
   .app-shell {
@@ -918,9 +887,6 @@
     grid-column: 1 / -1;
     grid-row: 2;
   }
-}
-.compact-workshop.four-offers .shop-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 @media (min-height: 500px) {
   .landscape-workshop .equipment-overview {
