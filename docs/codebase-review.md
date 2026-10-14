@@ -99,6 +99,9 @@ screen-owned stylesheets; shared primitives and materials remain global. This
 CSS extraction improves maintainability but is not visual acceptance. The
 device performance review remains open.
 
+The repeatable device scenarios and measurement fields are in
+[`phone-performance-profile.md`](phone-performance-profile.md).
+
 ## 1. Combat can continue indefinitely — P1
 
 **Evidence:** `src/game/combat.ts:410`, `src/game/combat.ts:423`,
