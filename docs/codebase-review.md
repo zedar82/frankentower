@@ -254,8 +254,10 @@ instantiate Combat only for a fight or an explicit simulation study.
 
 **Implementation:** preview actors now come from a shared formation builder and
 are exposed through a read-only `CombatView`. Rendering a preview no longer
-constructs the combat engine or runs start reactions. App still owns run state,
-navigation and the combat clock; the broader controller extraction remains.
+constructs the combat engine or runs start reactions. `useRunSession` now owns
+the mutable save/run reference, missing-run initialization, React refresh,
+persistence scheduling and common action analytics. App still owns navigation,
+the combat clock and fight feedback; the broader controller extraction remains.
 
 ## 7. One presentation catalogue — P2
 

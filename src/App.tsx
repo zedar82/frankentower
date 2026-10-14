@@ -33,12 +33,16 @@ import { EquipmentWorkspace } from './ui/Equipment';
 import { Surgery } from './ui/Surgery';
 import { Help, Hall, Catalogue, Report, Starter } from './ui/Reference';
 import { PagedText, useDisplayMode } from './ui/Paging';
+import { useRunSession } from './useRunSession';
 
 const SHOP_ACTIONS = { reroll, upgrade: upgradeShop, recover, freeze: toggleShopFreeze };
 type FlowStep = 'log' | 'lab' | 'shop' | null;
 export function App({ initialSave }: { initialSave: Save }) {
-  const saveRef = useRef(initialSave);
-  const [, redraw] = useState(0);
+  const combatRef = useRef<Combat | null>(null);
+  const previewRef = useRef<{ floor: number; build: Build; combat: CombatView } | null>(null);
+  const { saveRef, save, run, refresh, update } = useRunSession(initialSave, () => {
+    if (!combatRef.current) previewRef.current = null;
+  });
   const [flowStep, setFlowStep] = useState<FlowStep>(() =>
     initialSave.run?.phase === 'result' ||
     initialSave.run?.phase === 'checkpoint' ||
@@ -64,16 +68,11 @@ export function App({ initialSave }: { initialSave: Save }) {
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState('');
   const [fightError, setFightError] = useState<string | null>(null);
-  const combatRef = useRef<Combat | null>(null);
   const pauseRef = useRef(paused);
   pauseRef.current = paused;
-  const save = saveRef.current;
-  if (!save.run) save.run = newRun();
-  const run = save.run;
   const isCombat = run.phase === 'combat';
   const isEnd = ['dead', 'retired', 'complete'].includes(run.phase);
   const nextEnemies = encounter(run.floor, run.seed, save.legacy);
-  const previewRef = useRef<{ floor: number; build: Build; combat: CombatView } | null>(null);
   if (
     !combatRef.current &&
     (!previewRef.current ||
@@ -89,22 +88,6 @@ export function App({ initialSave }: { initialSave: Save }) {
   const sim = combatRef.current ?? previewRef.current!.combat;
   const s = isCombat && combatRef.current ? combatRef.current.player.stats : stats(run.build);
   const notify = (message: string) => setToast(message);
-  const update = (event?: string) => {
-    if (!combatRef.current) previewRef.current = null;
-    redraw((v) => v + 1);
-    void persist(saveRef.current);
-    if (event)
-      telemetry(event, {
-        floor: run.floor,
-        seed: run.seed,
-        gold: run.gold,
-        items: equipped(run.build)
-          .map((x) => `${x.item.defId}:${x.item.level}`)
-          .join(','),
-        anatomy: run.build.parts.map((p) => `${p.slot}:${p.variant}`).join(','),
-        efficiency: stats(run.build).efficiency,
-      });
-  };
   function beginFight() {
     const current = saveRef.current.run!;
     if (current.phase !== 'build') return;
@@ -186,7 +169,7 @@ export function App({ initialSave }: { initialSave: Save }) {
     update(purchased ? 'item_purchased' : 'item_equipped');
   }
   const itemDrag = useItemDrag({ enabled: run.phase === 'build', canDrop, onDrop: dropItem });
-  useEffect(() => subscribePlatform(() => redraw((v) => v + 1)), []);
+  useEffect(() => subscribePlatform(refresh), []);
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(''), 3200);
@@ -219,7 +202,7 @@ export function App({ initialSave }: { initialSave: Save }) {
       setFlowStep('shop');
       setFightError(message);
       void persist(saveRef.current);
-      redraw((v) => v + 1);
+      refresh();
     };
     const tick = (now: number) => {
       const delta = Math.min((now - last) / 1000, 0.15);
@@ -297,10 +280,10 @@ export function App({ initialSave }: { initialSave: Save }) {
             anatomy: current.build.parts.map((p) => `${p.slot}:${p.variant}`).join(','),
           });
           void persist(saveRef.current);
-          redraw((v) => v + 1);
+          refresh();
         } else if (now - lastRender > 70) {
           lastRender = now;
-          redraw((v) => v + 1);
+          refresh();
         }
       } else accumulator = 0;
       frame = requestAnimationFrame(tick);
