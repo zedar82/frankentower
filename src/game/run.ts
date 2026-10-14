@@ -50,6 +50,7 @@ export function newRun(seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>>
     operated: false,
     phase: 'start',
     lastEnemies: [],
+    lastReport: null,
     victories: 0,
     purchases: 0,
     rerolls: 0,

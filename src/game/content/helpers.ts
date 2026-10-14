@@ -21,5 +21,9 @@ export const cdr = (amount: number, select: Selector, percent = false): Effect =
   percent,
 });
 export function item(definition: Omit<ItemDef, 'price'> & { price?: number }): ItemDef {
-  return { price: [0, 8, 13, 21, 32, 48][definition.rarity], ...definition };
+  return {
+    targeting: { kind: 'single' },
+    price: [0, 8, 13, 21, 32, 48][definition.rarity],
+    ...definition,
+  };
 }

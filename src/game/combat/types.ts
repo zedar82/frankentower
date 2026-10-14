@@ -6,6 +6,7 @@ export interface ArmStrike {
   impactAt: number;
   rate: number;
   facing: number;
+  targets: string[];
 }
 export interface CombatAbility extends BuildAbility {
   remaining: number;
@@ -78,5 +79,7 @@ export interface Job {
   ancestry: string[];
   effects?: Effect[];
   target?: string;
+  targets?: string[];
+  targeting?: import('../types').Targeting;
   reactionId?: string;
 }

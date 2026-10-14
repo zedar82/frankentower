@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Combat } from '../src/game/combat';
+import { COMBAT_STALEMATE_SECONDS, Combat } from '../src/game/combat';
 import { ITEM_MAP } from '../src/game/content';
 import { human, stats } from '../src/game/anatomy';
 import { Random, successes } from '../src/game/random';
@@ -96,6 +96,71 @@ test('Poison ticks and decays, without being stopped by direct-attack defences',
   assert.equal(sim.enemies[0].poison, 40);
   assert.equal(sim.enemies[0].shield, 1000);
 });
+test('damage and follow-up status stay on one locked target when that target dies', () => {
+  const sim = new Combat(
+    armed('knife'),
+    [armed('skeletonblade', 'First'), armed('skeletonblade', 'Second')],
+    1234,
+  );
+  sim.player.x = 185;
+  sim.player.y = 250;
+  const [first, second] = sim.enemies;
+  first.x = sim.player.x + 40;
+  first.y = sim.player.y;
+  first.hp = 50;
+  second.x = sim.player.x + 50;
+  second.y = sim.player.y;
+  const node = sim.player.abilities[0];
+  sim.activate(sim.player, node);
+  assert.equal(first.hp, 0);
+  assert.equal(first.bleed, 0);
+  assert.equal(second.hp, 1000);
+  assert.equal(second.bleed, 0);
+});
+test('fixed-count targeting selects the nearest eligible targets once', () => {
+  custom({
+    id: 'test-count-targeting',
+    targeting: { kind: 'count', count: 2 },
+    effects: [{ kind: 'damage', amount: 10, direct: true }],
+  });
+  const sim = new Combat(
+    armed('test-count-targeting'),
+    [armed('skeletonblade', 'First'), armed('skeletonblade', 'Second'), armed('skeletonblade', 'Third')],
+    1234,
+  );
+  sim.enemies[0].x = sim.player.x + 35;
+  sim.enemies[0].y = sim.player.y;
+  sim.enemies[1].x = sim.player.x + 45;
+  sim.enemies[1].y = sim.player.y;
+  sim.enemies[2].x = sim.player.x + 100;
+  sim.enemies[2].y = sim.player.y;
+  sim.activate(sim.player, sim.player.abilities[0]);
+  assert.equal(sim.enemies[0].hp, 990);
+  assert.equal(sim.enemies[1].hp, 990);
+  assert.equal(sim.enemies[2].hp, 1000);
+});
+test('area targeting resolves against its selected impact point', () => {
+  custom({
+    id: 'test-area-targeting',
+    targeting: { kind: 'area', radius: 25, center: 'target' },
+    effects: [{ kind: 'damage', amount: 10, direct: true }],
+  });
+  const sim = new Combat(
+    armed('test-area-targeting'),
+    [armed('skeletonblade', 'Center'), armed('skeletonblade', 'Inside'), armed('skeletonblade', 'Outside')],
+    1234,
+  );
+  sim.enemies[0].x = sim.player.x + 35;
+  sim.enemies[0].y = sim.player.y;
+  sim.enemies[1].x = sim.player.x + 50;
+  sim.enemies[1].y = sim.player.y;
+  sim.enemies[2].x = sim.player.x + 70;
+  sim.enemies[2].y = sim.player.y;
+  sim.activate(sim.player, sim.player.abilities[0]);
+  assert.equal(sim.enemies[0].hp, 990);
+  assert.equal(sim.enemies[1].hp, 990);
+  assert.equal(sim.enemies[2].hp, 1000);
+});
 test('trigger ancestry is per branch, tracks instances, and stops recursive loops', () => {
   custom({
     id: 'test-hat',
@@ -184,6 +249,20 @@ test('identical builds and seeds produce identical outcomes and event traces', (
   assert.deepEqual(a.logs, b.logs);
   assert.equal(a.player.hp, b.player.hp);
   assert.equal(a.won, b.won);
+});
+test('an unresolved fight becomes a stalemate victory at the shared game timeout', () => {
+  const sim = new Combat(human('Patient'), [human('Opponent')], 1234);
+  sim.time = COMBAT_STALEMATE_SECONDS - 0.05;
+  sim.step(0.05);
+  assert.equal(sim.done, true);
+  assert.equal(sim.won, true);
+  assert.equal(sim.outcome, 'stalemate');
+});
+test('a diagnostic horizon can stop before the game timeout without inventing a result', () => {
+  const sim = new Combat(human('Patient'), [human('Opponent')], 1234);
+  assert.equal(sim.runToEnd(1), false);
+  assert.equal(sim.done, false);
+  assert.equal(sim.outcome, 'ongoing');
 });
 test('own-hit passive effects resolve inside the activation rather than being suppressed', () => {
   const sim = duel('maul');

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { ITEMS, ITEM_MAP } from '../game/content';
 import { equipped, identity } from '../game/anatomy';
-import type { Build, Item, Run, Save } from '../game/types';
-import type { Combat } from '../game/combat';
+import type { Build, CompletedFightReport, Item, Run, Save } from '../game/types';
 import { Icon } from './Icon';
 import { Creature } from './Creature';
 import { ItemInspector } from './ItemDetails';
@@ -191,12 +190,25 @@ export function Catalogue({ run, onChange }: { run: Run; onChange(event?: string
   );
 }
 
-export function Report({ run, sim }: { run: Run; sim: Combat }) {
+export function Report({ report }: { report: CompletedFightReport | null }) {
   const [section, setSection] = useState<
     'Summary' | 'Contribution' | 'Patient' | 'Enemies' | 'Transcript'
   >('Summary');
   const [build, setBuild] = useState<Build>();
   const [page, setPage] = useState(0);
+  if (!report)
+    return (
+      <div className="reference-view report-view">
+        <h2>Battle report</h2>
+        <p>No completed fight report is available.</p>
+      </div>
+    );
+  const outcome =
+    report.outcome === 'defeat'
+      ? 'Patient died'
+      : report.outcome === 'stalemate'
+        ? 'Stalemate victory'
+        : 'Victory';
   return (
     <div className="reference-view report-view">
       <label>
@@ -216,7 +228,7 @@ export function Report({ run, sim }: { run: Run; sim: Combat }) {
       </label>
       {section === 'Summary' ? (
         <PagedText
-          text={`${run.build.name} · Floor ${run.floor}\n${run.phase === 'dead' ? 'Did not survive' : run.phase === 'retired' ? 'Retired as guardian' : run.phase === 'complete' ? 'Tower completed' : sim.done ? 'Encounter survived' : 'Current observation'}\n\nDuration ${sim.time.toFixed(1)}s\nDamage ${Math.round(sim.player.damage)}\nHealing ${Math.round(sim.player.healing)}\n\n${sim.suppressed} recursive activations prevented.\n\nEquipment contribution, patient details, final enemies, and the complete combat transcript are available from the report menu.`}
+          text={`${report.patient.build.name} · Floor ${report.floor}\n${outcome}\n\nDuration ${report.duration.toFixed(1)}s\nDamage ${Math.round(report.patient.damage)}\nHealing ${Math.round(report.patient.healing)}\n\n${report.suppressed} recursive activations prevented.\n\n${report.transcriptTruncated ? 'The transcript contains the most recent 400 entries.' : 'The complete combat transcript is available.'}`}
           label="Summary"
         />
       ) : section === 'Contribution' ? (
@@ -225,13 +237,13 @@ export function Report({ run, sim }: { run: Run; sim: Combat }) {
           <PagedList
             page={page}
             onPage={setPage}
-            items={[...sim.player.abilities].sort((a, b) => b.damage - a.damage)}
+            items={[...report.contributions].sort((a, b) => b.damage - a.damage)}
             rowHeight={80}
             minWidth={320}
             render={(ability) => (
               <div className="contribution-entry" key={ability.uid}>
                 <strong>
-                  {ability.def.name} · Lv{ability.level}
+                  {ability.name} · Lv{ability.level}
                 </strong>
                 <span>
                   {ability.activations} acts · {Math.round(ability.damage)} damage ·{' '}
@@ -242,7 +254,7 @@ export function Report({ run, sim }: { run: Run; sim: Combat }) {
           />
         </>
       ) : section === 'Patient' ? (
-        <PatientSummary build={run.build} />
+        <PatientSummary build={report.patient.build} />
       ) : section === 'Enemies' ? (
         build ? (
           <>
@@ -251,7 +263,7 @@ export function Report({ run, sim }: { run: Run; sim: Combat }) {
           </>
         ) : (
           <PagedList
-            items={run.lastEnemies}
+            items={report.enemies.map((enemy) => enemy.build)}
             empty="No final encounter recorded."
             render={(enemy, index) => (
               <button key={index} className="hall-entry" onClick={() => setBuild(enemy)}>
@@ -266,19 +278,21 @@ export function Report({ run, sim }: { run: Run; sim: Combat }) {
         )
       ) : (
         <>
-          <p>{sim.suppressed} recursive activations prevented.</p>
+          {report.transcriptTruncated && (
+            <p>The transcript is limited to the most recent 400 entries.</p>
+          )}
           <div
             className="combat-transcript"
             tabIndex={0}
             role="region"
             aria-label="Scrollable combat log"
           >
-            {sim.logs.map((log) => (
+            {report.transcript.map((log) => (
               <div key={log.id} className={`transcript-line ${log.kind}`}>
                 <time>{log.time.toFixed(1)}s</time>
                 <span>
                   {log.text}
-                  <small>{sim.chainNames(log.chain).join(' → ')}</small>
+                  {log.chain.length > 0 && <small>{log.chain.join(' → ')}</small>}
                 </span>
               </div>
             ))}
@@ -288,7 +302,6 @@ export function Report({ run, sim }: { run: Run; sim: Combat }) {
     </div>
   );
 }
-
 export function Starter({ run, onChoose }: { run: Run; onChoose(id: string): void }) {
   return (
     <div className="starter-view">

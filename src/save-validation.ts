@@ -22,6 +22,9 @@ function text(value: unknown) {
   requireValid(typeof value === 'string' && value.length > 0 && value.length <= 256);
   return value;
 }
+function longText(value: unknown) {
+  requireValid(typeof value === 'string' && value.length <= 2048);
+}
 function number(value: unknown, min = 0, max = Number.MAX_SAFE_INTEGER, integer = true): number {
   requireValid(
     typeof value === 'number' &&
@@ -72,6 +75,61 @@ function build(value: unknown, items = new Set<string>()) {
   for (const factor of ['healthFactor', 'powerFactor'])
     if (b[factor] !== undefined) number(b[factor], 0.001, 1000, false);
 }
+function fightActorReport(value: unknown) {
+  const a = object(value);
+  build(a.build);
+  const maxHp = number(a.maxHp, 1, 1_000_000, false),
+    maxMana = number(a.maxMana, 0, 1_000_000, false);
+  number(a.hp, 0, maxHp, false);
+  number(a.mana, 0, maxMana, false);
+  number(a.damage, 0, 1_000_000_000, false);
+  number(a.healing, 0, 1_000_000_000, false);
+  if (a.diedAt !== undefined) number(a.diedAt, 0, 3600, false);
+}
+function fightReport(value: unknown) {
+  const r = object(value);
+  number(r.floor, 1, 100);
+  number(r.seed, 0, 0xffffffff);
+  requireValid(['victory', 'stalemate', 'defeat'].includes(text(r.outcome)));
+  number(r.duration, 0, 3600, false);
+  fightActorReport(r.patient);
+  for (const enemy of array(r.enemies, 6)) fightActorReport(enemy);
+  for (const entry of array(r.contributions, 1000)) {
+    const c = object(entry);
+    text(c.uid);
+    text(c.name);
+    number(c.level, 1, 3);
+    number(c.activations, 0);
+    number(c.damage, 0, 1_000_000_000, false);
+    number(c.healing, 0, 1_000_000_000, false);
+    number(c.shielding, 0, 1_000_000_000, false);
+  }
+  number(r.suppressed, 0);
+  boolean(r.transcriptTruncated);
+  let priorTime = 0;
+  for (const entry of array(r.transcript, 400)) {
+    const log = object(entry);
+    number(log.id, 1);
+    const time = number(log.time, priorTime, 3600, false);
+    priorTime = time;
+    requireValid(
+      ['damage', 'heal', 'shield', 'activation', 'status', 'suppressed', 'resource', 'death'].includes(
+        text(log.kind),
+      ),
+    );
+    text(log.actor);
+    if (log.target !== undefined) text(log.target);
+    if (log.ability !== undefined) text(log.ability);
+    if (log.value !== undefined) number(log.value, 0, 1_000_000_000, false);
+    longText(log.text);
+    for (const chain of array(log.chain, 64)) text(chain);
+    if (log.crit !== undefined) number(log.crit, 0, 100, false);
+    if (log.shieldBreak !== undefined) boolean(log.shieldBreak);
+    if (log.attack !== undefined)
+      requireValid(['slash', 'heavy', 'bolt', 'arrow'].includes(text(log.attack)));
+    if (log.status !== undefined) requireValid(['bleed', 'poison'].includes(text(log.status)));
+  }
+}
 function run(value: unknown) {
   const r = object(value),
     items = new Set<string>();
@@ -101,6 +159,7 @@ function run(value: unknown) {
     ),
   );
   for (const entry of array(r.lastEnemies, 6)) build(entry);
+  if (r.lastReport !== null) fightReport(r.lastReport);
   for (const counter of ['victories', 'purchases', 'rerolls', 'surgeries']) number(r[counter]);
   // Generated IDs must not be reused after loading.
   const prefix = `r${r.seed}-`;

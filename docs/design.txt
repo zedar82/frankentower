@@ -16,8 +16,9 @@ Combat stalemate policy — 14 October 2026
 
 An extended unresolved fight counts as a player victory if the player is still
 alive. Award the normal floor reward, victory recovery and progression, including
-the usual checkpoint and final-floor outcomes. The duration threshold and any
-progress detection remain to be defined during implementation. Simulation-budget
+the usual checkpoint and final-floor outcomes. The first implementation uses a
+configurable 160-second timeout as a tuning point; an unresolved fight awards a
+stalemate victory if the player is alive at that point. Simulation-budget
 failures and engine exceptions retain their separate pre-fight recovery behavior.
 
 Combat targeting policy — 14 October 2026

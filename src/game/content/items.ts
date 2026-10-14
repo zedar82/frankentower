@@ -473,7 +473,8 @@ export const ITEMS: ItemDef[] = [
     icon: 'wand',
     text: 'Every 4s: spend 40 Mana to attack all enemies for 380.',
     cooldown: 4,
-    effects: [damage(380, { all: true, cost: 40 })],
+    targeting: { kind: 'area', radius: 700, center: 'target' },
+    effects: [damage(380, { cost: 40 })],
     signature: 'On Kill: gain 80 Mana.',
     lv3: [react('kill', [fx('mana', 80)])],
   }),
@@ -691,7 +692,8 @@ export const ITEMS: ItemDef[] = [
     icon: 'helmet',
     text: 'Every 6s: spend 100 Mana to attack all enemies for 1800 per Head.',
     cooldown: 6,
-    effects: [damage(1800, { per: 'head', cost: 100, all: true })],
+    targeting: { kind: 'area', radius: 700, center: 'target' },
+    effects: [damage(1800, { per: 'head', cost: 100 })],
     signature: 'On Kill: gain 150 Mana.',
     lv3: [react('kill', [fx('mana', 150)])],
   }),
@@ -708,7 +710,12 @@ export const ITEMS: ItemDef[] = [
     effects: [damage(3000)],
     reactions: [react('activated', [cdr(0.5, { self: true })], { tag: 'Ranged' })],
     signature: 'On own Crit: attack all enemies for 1000.',
-    lv3: [react('crit', [damage(1000, { direct: false, all: true })], { own: true })],
+    lv3: [
+      react('crit', [damage(1000, { direct: false })], {
+        own: true,
+        targeting: { kind: 'area', radius: 700, center: 'target' },
+      }),
+    ],
   }),
   item({
     id: 'donor',

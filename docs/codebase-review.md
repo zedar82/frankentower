@@ -68,27 +68,27 @@ at normal circulation. Two such builds with 60 Armour and level-1 daggers can
 block each other's attacks and sustain attrition. Personal guardians make
 opponents with player-style healing a real supported case.
 
-`runToEnd(160)` stops iterating at its horizon but returns only `won`; it does
-not mark an unresolved simulation as a terminal outcome. The interactive loop
-has no corresponding horizon and waits for `combat.done` indefinitely.
+`runToEnd(160)` used to stop iterating at its horizon without marking an
+unresolved simulation as terminal. The interactive loop had no corresponding
+horizon and could wait for `combat.done` indefinitely.
 
 **Agreed policy — 14 October:** Daniel considers an extended unresolved fight a
 player win if the player is still alive. Resolve it through normal victory
 rewards, recovery and progression, including checkpoint/final-floor behavior.
-The duration threshold and any progress detection are not yet agreed; the
-current diagnostic runner's 160-second horizon is not an agreed game timeout.
+The first engine implementation uses a named 160-second timeout as a tuning
+point; this duration remains adjustable after playtesting.
 
-**Recommendation:** implement that policy in the shared engine for interactive
-play and diagnostic runners. Distinguish a stalemate victory from an ordinary
-victory in diagnostic/report metadata. Simulation-budget failures and engine
-exceptions retain their separate pre-fight recovery behavior. A deliberately
-short diagnostic horizon may still return an unresolved result before the game
-timeout. This policy is recorded here and in the design brief; runtime behavior
-has not yet changed.
+**Implementation:** the shared engine now ends unresolved fights at the named
+timeout as a stalemate victory for a living player. `outcome` distinguishes
+stalemate, ordinary victory, defeat, failure and ongoing combat. Simulation-
+budget failures retain their separate pre-fight recovery behavior. A deliberately
+short `runToEnd` horizon can still return before the game timeout without
+inventing a result. Saved report metadata is handled in the next implementation
+stage.
 
-**Future regression:** mutually blocked healing builds award a normal victory
-at the agreed threshold. Engine failure still recovers without recording a win
-or defeat, and a prior player death remains a defeat.
+**Regression coverage:** a living player receives a stalemate outcome at the
+shared timeout, while a short diagnostic horizon stays unresolved. Follow-up
+coverage should verify App recovery for engine failure and ordinary player death.
 
 ## 2. Completed reports become fresh previews after reload — P1
 
@@ -111,20 +111,24 @@ session-only, say they are unavailable after reload instead of showing new
 statistics. A changed save shape can bump the development ruleset and reset
 incompatible saves; no migration layer is needed.
 
-**Future regression:** reload a completed fight and retain its report, or show
-the agreed unavailable state. Also check checkpoint retirement and final victory.
+**Implementation:** `Run.lastReport` stores a bounded end-of-fight snapshot with
+outcome, seed/floor, patient and enemy state, item contributions, suppression
+count, and the last 400 transcript entries. The transcript marks truncation
+explicitly. The report screen reads only this snapshot, including after reload;
+it no longer presents a fresh preview as historical data. The save ruleset was
+bumped so incompatible development saves reset without migration.
+
+**Regression coverage:** a completed report survives save reload with its
+outcome and final patient state intact.
 
 ## 3. An activation can change targets between effects — P2
 
 **Evidence:** `src/game/combat.ts:100`, `src/game/combat.ts:198–236`,
 `src/game/combat/effects.ts:53–56`.
 
-Activation checks reach against one opponent, but each effect resolves its own
-living target. For a Knife or Necrotic Sceptre, damage can kill opponent A and
-the subsequent Bleed/Poison effect can choose opponent B. This occurs even
-with a preferred ID because `target()` falls back when that opponent is dead.
-The original reach check was against A. This is an implicit target policy,
-not a runtime reproduction performed during this review.
+Before implementation, activation checked reach against one opponent, but each
+effect resolved its own living target. A damage effect could kill opponent A,
+then a Bleed/Poison effect could choose opponent B.
 
 **Agreed policy — 14 October:** each item declares single, fixed-count or
 area/radius targeting. Daniel confirmed that range means a spatial area.
@@ -138,23 +142,19 @@ not invalidate a hit on a living locked target. Skip remaining hostile effects
 on targets that die during resolution, without replacement; continue resolving
 other living targets in the set. Normal Armour/Shield rules still apply.
 
-**Recommendation:** add the targeting contract to shared ability definitions so
-equipment, limbs and sets stay on one engine. Store an action context containing
-the selected actor IDs and, for area attacks, the chosen spatial origin/radius.
-Use that context for effects, pending strikes, feedback and reports. A newly
-triggered action acquires its own targets without mutating its parent's set or
-ancestry. Separate hostile-target queries from ability selectors.
+**Implementation:** shared ability and reaction definitions now support single,
+fixed-count and area targets. Count acquisition takes the nearest eligible
+targets, up to the requested count. Targeted area attacks select their center
+when the action starts; the existing all-enemy items use a radius covering the
+arena. Hand strikes lock their set when the forward stroke begins. Jobs carry
+the selected IDs through resolution; effects skip dead members without
+replacement, while living members remain hittable after movement. This keeps
+the deterministic engine shared by players, enemies, limbs and set abilities.
 
-The exact commitment moment relative to windup/contact, acquisition ordering
-and available-count behavior remain to be settled during implementation. Reach
-determines eligibility at selection; do not add impact-time misses or retargeting.
-Runtime behavior has not yet changed.
-
-**Future regression:** a damage-plus-status ability kills A and does not apply
-its follow-up to B. Fixed-count and area attacks retain their selected sets when
-targets die or other actors enter the area. New triggered actions acquire their
-own sets. Living locked targets still receive their attacks after moving out of
-the original reach/area. Preserve sibling ancestry and own-hit behavior.
+**Regression coverage:** damage-plus-status does not switch targets after a
+kill; fixed-count and area selection use the declared set; committed strikes
+hit a living target after it leaves reach; branch-local ancestry tests still
+pass.
 
 ## 4. Balance output needs correction before tuning — P2
 

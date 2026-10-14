@@ -267,6 +267,10 @@ export function App({ initialSave }: { initialSave: Save }) {
         }
         if (combat.done) {
           accumulator = 0;
+          current.lastReport = combat.completedReport(
+            current.floor,
+            current.seed ^ (current.floor * 15485863),
+          );
           finishFight(current, combat.player.hp, combat.won, saveRef.current);
           sound(combat.won ? 'win' : 'lose', saveRef.current.settings.sound);
           telemetry('fight_complete', {
@@ -692,7 +696,7 @@ export function App({ initialSave }: { initialSave: Save }) {
           )}
           {modal === 'report' && (
             <Modal title="Patient outcome report" onClose={() => setModal(null)} wide>
-              <Report run={run} sim={sim} />
+              <Report report={run.lastReport} />
             </Modal>
           )}
           {modal === 'settings' && (

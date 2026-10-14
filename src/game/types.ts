@@ -1,4 +1,4 @@
-export const RULESET = 'frankentower-3';
+export const RULESET = 'frankentower-4';
 export const SATCHEL_CAPACITY = 8;
 export type Slot = 'hand' | 'head' | 'foot' | 'chest' | 'heart';
 export type ItemType = 'Weapon' | 'Wand' | 'Shield' | 'Helmet' | 'Armour' | 'Shoe' | 'Heart';
@@ -31,6 +31,10 @@ export type EventKind =
   | 'mana';
 export type Stat = 'armour' | 'speed' | 'crit' | 'chance' | 'capacity' | 'maxHp' | 'maxMana';
 export type AbilitySourceKind = 'item' | 'limb' | 'set';
+export type Targeting =
+  | { kind: 'single' }
+  | { kind: 'count'; count: number }
+  | { kind: 'area'; radius: number; center: 'self' | 'target' };
 export interface Selector {
   self?: boolean;
   type?: ItemType;
@@ -50,8 +54,8 @@ interface AmountEffect extends EffectBase {
   per?: Slot;
 }
 export type Effect =
-  | (AmountEffect & { kind: 'damage'; all?: boolean; direct?: boolean; shieldBonus?: number })
-  | (AmountEffect & { kind: 'bleed' | 'poison'; all?: boolean })
+  | (AmountEffect & { kind: 'damage'; direct?: boolean; shieldBonus?: number })
+  | (AmountEffect & { kind: 'bleed' | 'poison' })
   | (AmountEffect & { kind: 'heal' | 'shield' | 'mana' })
   | (EffectBase & { kind: 'trigger'; select?: Selector })
   | (EffectBase & { kind: 'cdr'; amount: number; select?: Selector; percent?: boolean })
@@ -65,6 +69,7 @@ export interface Reaction {
   own?: boolean;
   source?: AbilitySourceKind;
   chance?: number;
+  targeting?: Targeting;
   effects: Effect[];
 }
 export interface AbilityDef {
@@ -75,6 +80,7 @@ export interface AbilityDef {
   icon: string;
   text: string;
   cooldown?: number;
+  targeting?: Targeting;
   effects?: Effect[];
   reactions?: Reaction[];
   stats?: Partial<Record<Stat, number>>;
@@ -132,6 +138,53 @@ export interface Procedure {
 }
 export type Phase =
   'start' | 'build' | 'combat' | 'result' | 'checkpoint' | 'dead' | 'retired' | 'complete';
+export type CombatOutcome = 'ongoing' | 'victory' | 'stalemate' | 'defeat' | 'failure';
+export interface FightActorReport {
+  build: Build;
+  hp: number;
+  maxHp: number;
+  mana: number;
+  maxMana: number;
+  damage: number;
+  healing: number;
+  diedAt?: number;
+}
+export interface FightContribution {
+  uid: string;
+  name: string;
+  level: number;
+  activations: number;
+  damage: number;
+  healing: number;
+  shielding: number;
+}
+export interface FightTranscriptEntry {
+  id: number;
+  time: number;
+  kind: 'damage' | 'heal' | 'shield' | 'activation' | 'status' | 'suppressed' | 'resource' | 'death';
+  actor: string;
+  target?: string;
+  ability?: string;
+  value?: number;
+  text: string;
+  chain: string[];
+  crit?: number;
+  shieldBreak?: boolean;
+  attack?: 'slash' | 'heavy' | 'bolt' | 'arrow';
+  status?: 'bleed' | 'poison';
+}
+export interface CompletedFightReport {
+  floor: number;
+  seed: number;
+  outcome: Exclude<CombatOutcome, 'ongoing' | 'failure'>;
+  duration: number;
+  patient: FightActorReport;
+  enemies: FightActorReport[];
+  contributions: FightContribution[];
+  suppressed: number;
+  transcript: FightTranscriptEntry[];
+  transcriptTruncated: boolean;
+}
 export interface Run {
   seed: number;
   rng: number;
@@ -149,6 +202,7 @@ export interface Run {
   operated: boolean;
   phase: Phase;
   lastEnemies: Build[];
+  lastReport: CompletedFightReport | null;
   victories: number;
   purchases: number;
   rerolls: number;

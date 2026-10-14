@@ -11,7 +11,6 @@ export interface EffectEngine {
   actors: Actor[];
   time: number;
   rng: Random;
-  target(actor: Actor, preferred?: string): Actor | undefined;
   select(actor: Actor, origin: CombatAbility, selector?: Selector): CombatAbility[];
   hit(
     actor: Actor,
@@ -39,6 +38,7 @@ export function resolveEffect(
   node: CombatAbility,
   effect: Effect,
   ancestry: string[],
+  targets: Actor[],
   preferred?: string,
 ) {
   if (actor.hp <= 0) return;
@@ -50,13 +50,9 @@ export function resolveEffect(
       ('amount' in effect ? effect.amount : 0) *
       (effect.kind === 'cdr' || effect.kind === 'trigger' || effect.kind === 'stat' ? 1 : scale) *
       ('per' in effect && effect.per ? count(actor.build, effect.per) : 1);
-    const targets =
-      'all' in effect && effect.all
-        ? engine.actors.filter((a) => a.side !== actor.side && a.hp > 0)
-        : [engine.target(actor, preferred)].filter((a): a is Actor => !!a);
     switch (effect.kind) {
       case 'damage':
-        for (const target of targets) {
+        for (const target of targets.filter((candidate) => candidate.hp > 0)) {
           const tiers = effect.direct
             ? successes(actor.stats.crit * actor.stats.chance, engine.rng)
             : 0;
@@ -69,7 +65,7 @@ export function resolveEffect(
         break;
       case 'bleed':
       case 'poison':
-        for (const target of targets) {
+        for (const target of targets.filter((candidate) => candidate.hp > 0)) {
           target[effect.kind] += amount;
           if (effect.kind === 'poison') target.poisonOwner = actor.id;
           engine.log(

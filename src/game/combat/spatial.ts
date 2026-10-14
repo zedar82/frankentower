@@ -28,6 +28,8 @@ export function attackRange(actor: Actor, target: Actor, def: AbilityDef) {
 }
 export const offensive = (effects: Effect[]) =>
   effects.some((e) => e.kind === 'damage' && e.direct);
+export const hostile = (effects: Effect[]) =>
+  effects.some((e) => e.kind === 'damage' || e.kind === 'bleed' || e.kind === 'poison');
 export const usesArmStrike = (node: CombatAbility) =>
   node.slot === 'hand' && offensive(node.def.effects ?? []);
 export function armMotion(actor: Actor, node: CombatAbility, time: number): ArmMotion {

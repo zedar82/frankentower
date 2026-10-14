@@ -134,7 +134,7 @@ test('partial cooldown reduction advances a committed pose without losing the re
   near(node.lastActivated, contact - 0.02);
 });
 
-test('committed attacks recheck reach and dead attackers cannot land pending blows', () => {
+test('committed attacks stay locked to their target, and dead attackers cannot land pending blows', () => {
   for (const escape of [false, true]) {
     const sim = fixture('club'),
       node = sim.player.abilities[0];
@@ -143,7 +143,34 @@ test('committed attacks recheck reach and dead attackers cannot land pending blo
     if (escape) sim.enemies[0].x = 500;
     else sim.player.hp = 0;
     for (let i = 0; i < 20; i++) sim.step(0.01);
-    assert.equal(sim.enemies[0].hp, hp);
-    assert.equal(node.activations, 0);
+    assert.equal(sim.enemies[0].hp, escape ? hp - 300 : hp);
+    assert.equal(node.activations, escape ? 1 : 0);
   }
+});
+
+test('a committed strike does not switch targets if its locked target dies before contact', () => {
+  const build = human('Timing patient');
+  build.parts.find((part) => part.slot === 'hand')!.item = {
+    uid: 'locked-club',
+    defId: 'club',
+    level: 1,
+  };
+  const lockedBuild = human('Locked target'),
+    replacementBuild = human('Replacement');
+  lockedBuild.healthFactor = replacementBuild.healthFactor = 100;
+  const sim = new Combat(build, [lockedBuild, replacementBuild], 1234);
+  const node = sim.player.abilities[0],
+    [locked, replacement] = sim.enemies;
+  sim.player.stats.movementSpeed = 0;
+  locked.stats.movementSpeed = replacement.stats.movementSpeed = 0;
+  locked.x = sim.player.x + 40;
+  locked.y = sim.player.y;
+  replacement.x = sim.player.x + 50;
+  replacement.y = sim.player.y;
+  until(sim, () => !!node.strike);
+  assert.deepEqual(node.strike!.targets, [locked.id]);
+  locked.hp = 0;
+  const hp = replacement.hp;
+  until(sim, () => node.activations > 0);
+  assert.equal(replacement.hp, hp);
 });

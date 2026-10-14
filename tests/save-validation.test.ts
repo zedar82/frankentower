@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { defaultSave, newRun, startRun } from '../src/game/run';
 import { encounter } from '../src/game/encounters';
+import { human } from '../src/game/anatomy';
+import { Combat } from '../src/game/combat';
 import { parseSave, InvalidSaveError } from '../src/save-validation';
 import { RULESET } from '../src/game/types';
 
@@ -18,6 +20,20 @@ test('valid current saves retain builds, inventory, settings and saved enemy com
     s.run!.lastEnemies = encounter(floor, s.run!.seed, []);
     assert.deepEqual(parseSave(JSON.stringify(s)), s);
   }
+});
+test('completed fight reports survive save reload without using a fresh preview', () => {
+  const s = fixture(),
+    run = s.run!;
+  const sim = new Combat(run.build, [human('Test enemy')], 1234, run.hp);
+  sim.player.hp = 0;
+  sim.step();
+  run.phase = 'dead';
+  run.hp = 0;
+  run.lastReport = sim.completedReport(run.floor, 1234);
+  const restored = parseSave(JSON.stringify(s));
+  assert.deepEqual(restored.run!.lastReport, run.lastReport);
+  assert.equal(restored.run!.lastReport!.outcome, 'defeat');
+  assert.equal(restored.run!.lastReport!.patient.hp, 0);
 });
 test('missing and incompatible saves reset without migration; interrupted combat returns to build', () => {
   assert.deepEqual(parseSave(null), defaultSave());
