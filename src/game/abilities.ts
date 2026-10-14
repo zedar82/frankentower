@@ -1,4 +1,4 @@
-import { ITEM_MAP } from './content';
+import { ITEM_MAP, type ItemCatalog } from './content';
 import { equipped, usable } from './body';
 import { VARIANT_DEFINITIONS } from './anatomy-content';
 import { activeSets } from './sets';
@@ -21,12 +21,12 @@ export interface BuildAbility {
 
 // One ordered list drives static stats and runtime abilities on both sides.
 // Limb/set instances never pretend to be inventory items.
-export function buildAbilities(build: Build): BuildAbility[] {
+export function buildAbilities(build: Build, itemCatalog: ItemCatalog = ITEM_MAP): BuildAbility[] {
   const abilities: BuildAbility[] = equipped(build)
-    .filter(({ item }) => usable(build, item))
+    .filter(({ item }) => usable(build, item, itemCatalog))
     .map(({ part, item }) => ({
       uid: item.uid,
-      def: ITEM_MAP[item.defId],
+      def: itemCatalog[item.defId],
       level: item.level,
       slot: part.slot,
       source: { kind: 'item', item, partUid: part.uid },
@@ -43,7 +43,7 @@ export function buildAbilities(build: Build): BuildAbility[] {
       });
     }
   }
-  for (const { def, pieces } of activeSets(build)) {
+  for (const { def, pieces } of activeSets(build, itemCatalog)) {
     for (const bonus of def.bonuses) {
       if (pieces >= bonus.pieces)
         abilities.push({

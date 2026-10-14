@@ -2,6 +2,7 @@ import { buildAbilities, LEVEL_SCALE } from './abilities';
 import { count } from './body';
 import { SLOT_DEFINITIONS, VARIANT_DEFINITIONS } from './anatomy-content';
 import { activeSets } from './sets';
+import { ITEM_MAP, type ItemCatalog } from './content';
 import type { Build, Slot, Stat, Stats } from './types';
 export { count, human, equipped, usable } from './body';
 export { LEVEL_SCALE } from './abilities';
@@ -28,7 +29,7 @@ export interface CompiledBuildStats {
 }
 
 /** Compile anatomy and equipment facts that stay fixed throughout a fight. */
-export function compileBuildStats(build: Build): CompiledBuildStats {
+export function compileBuildStats(build: Build, itemCatalog: ItemCatalog = ITEM_MAP): CompiledBuildStats {
   const result: Stats = {
     maxHp: 0,
     maxMana: 0,
@@ -62,14 +63,14 @@ export function compileBuildStats(build: Build): CompiledBuildStats {
       capacityWithoutMana += capacity;
     }
   }
-  for (const ability of buildAbilities(build)) {
+  for (const ability of buildAbilities(build, itemCatalog)) {
     for (const [key, value] of Object.entries(ability.def.stats ?? {})) {
       const scaled = value * LEVEL_SCALE[ability.level];
       result[key as Stat] += scaled;
       if (key === 'capacity') capacityWithoutMana += scaled;
     }
   }
-  for (const { def, pieces } of activeSets(build)) result.sets[def.id] = pieces;
+  for (const { def, pieces } of activeSets(build, itemCatalog)) result.sets[def.id] = pieces;
   result.efficiency = circulationEfficiency(result.capacity, result.load);
   const footCount = count(build, 'foot');
   result.movementSpeed = movementSpeed(footCount, result.speed);
@@ -106,8 +107,9 @@ export function stats(
   build: Build,
   mana = Infinity,
   modifiers: Partial<Record<Stat, number>> = {},
+  itemCatalog: ItemCatalog = ITEM_MAP,
 ): Stats {
-  return statsFromCompiled(compileBuildStats(build), mana, modifiers);
+  return statsFromCompiled(compileBuildStats(build, itemCatalog), mana, modifiers);
 }
 
 function movementSpeed(feet: number, speed: number) {

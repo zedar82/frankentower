@@ -1,6 +1,6 @@
 import type { AbilityDef, Build, Tag } from './types';
 import { equipped, usable } from './body';
-import { ITEM_MAP } from './content';
+import { ITEM_MAP, type ItemCatalog } from './content';
 
 export interface SetDefinition {
   id: string;
@@ -63,10 +63,10 @@ export const SET_DEFINITIONS: SetDefinition[] = [
   },
 ];
 
-export function activeSets(build: Build) {
-  const items = equipped(build).filter(({ item }) => usable(build, item));
+export function activeSets(build: Build, itemCatalog: ItemCatalog = ITEM_MAP) {
+  const items = equipped(build).filter(({ item }) => usable(build, item, itemCatalog));
   return SET_DEFINITIONS.map((def) => ({
     def,
-    pieces: items.filter(({ item }) => ITEM_MAP[item.defId].tags.includes(def.tag)).length,
+    pieces: items.filter(({ item }) => itemCatalog[item.defId].tags.includes(def.tag)).length,
   }));
 }

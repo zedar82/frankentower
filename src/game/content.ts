@@ -13,6 +13,8 @@ for (const definition of definitions) {
   if (itemIds.has(definition.id)) throw new Error(`Duplicate item definition: ${definition.id}`);
   itemIds.add(definition.id);
 }
-export const ITEM_MAP: Record<string, ItemDef> = Object.fromEntries(
+export type ItemCatalog = Readonly<Record<string, ItemDef>>;
+
+export const ITEM_MAP: ItemCatalog = Object.freeze(Object.fromEntries(
   definitions.map((item) => [item.id, item]),
-);
+));

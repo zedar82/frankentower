@@ -1,4 +1,4 @@
-import { ITEM_MAP } from './content';
+import { ITEM_MAP, type ItemCatalog } from './content';
 import type { Build, Item, Part, Slot } from './types';
 
 export function count(build: Build, slot: Slot) {
@@ -14,7 +14,7 @@ export function equipped(build: Build): { part: Part; item: Item }[] {
   return build.parts.flatMap((part) => (part.item ? [{ part, item: part.item }] : []));
 }
 
-export function usable(build: Build, item: Item) {
-  const requirement = ITEM_MAP[item.defId]?.requires;
+export function usable(build: Build, item: Item, itemCatalog: ItemCatalog = ITEM_MAP) {
+  const requirement = itemCatalog[item.defId]?.requires;
   return !requirement || count(build, requirement.slot) >= requirement.count;
 }

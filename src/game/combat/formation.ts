@@ -2,13 +2,14 @@ import { buildAbilities } from '../abilities';
 import { circulationEfficiency, compileBuildStats, count, statsFromCompiled } from '../anatomy';
 import { clone, type Build } from '../types';
 import type { Actor, CombatAbility } from './types';
+import { ITEM_MAP, type ItemCatalog } from '../content';
 
-function makeActor(build: Build, side: Actor['side'], id: string, hp?: number): Actor {
+function makeActor(build: Build, side: Actor['side'], id: string, hp: number | undefined, itemCatalog: ItemCatalog): Actor {
   build = clone(build);
-  const compiledStats = compileBuildStats(build);
+  const compiledStats = compileBuildStats(build, itemCatalog);
   const actorStats = statsFromCompiled(compiledStats);
   const { capacityWithMana, capacityWithoutMana } = compiledStats;
-  const abilities: CombatAbility[] = buildAbilities(build).map((ability) => ({
+  const abilities: CombatAbility[] = buildAbilities(build, itemCatalog).map((ability) => ({
     ...ability,
     remaining: ability.def.cooldown ?? Infinity,
     activations: 0,
@@ -54,10 +55,10 @@ export function refreshCirculation(actor: Actor) {
   actor.stats.efficiency = circulationEfficiency(actor.stats.capacity, actor.stats.load);
 }
 
-export function createCombatActors(player: Build, enemies: Build[], hp?: number): Actor[] {
+export function createCombatActors(player: Build, enemies: Build[], hp?: number, itemCatalog: ItemCatalog = ITEM_MAP): Actor[] {
   const actors = [
-    makeActor(player, 'player', 'player', hp),
-    ...enemies.map((build, index) => makeActor(build, 'enemy', `enemy-${index}`)),
+    makeActor(player, 'player', 'player', hp, itemCatalog),
+    ...enemies.map((build, index) => makeActor(build, 'enemy', `enemy-${index}`, undefined, itemCatalog)),
   ];
   actors[0].x = 185;
   actors[0].y = 250;

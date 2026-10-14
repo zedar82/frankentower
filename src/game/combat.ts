@@ -19,6 +19,7 @@ import type {
   LogEntry,
 } from './combat/types';
 import { createCombatActors, refreshCirculation } from './combat/formation';
+import { ITEM_MAP, type ItemCatalog } from './content';
 import { matchesReaction, matchesSelector, reactionsFor } from './combat/reactions';
 import { resolveEffect } from './combat/effects';
 import {
@@ -56,9 +57,9 @@ export class Combat {
   private serial = 0;
   private jobs: Job[] = [];
   private tickAccumulator = 0;
-  constructor(player: Build, enemies: Build[], seed: number, hp?: number) {
+  constructor(player: Build, enemies: Build[], seed: number, hp?: number, itemCatalog: ItemCatalog = ITEM_MAP) {
     this.rng = new Random(seed);
-    this.actors = createCombatActors(player, enemies, hp);
+    this.actors = createCombatActors(player, enemies, hp, itemCatalog);
     for (const actor of this.actors) this.emit(actor, { kind: 'start', ancestry: [] });
     this.drain();
     this.checkEnd();

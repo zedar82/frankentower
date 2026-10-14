@@ -250,8 +250,10 @@ of the build and checks item rarity/price/slot/type, finite rule values,
 cooldowns, target shapes, selector contradictions, duplicate explicit reaction
 IDs, set thresholds and procedure counts/variants. Item definitions default to
 explicit single-target metadata. The catalogue remains mutable because existing
-combat tests add definitions directly; fixture injection should precede any
-future move to readonly/frozen definitions.
+combat tests used to add definitions directly. **Implemented:** `ITEM_MAP` is
+now a frozen readonly lookup, and combat/preview fixture tests pass isolated
+item catalogues through the same production assembly path. The regression
+check confirms fixture definitions do not leak into the production catalogue.
 ## 6. Extract application ownership — P2
 
 **Evidence:** `src/App.tsx:37–106`, `src/App.tsx:184–307`,

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { COMBAT_STALEMATE_SECONDS, Combat } from '../src/game/combat';
 import { createCombatPreview } from '../src/game/combat/view';
-import { ITEM_MAP } from '../src/game/content';
+import { ITEM_MAP, type ItemCatalog } from '../src/game/content';
 import { human, stats } from '../src/game/anatomy';
 import { Random, successes } from '../src/game/random';
 import { type Build, type ItemDef } from '../src/game/types';
@@ -12,8 +12,8 @@ function armed(id: string, name = 'Patient'): Build {
   b.parts.find((p) => p.slot === 'hand')!.item = { uid: `${name}-item`, defId: id, level: 1 };
   return b;
 }
-function custom(def: Partial<ItemDef> & { id: string }) {
-  ITEM_MAP[def.id] = {
+function custom(def: Partial<ItemDef> & { id: string }): ItemDef {
+  return {
     name: def.id,
     slot: 'hand',
     type: 'Weapon',
@@ -26,6 +26,16 @@ function custom(def: Partial<ItemDef> & { id: string }) {
     ...def,
   };
 }
+function catalog(...definitions: ItemDef[]): ItemCatalog {
+  return Object.freeze({ ...ITEM_MAP, ...Object.fromEntries(definitions.map((def) => [def.id, def])) });
+}
+test('combat fixtures use isolated catalogues and production definitions cannot be registered globally', () => {
+  const fixture = custom({ id: 'test-isolated-catalogue' });
+  const testCatalog = catalog(fixture);
+  assert.equal(Object.isFrozen(ITEM_MAP), true);
+  assert.equal(ITEM_MAP[fixture.id], undefined);
+  assert.equal(testCatalog[fixture.id], fixture);
+});
 function closeRanks(sim: Combat) {
   sim.enemies[0].x = sim.player.x + 40;
   sim.enemies[0].y = sim.player.y;
@@ -42,7 +52,7 @@ test('a normal human starts at 1000 HP and circulatory equilibrium', () => {
   assert.equal(s.efficiency, 1);
 });
 test('combat preview shares formation data without running combat start reactions', () => {
-  custom({
+  const previewItem = custom({
     id: 'test-preview-start',
     slot: 'head',
     type: 'Helmet',
@@ -54,11 +64,11 @@ test('combat preview shares formation data without running combat start reaction
     defId: 'test-preview-start',
     level: 1,
   };
-  const preview = createCombatPreview(build, [human('Preview enemy')], 700);
+  const preview = createCombatPreview(build, [human('Preview enemy')], 700, catalog(previewItem));
   assert.equal(preview.player.shield, 0);
   assert.equal(preview.player.x, 185);
   assert.equal(preview.enemies[0].x, 475);
-  const combat = new Combat(build, [human('Actual enemy')], 700);
+  const combat = new Combat(build, [human('Actual enemy')], 700, undefined, catalog(previewItem));
   assert.equal(combat.player.shield, 10);
 });
 test('visual combat feedback is bounded and separate from transcript entries', () => {
@@ -147,7 +157,7 @@ test('damage and follow-up status stay on one locked target when that target die
   assert.equal(second.bleed, 0);
 });
 test('fixed-count targeting selects the nearest eligible targets once', () => {
-  custom({
+  const countItem = custom({
     id: 'test-count-targeting',
     targeting: { kind: 'count', count: 2 },
     effects: [{ kind: 'damage', amount: 10, direct: true }],
@@ -160,6 +170,8 @@ test('fixed-count targeting selects the nearest eligible targets once', () => {
       armed('skeletonblade', 'Third'),
     ],
     1234,
+    undefined,
+    catalog(countItem),
   );
   sim.enemies[0].x = sim.player.x + 35;
   sim.enemies[0].y = sim.player.y;
@@ -173,7 +185,7 @@ test('fixed-count targeting selects the nearest eligible targets once', () => {
   assert.equal(sim.enemies[2].hp, 1000);
 });
 test('area targeting resolves against its selected impact point', () => {
-  custom({
+  const areaItem = custom({
     id: 'test-area-targeting',
     targeting: { kind: 'area', radius: 25, center: 'target' },
     effects: [{ kind: 'damage', amount: 10, direct: true }],
@@ -186,6 +198,8 @@ test('area targeting resolves against its selected impact point', () => {
       armed('skeletonblade', 'Outside'),
     ],
     1234,
+    undefined,
+    catalog(areaItem),
   );
   sim.enemies[0].x = sim.player.x + 35;
   sim.enemies[0].y = sim.player.y;
@@ -199,7 +213,7 @@ test('area targeting resolves against its selected impact point', () => {
   assert.equal(sim.enemies[2].hp, 1000);
 });
 test('trigger ancestry is per branch, tracks instances, and stops recursive loops', () => {
-  custom({
+  const hatItem = custom({
     id: 'test-hat',
     slot: 'head',
     type: 'Helmet',
@@ -207,13 +221,13 @@ test('trigger ancestry is per branch, tracks instances, and stops recursive loop
     effects: [{ kind: 'trigger', select: { type: 'Wand' } }],
     reactions: [{ event: 'mana', effects: [{ kind: 'trigger', select: { self: true } }] }],
   });
-  custom({
+  const wandItem = custom({
     id: 'test-wand',
     type: 'Wand',
     cooldown: 99,
     effects: [{ kind: 'damage', amount: 1, direct: true }],
   });
-  custom({
+  const heartItem = custom({
     id: 'test-heart',
     slot: 'heart',
     type: 'Heart',
@@ -229,7 +243,13 @@ test('trigger ancestry is per branch, tracks instances, and stops recursive loop
           part.slot === 'head' ? 'test-hat' : part.slot === 'heart' ? 'test-heart' : 'test-wand',
         level: 1,
       };
-  const sim = closeRanks(new Combat(build, [armed('skeletonblade', 'Target')], 12));
+  const sim = closeRanks(new Combat(
+    build,
+    [armed('skeletonblade', 'Target')],
+    12,
+    undefined,
+    catalog(hatItem, wandItem, heartItem),
+  ));
   sim.player.mana = 0;
   const hat = sim.player.abilities.find((n) => n.def.id === 'test-hat')!,
     heart = sim.player.abilities.find((n) => n.def.id === 'test-heart')!;

@@ -1,9 +1,10 @@
 import type { Build } from '../types';
 import { createCombatActors } from './formation';
+import { ITEM_MAP, type ItemCatalog } from '../content';
 import type { CombatView, LogEntry } from './types';
 
-export function createCombatPreview(player: Build, enemies: Build[], hp?: number): CombatView {
-  const actors = createCombatActors(player, enemies, hp);
+export function createCombatPreview(player: Build, enemies: Build[], hp?: number, itemCatalog: ItemCatalog = ITEM_MAP): CombatView {
+  const actors = createCombatActors(player, enemies, hp, itemCatalog);
   return {
     actors,
     time: 0,
