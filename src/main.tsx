@@ -6,6 +6,7 @@ import { RULESET } from './game/types';
 import './styles.css';
 import './ui-materials.css';
 import './ui-workshop.css';
+import './ui-clinic.css';
 import { PagedText } from './ui/Paging';
 import { AssetLoadError, retryFailedAssets } from './art/asset-loader';
 

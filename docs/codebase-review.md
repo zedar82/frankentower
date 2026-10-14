@@ -411,7 +411,10 @@ live Shop uses workshop-specific classes; shared selectors and responsive rules
 remain. The obsolete generic shop composition was also removed from the base
 sheet: unused `.shop-stage`/`.shop-services` rules, old grid placement and the
 two-by-two offer grid no longer compete with the live workshop layout. Further
-screen-by-screen regrouping is still open.
+screen-by-screen regrouping is still open. Clinic layout and clinic-specific
+phone/short-landscape compositions now live in `src/ui-clinic.css`, loaded in
+the same `workshop` cascade layer; the shop-specific screen rules remain in
+`src/ui-workshop.css`.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's
