@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { COMBAT_STALEMATE_SECONDS, Combat } from '../src/game/combat';
+import { createCombatPreview } from '../src/game/combat/view';
 import { ITEM_MAP } from '../src/game/content';
 import { human, stats } from '../src/game/anatomy';
 import { Random, successes } from '../src/game/random';
@@ -39,6 +40,26 @@ test('a normal human starts at 1000 HP and circulatory equilibrium', () => {
   assert.equal(s.maxHp, 1000);
   assert.equal(s.capacity, s.load);
   assert.equal(s.efficiency, 1);
+});
+test('combat preview shares formation data without running combat start reactions', () => {
+  custom({
+    id: 'test-preview-start',
+    slot: 'head',
+    type: 'Helmet',
+    reactions: [{ event: 'start', effects: [{ kind: 'shield', amount: 10 }] }],
+  });
+  const build = human('Preview patient');
+  build.parts.find((part) => part.slot === 'head')!.item = {
+    uid: 'preview-head',
+    defId: 'test-preview-start',
+    level: 1,
+  };
+  const preview = createCombatPreview(build, [human('Preview enemy')], 700);
+  assert.equal(preview.player.shield, 0);
+  assert.equal(preview.player.x, 185);
+  assert.equal(preview.enemies[0].x, 475);
+  const combat = new Combat(build, [human('Actual enemy')], 700);
+  assert.equal(combat.player.shield, 10);
 });
 test('Shield absorbs one attack and discards its unused remainder', () => {
   const sim = duel(),

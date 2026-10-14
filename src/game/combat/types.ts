@@ -66,6 +66,15 @@ export interface LogEntry {
   attack?: 'slash' | 'heavy' | 'bolt' | 'arrow';
   status?: 'bleed' | 'poison';
 }
+export interface CombatView {
+  actors: Actor[];
+  time: number;
+  logs: LogEntry[];
+  done: boolean;
+  failure?: string;
+  player: Actor;
+  enemies: Actor[];
+}
 export interface CombatEvent {
   kind: EventKind;
   source?: CombatAbility;

@@ -58,10 +58,12 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 ### Implementation status
 
 Implemented and committed locally: terminal stalemate victories, locked action
-targeting, and saved completed-fight reports. The development ruleset is now
-`frankentower-4`. The balance runner and content validator are in progress.
-Session/controller ownership, art catalogues/readiness, responsive styling and
-render/stat performance remain planned work.
+targeting, saved completed-fight reports, corrected balance diagnostics and
+build-time content validation. The development ruleset is now
+`frankentower-4`. Static combat previews and one shared display-mode
+subscription are in progress. Session/controller ownership, art
+catalogues/readiness, CSS consolidation and render/stat performance remain
+planned work.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -244,6 +246,11 @@ Extract one boundary at a time. Keep presentation navigation out of combat and
 avoid an all-purpose manager. Build static previews from build/layout data;
 instantiate Combat only for a fight or an explicit simulation study.
 
+**Implementation:** preview actors now come from a shared formation builder and
+are exposed through a read-only `CombatView`. Rendering a preview no longer
+constructs the combat engine or runs start reactions. App still owns run state,
+navigation and the combat clock; the broader controller extraction remains.
+
 ## 7. One presentation catalogue — P2
 
 **Evidence:** `src/art/item-assets.ts:18–159`,
@@ -309,6 +316,10 @@ Centralize spacing, control sizes, frames and typography as tokens. Prefer
 container-aware layout where a component's allocated space decides fit; expose
 one shared display-mode subscription for genuinely different interactions.
 Retain deliberate phone/desktop modes and the existing no-scroll rules.
+
+**Implementation:** `useDisplayMode` now reads one shared viewport snapshot and
+uses one resize subscription for all consumers. The shop's landscape threshold
+is part of that snapshot. CSS ownership and obsolete selector cleanup remain.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's

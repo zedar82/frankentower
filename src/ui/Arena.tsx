@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { ARENA, armMotion, type Combat, type LogEntry } from '../game/combat';
+import { ARENA, armMotion, type LogEntry } from '../game/combat';
+import type { CombatView } from '../game/combat/types';
 import {
   monster,
   oval,
@@ -165,7 +166,7 @@ export function Arena({
   paused,
   onInspect,
 }: {
-  combat: Combat;
+  combat: CombatView;
   floor: number;
   paused: boolean;
   onInspect: (build: Build) => void;
@@ -212,7 +213,7 @@ export function Arena({
       c!.save();
       const alive = sim.actors.filter((a) => a.hp > 0),
         subjects = alive.length ? alive : sim.actors;
-      const renderScale = (a: Combat['actors'][number]) =>
+      const renderScale = (a: CombatView['actors'][number]) =>
         a.side === 'player' ? 1.1 : /Ogre|Brute/.test(a.build.name) ? 1.25 : 0.91;
       const minX = Math.min(
           ...subjects.map((a) => a.x + puppetBounds(a.build).left * renderScale(a)),

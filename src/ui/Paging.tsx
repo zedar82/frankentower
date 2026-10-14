@@ -1,17 +1,49 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 
+export interface DisplayMode {
+  compact: boolean;
+  short: boolean;
+  shopLandscape: boolean;
+}
+
+function readDisplayMode(): DisplayMode {
+  const width = typeof window === 'undefined' ? 1280 : window.innerWidth;
+  const height = typeof window === 'undefined' ? 800 : window.innerHeight;
+  const compact = width < 1100 || height < 620;
+  return { compact, short: height < 500, shopLandscape: compact && width >= 681 && height < 700 };
+}
+
+const serverMode: DisplayMode = { compact: false, short: false, shopLandscape: false };
+let displayMode = readDisplayMode();
+const subscribers = new Set<() => void>();
+let listening = false;
+function updateDisplayMode() {
+  const next = readDisplayMode();
+  if (
+    next.compact === displayMode.compact &&
+    next.short === displayMode.short &&
+    next.shopLandscape === displayMode.shopLandscape
+  )
+    return;
+  displayMode = next;
+  for (const subscriber of subscribers) subscriber();
+}
+function subscribeDisplayMode(subscriber: () => void) {
+  subscribers.add(subscriber);
+  if (!listening && typeof window !== 'undefined') {
+    window.addEventListener('resize', updateDisplayMode);
+    listening = true;
+  }
+  return () => {
+    subscribers.delete(subscriber);
+    if (listening && subscribers.size === 0 && typeof window !== 'undefined') {
+      window.removeEventListener('resize', updateDisplayMode);
+      listening = false;
+    }
+  };
+}
 export function useDisplayMode() {
-  const read = () => ({
-    compact: innerWidth < 1100 || innerHeight < 620,
-    short: innerHeight < 500,
-  });
-  const [mode, setMode] = useState(read);
-  useLayoutEffect(() => {
-    const update = () => setMode(read());
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
-  return mode;
+  return useSyncExternalStore(subscribeDisplayMode, () => displayMode, () => serverMode);
 }
 
 export function PageControls({

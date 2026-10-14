@@ -40,10 +40,9 @@ export function Shop({
   onSatchel,
   onBuild,
 }: Props) {
-  const { compact, short } = useDisplayMode();
+  const { compact, short, shopLandscape } = useDisplayMode();
   const [services, setServices] = useState(false);
   const [iconGuide, setIconGuide] = useState(false);
-  const landscape = compact && innerWidth >= 681 && innerHeight < 700;
   const service = (label: string, cost: number, action: ShopAction, reason: string | null) => (
     <div className="service-option">
       <button disabled={!!reason} onClick={() => onAction(action)}>
@@ -61,7 +60,7 @@ export function Shop({
   );
   return (
     <main
-      className={`shop-screen workshop-shop compact-offers ${compact ? 'compact-workshop' : 'wide-workshop'} ${short ? 'short-workshop' : ''} ${landscape ? 'landscape-workshop' : ''}`}
+      className={`shop-screen workshop-shop compact-offers ${compact ? 'compact-workshop' : 'wide-workshop'} ${short ? 'short-workshop' : ''} ${shopLandscape ? 'landscape-workshop' : ''}`}
     >
       <div className="workshop-scene">
         <section

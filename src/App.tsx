@@ -9,6 +9,8 @@ import { encounter } from './game/encounters';
 import { type Build, type Item, type Save, type Slot } from './game/types';
 import { hasOffensiveAbility } from './game/abilities';
 import { Combat } from './game/combat';
+import { createCombatPreview } from './game/combat/view';
+import type { CombatView } from './game/combat/types';
 import {
   hostPaused,
   persist,
@@ -71,7 +73,7 @@ export function App({ initialSave }: { initialSave: Save }) {
   const isCombat = run.phase === 'combat';
   const isEnd = ['dead', 'retired', 'complete'].includes(run.phase);
   const nextEnemies = encounter(run.floor, run.seed, save.legacy);
-  const previewRef = useRef<{ floor: number; build: Build; combat: Combat } | null>(null);
+  const previewRef = useRef<{ floor: number; build: Build; combat: CombatView } | null>(null);
   if (
     !combatRef.current &&
     (!previewRef.current ||
@@ -81,7 +83,7 @@ export function App({ initialSave }: { initialSave: Save }) {
     previewRef.current = {
       floor: run.floor,
       build: run.build,
-      combat: new Combat(run.build, nextEnemies, run.seed ^ (run.floor * 15485863), run.hp),
+      combat: createCombatPreview(run.build, nextEnemies, run.hp),
     };
   }
   const sim = combatRef.current ?? previewRef.current!.combat;

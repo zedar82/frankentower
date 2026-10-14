@@ -1,5 +1,4 @@
-import { stats, count } from './anatomy';
-import { buildAbilities } from './abilities';
+import { stats } from './anatomy';
 import { Random, successes } from './random';
 import { ARM_STRIKE_TIME } from './attack-motion';
 import {
@@ -13,6 +12,7 @@ import {
   type Targeting,
 } from './types';
 import type { Actor, CombatAbility, CombatEvent, Job, LogEntry } from './combat/types';
+import { createCombatActors } from './combat/formation';
 import { matchesReaction, matchesSelector, reactionsFor } from './combat/reactions';
 import { resolveEffect } from './combat/effects';
 import {
@@ -51,59 +51,10 @@ export class Combat {
   private tickAccumulator = 0;
   constructor(player: Build, enemies: Build[], seed: number, hp?: number) {
     this.rng = new Random(seed);
-    this.actors = [
-      this.makeActor(player, 'player', 'player', hp),
-      ...enemies.map((b, i) => this.makeActor(b, 'enemy', `enemy-${i}`)),
-    ];
-    this.player.x = 185;
-    this.player.y = 250;
-    this.enemies.forEach((a, i) => {
-      const angle = (i - (enemies.length - 1) / 2) * 0.58;
-      a.x = 410 + Math.cos(angle) * 65;
-      a.y = 238 + Math.sin(angle) * 100;
-    });
+    this.actors = createCombatActors(player, enemies, hp);
     for (const actor of this.actors) this.emit(actor, { kind: 'start', ancestry: [] });
     this.drain();
     this.checkEnd();
-  }
-  private makeActor(build: Build, side: Actor['side'], id: string, hp?: number): Actor {
-    build = clone(build);
-    const s = stats(build);
-    const abilities: CombatAbility[] = buildAbilities(build).map((ability) => ({
-      ...ability,
-      remaining: ability.def.cooldown ?? Infinity,
-      activations: 0,
-      damage: 0,
-      healing: 0,
-      shielding: 0,
-      lastActivated: -10,
-    }));
-    return {
-      id,
-      side,
-      build,
-      stats: s,
-      hp: Math.min(s.maxHp, hp ?? s.maxHp),
-      mana: s.maxMana,
-      shield: 0,
-      bleed: 0,
-      poison: 0,
-      abilities,
-      modifiers: {},
-      damage: 0,
-      healing: 0,
-      lastHit: -10,
-      lastAction: -10,
-      x: 320,
-      y: 238,
-      vx: 0,
-      vy: 0,
-      radius:
-        20 + Math.min(8, count(build, 'foot')) + Math.min(6, Math.max(0, count(build, 'hand') - 2)),
-      facing: side === 'player' ? 1 : -1,
-      walked: 0,
-      windup: 0,
-    };
   }
   get player() {
     return this.actors[0];
