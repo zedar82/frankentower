@@ -62,10 +62,11 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-Session/controller ownership, the full art catalogue, retryable asset loading,
-CSS consolidation, full compiled combat stats and structured command results
-remain planned work. Fight completion now rejects repeated calls after the
-combat phase. Puppet layout has a content-signature cache that handles in-place
+Session/controller ownership, shared retryable asset loading, CSS consolidation,
+full compiled combat stats and structured command results remain planned work.
+The item presentation catalogue now covers every equipment slot. Fight
+completion now rejects repeated calls after the combat phase. Puppet layout has
+a content-signature cache that handles in-place
 build edits and geometry readiness changes. Combat now precomputes each actor's
 mana-positive and mana-depleted capacity, avoiding full stat reconstruction on
 every simulation step; broader profiling and render optimization remain.
@@ -283,12 +284,15 @@ optional asymmetry and unrestricted material colors. Torso/organ equipment
 should gain defined interfaces before further art is generated; accepted chest
 icons are not currently a worn chest renderer.
 
-**Implementation:** held art now resolves each content item ID into one
-presentation containing its icon-based grip, axis, frame and hand layer plus
-its item-specific image and crop. Drawing, bounds and hand-overlap order use
-that same resolver, and authored hand items fail fast if their icon has no held
-profile. Crown, footwear, torso and organ profiles and generator links remain
-to be consolidated.
+**Implementation:** one discriminated presentation catalogue now maps every
+content item to held, crown, footwear, torso or organ art. Held art resolves its
+content ID into one profile containing grip, axis, frame, hand layer, image and
+crop; drawing, bounds and hand-overlap order share that profile. Crown and
+footwear profiles declare their front-facing coverage and attachment landmarks.
+Torso and organ profiles establish their slot interfaces and explicitly record
+that current art is icon-only. Build validation checks profile-to-slot roles,
+finite landmarks and crops against the dimensions of existing PNG files.
+Generator metadata and worn torso/organ renderers remain outstanding.
 
 ## 8. Asset loading and recovery — P2
 
@@ -315,7 +319,10 @@ group. Quartermaster and clinic backgrounds track readiness independently.
 Modular geometry is validated for finite dimensions and required head crown,
 arm grip, leg sole/ankle and root landmarks. A failed optional body sprite logs
 its asset name and draws a material-colored fallback block; the geometry file
-remains essential. A shared URL cache and targeted retry are still future work.
+remains essential. Presentation images now deduplicate by art path within the
+item-art catalogue, and build validation checks every catalogue PNG and crop.
+A shared loader across body, arena and item assets, explicit load/error state
+and targeted retry remain future work.
 
 ## 9. Responsive styling and display modes — P2
 
