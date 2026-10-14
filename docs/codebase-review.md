@@ -70,8 +70,8 @@ Fight completion rejects duplicate terminal calls. Puppet layouts use a
 content-signature cache that detects in-place build edits and geometry
 readiness changes. Combat precomputes stable actor stats. Trunk paths and
 material patterns are cached by their geometry and asset inputs. Arena and
-dressing-room cosmetic loops stop while paused or hidden. Remaining validation
-is a clean browser rerun and physical-device profiling. Chest and heart items now have fitted
+dressing-room cosmetic loops stop while paused or hidden. The remaining
+validation is physical-device profiling. Chest and heart items now have fitted
 front overlays in the modular renderer. Poison uses one shared pool
 with latest-applicator actor credit;
 item-level tick attribution is deferred with item balance. Arena effects now
@@ -83,18 +83,14 @@ duplicate authored item/procedure summaries were removed.
 ### Verification and remaining scope
 
 After the content-summary changes, all 81 unit tests and `npm run build` pass.
-The full browser, arena, puppet and reliability suites passed before this
-latest UI copy refactor. A rerun with installed Chrome timed out before the
-arena action became visible; Vite dependency optimization separately reported
-access denied while scanning above the workspace. The browser check therefore
-needs a clean rerun in an environment where the dev server can optimize its
-dependencies. Earlier browser coverage includes desktop and phone layouts,
-short-landscape views, spatial combat, dense anatomy poses, pause/resume,
-dialogs, saved reports and recovery paths. Browser regression checks still do
-not substitute for profiling on physical phones.
+The browser, arena, puppet and reliability suites also pass with installed
+Chrome, including desktop and phone layouts, short-landscape views, spatial
+combat, dense anatomy poses, pause/resume, dialogs, saved reports and recovery
+paths. Browser regression checks do not substitute for profiling on physical
+phones.
 
-Remaining validation needs a clean browser run and representative phones before
-setting performance budgets or prefetch thresholds. The
+The remaining validation needs representative phones before setting
+performance budgets or prefetch thresholds. The
 current front-facing breastplate, spiked cuirass and heart assets now use
 catalogue-owned fit envelopes, torso clipping and heart attachment positions;
 the puppet capture covers both chest designs, one and multiple organs, and
@@ -589,9 +585,9 @@ profile scale stay fixed.
 
 ## Suggested implementation sequence
 
-This was the original sequence. All code-side stages are implemented; a clean
-browser rerun and phone profiling remain validation tasks, and item-balance-
-dependent attribution remains deliberately deferred.
+This was the original sequence. All code-side stages are implemented; phone
+profiling remains a validation task, and item-balance-dependent attribution
+remains deliberately deferred.
 
 1. Guarantee combat termination; correct diagnostic outcome classification.
 2. Make completed reports accurate after reload; fix factual content prose and
