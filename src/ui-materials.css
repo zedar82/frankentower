@@ -92,26 +92,6 @@ button:hover:not(:disabled) {
   font-size: var(--type-h3);
   color: #cdb48e;
 }
-.desktop-shop .shop-stage {
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.35fr) minmax(0, 1.5fr);
-  grid-template-rows: 176px minmax(0, 1fr);
-}
-.desktop-shop .patient-paper {
-  grid-column: 1;
-  grid-row: 1;
-  padding: 16px 20px;
-}
-.desktop-shop .patient-paper h1 {
-  font-size: var(--type-h2);
-}
-.desktop-shop .patient-paper p {
-  font-size: 12px;
-  margin: 0 0 5px;
-}
-.desktop-shop .patient-meters {
-  gap: 5px 12px;
-  font-size: 11px;
-}
 .patient-circulation {
   display: none;
 }
@@ -128,18 +108,8 @@ button:hover:not(:disabled) {
 .card-info:hover:not(:disabled) {
   background: #9b73351a;
 }
-.desktop-shop .shop-creature {
-  grid-column: 2;
-  grid-row: 1 / 3;
-}
 .shop-creature {
   background: transparent;
-}
-.desktop-shop .equipment-overview {
-  grid-column: 1;
-  grid-row: 2;
-  padding: 10px;
-  gap: 5px;
 }
 .equipment-category {
   border-width: 0 0 1px;
@@ -270,36 +240,6 @@ button:hover:not(:disabled) {
   text-shadow: 1px 1px #08070d;
 }
 /* A short desktop window gives the equipment grid priority over a tall record. */
-@media (min-width: 1100px) and (max-height: 849px) {
-  .desktop-shop .shop-stage {
-    grid-template-rows: 112px minmax(0, 1fr);
-  }
-  .desktop-shop .patient-paper {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-  }
-  .desktop-shop .patient-paper > .eyebrow,
-  .desktop-shop .patient-paper > p,
-  .desktop-shop .patient-name > span,
-  .desktop-shop .patient-meters > span {
-    display: none;
-  }
-  .desktop-shop .patient-name h1 {
-    font-size: 21px;
-  }
-  .desktop-shop .patient-circulation {
-    display: block;
-    font-size: 11px;
-    margin-top: 5px;
-  }
-  .desktop-shop .patient-meters {
-    display: flex;
-    gap: 5px;
-  }
-}
 .app-notice {
   text-shadow: 1px 1px #09070c;
 }
@@ -319,52 +259,6 @@ button:hover:not(:disabled) {
   }
 }
 @media (max-width: 1099px), (max-height: 619px) {
-  .compact-shop .patient-paper {
-    padding: 9px 12px;
-    display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    align-items: center;
-    gap: 9px;
-    flex: none;
-  }
-  .compact-shop .patient-paper > .eyebrow,
-  .compact-shop .patient-paper > p,
-  .compact-shop .patient-name > span,
-  .compact-shop .patient-meters > span {
-    display: none;
-  }
-  .compact-shop .patient-name {
-    min-height: 44px;
-  }
-  .compact-shop .patient-name h1 {
-    font-size: 20px;
-    line-height: 1.1;
-  }
-  .compact-shop .patient-circulation {
-    display: block;
-    font-size: 11px;
-    margin-top: 5px;
-  }
-  .compact-shop .patient-meters {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    font-size: 11px;
-  }
-  .compact-shop .patient-meters .meter {
-    height: 7px;
-    margin-top: 2px;
-  }
-  .compact-shop .shop-card {
-    padding: 16px;
-  }
-  .compact-shop .shop-card .card-info {
-    gap: 12px;
-  }
-  .compact-shop .equipment-overview {
-    padding: 12px;
-    gap: 5px;
-  }
   .modal {
     padding: 14px;
   }
@@ -428,16 +322,6 @@ button:hover:not(:disabled) {
     font-size: 10px;
     letter-spacing: 0.5px;
   }
-  .compact-shop .patient-paper::before {
-    border-width: 15px;
-  }
-  .compact-shop .patient-paper {
-    gap: 6px;
-    padding: 8px 12px;
-  }
-  .compact-shop .patient-name h1 {
-    font-size: 18px;
-  }
   .equipment-preview > span {
     width: 38px;
     height: 38px;
@@ -462,18 +346,8 @@ button:hover:not(:disabled) {
   }
 }
 @media (max-height: 619px) {
-  .compact-shop .shop-services {
-    padding: 8px;
-    gap: 4px;
-  }
-  .compact-shop .shop-services .paged-list {
-    gap: 4px;
-  }
   .shop-card::before {
     border-width: 15px;
-  }
-  .compact-shop .shop-card {
-    padding: 8px;
   }
   .modal {
     padding: 10px;
@@ -508,26 +382,6 @@ button:hover:not(:disabled) {
 @media (max-height: 499px) and (min-width: 681px) {
   .modal:has(.equipment-workspace) {
     padding: 18px;
-  }
-  .compact-shop {
-    display: grid;
-    grid-template-columns: 132px minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: 8px;
-  }
-  .compact-shop > .view-tabs {
-    grid-column: 1;
-    grid-row: 1;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .compact-shop > .shop-stage {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .compact-shop > .screen-actions {
-    grid-column: 1 / -1;
-    grid-row: 2;
   }
   .surgery-stage:not(:has(.clinic-patient)) .procedure-content {
     grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.4fr);
@@ -607,38 +461,8 @@ button:hover:not(:disabled) {
     padding: 4px;
     font-size: 12px;
   }
-  .compact-shop > .station-title,
   .surgery-screen > .station-title {
     display: none;
-  }
-  .compact-shop .stock-counter {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: 44px minmax(0, 1fr);
-    gap: 4px 12px;
-  }
-  .compact-shop .stock-counter > .stock-state {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: center;
-  }
-  .compact-shop .stock-counter > .page-controls {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .compact-shop .stock-counter > .shop-grid {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-  .compact-shop .sold-card {
-    padding: 8px;
-    gap: 4px;
-  }
-  .compact-shop .sold-card h3 {
-    font-size: 18px;
-  }
-  .compact-shop .sold-card p {
-    font-size: 13px;
   }
   .surgery-stage:has(.clinic-patient) .procedure-card {
     display: flex;
@@ -653,19 +477,6 @@ button:hover:not(:disabled) {
   }
   .clinic-patient .patient-label {
     display: none;
-  }
-  .compact-shop .patient-paper {
-    width: 40%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 12px;
-  }
-  .compact-shop .patient-name {
-    width: 100%;
-  }
-  .compact-shop .patient-meters {
-    width: 100%;
   }
 }
 @media (max-width: 359px) {

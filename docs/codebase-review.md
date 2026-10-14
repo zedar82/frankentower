@@ -377,8 +377,10 @@ Short-landscape build summaries now constrain the creature pane while preserving
 the paged text region's stretch sizing. The browser fixture now supplies a
 validated report snapshot when it exercises saved report sections. The existing
 browser suite passed after these changes, including the short-landscape report
-layout case and the ordered layers. Broader selector regrouping and responsive
-rule consolidation remain.
+layout case and the ordered layers. The obsolete `.compact-shop` and
+`.desktop-shop` selector branches have now been removed after confirming the
+live Shop uses workshop-specific classes; shared selectors and responsive rules
+remain. Broader screen-by-screen regrouping is still open.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's
