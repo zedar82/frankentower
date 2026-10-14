@@ -334,6 +334,10 @@ test('successful floors award gold, recover health, and stop at checkpoints', ()
   assert.equal(r.phase, 'checkpoint');
   assert.equal(r.hp, 550);
   assert.equal(save.best, 20);
+  const awardedGold = r.gold;
+  assert.equal(finishFight(r, 300, true, save), false);
+  assert.equal(r.gold, awardedGold);
+  assert.equal(r.victories, 1);
   assert.equal(advance(r), true);
   assert.equal(r.floor, 21);
   r.floor = 100;

@@ -63,7 +63,9 @@ build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
 Session/controller ownership, unified art catalogues, retryable asset loading,
-CSS consolidation and compiled combat stats remain planned work. Puppet layout
+CSS consolidation, compiled combat stats and structured command results remain
+planned work. Fight completion now rejects repeated calls after the combat phase.
+Puppet layout
 now has a content-signature cache that handles in-place build edits and geometry
 readiness changes; profiling and broader render optimization remain.
 
@@ -379,7 +381,9 @@ Use a reusable surgery plan for removal, displacement, additions and validation;
 replace `ignoreMoney`, which actually skips several visit constraints, with an
 explicit availability context. Add transition guards to completion commands
 so future callers cannot award a fight twice. These changes can stay local to
-existing modules.
+existing modules. `finishFight` now accepts calls only during combat and returns
+whether it applied a terminal result; duplicate callbacks cannot award rewards
+or records again.
 
 ### Events, reports and attribution
 

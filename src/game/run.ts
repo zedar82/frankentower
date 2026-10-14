@@ -77,12 +77,13 @@ export function advance(run: Run) {
   }
   return true;
 }
-export function finishFight(run: Run, hp: number, won: boolean, save: Save) {
+export function finishFight(run: Run, hp: number, won: boolean, save: Save): boolean {
+  if (run.phase !== 'combat') return false;
   run.hp = Math.max(0, Math.round(hp));
   if (!won) {
     run.phase = 'dead';
     record(save, run, 'Died');
-    return;
+    return true;
   }
   run.victories++;
   run.highest = run.floor;
@@ -108,6 +109,7 @@ export function finishFight(run: Run, hp: number, won: boolean, save: Save) {
     save.achievements.push('Headless Horseman');
   if (stats(run.build).sets.octopod >= 8 && !save.achievements.includes('Well-Heeled'))
     save.achievements.push('Well-Heeled');
+  return true;
 }
 function record(save: Save, run: Run, reason: string) {
   save.records.unshift({ name: run.build.name, floor: run.floor, build: clone(run.build), reason });
