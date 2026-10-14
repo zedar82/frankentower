@@ -27,7 +27,7 @@
 .main-header .journey {
   margin-left: 0;
   gap: 6px;
-  font-size: 14px;
+  font-size: var(--type-body);
 }
 .main-header .journey .pixel-icon,
 .main-header .journey > span {

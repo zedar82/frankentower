@@ -367,13 +367,14 @@ is part of that snapshot. Unused single-offer and four-offer layout overrides
 were removed after checking that the live shop uses the compact-offers layout.
 The three global style sheets now use ordered `base`, `materials` and `workshop`
 cascade layers, making their shared primitive, material and screen-composition
-precedence explicit.
+precedence explicit. Shared tokens now cover the core spacing scale, minimum
+control size, base heading/caption sizes and frame slice/border dimensions.
 Short-landscape build summaries now constrain the creature pane while preserving
 the paged text region's stretch sizing. The browser fixture now supplies a
 validated report snapshot when it exercises saved report sections. The existing
 browser suite passed after these changes, including the short-landscape report
-layout case and the ordered layers. Selector regrouping and responsive rule
-consolidation remain.
+layout case and the ordered layers. Broader selector regrouping and responsive
+rule consolidation remain.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's

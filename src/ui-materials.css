@@ -37,8 +37,8 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  border: 22px solid transparent;
-  border-image: url('/ui/iron-frame-v1.png') 240 fill stretch;
+  border: var(--frame-border) solid transparent;
+  border-image: url('/ui/iron-frame-v1.png') var(--frame-image-slice) fill stretch;
   image-rendering: pixelated;
   filter: drop-shadow(0 3px 2px #08070bcc);
 }
@@ -47,14 +47,14 @@
   border-image-source: url('/ui/parchment-frame-v1.png');
 }
 .modal::before {
-  border-width: 26px;
+  border-width: var(--frame-modal-border);
 }
 .main-header::before,
 .stock-counter > .panel-heading::before {
-  border-width: 18px;
+  border-width: calc(var(--frame-border) - var(--space-1));
 }
 .main-header {
-  padding: 8px 16px;
+  padding: var(--space-2) var(--space-4);
 }
 button,
 select {
@@ -89,7 +89,7 @@ button:hover:not(:disabled) {
   text-shadow: 1px 2px #08070c;
 }
 .station-title h2 {
-  font-size: 18px;
+  font-size: var(--type-h3);
   color: #cdb48e;
 }
 .desktop-shop .shop-stage {
@@ -102,7 +102,7 @@ button:hover:not(:disabled) {
   padding: 16px 20px;
 }
 .desktop-shop .patient-paper h1 {
-  font-size: 24px;
+  font-size: var(--type-h2);
 }
 .desktop-shop .patient-paper p {
   font-size: 12px;
@@ -116,7 +116,7 @@ button:hover:not(:disabled) {
   display: none;
 }
 .patient-name {
-  min-height: 44px;
+  min-height: var(--control-min-hit);
   gap: 8px;
 }
 .patient-name h1 {
@@ -257,7 +257,7 @@ button:hover:not(:disabled) {
   border-radius: 5px 2px 4px 3px;
 }
 .flow-card {
-  padding: 24px;
+  padding: var(--space-5);
 }
 .modal {
   padding: 20px;
