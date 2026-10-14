@@ -68,9 +68,29 @@ presentation catalogue now covers every equipment slot. Fight completion
 rejects duplicate terminal calls. Puppet layouts use a content-signature cache
 that detects in-place build edits and geometry readiness changes. Combat
 precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
-while paused or hidden. Remaining work includes physical-device profiling and
-worn torso/organ renderers. Poison uses one shared pool with latest-applicator
-actor credit; item-level tick attribution is deferred with item balance.
+while paused or hidden. Remaining scoped follow-ups are physical-device
+profiling, fitted torso/organ art and renderers, and further screen-specific CSS
+regrouping. Poison uses one shared pool with latest-applicator actor credit;
+item-level tick attribution is deferred with item balance.
+
+### Verification and remaining scope
+
+The implementation checkpoint was re-verified on 14 October 2026: all 76 unit
+tests pass, `npm run build` passes TypeScript/content validation/production
+bundling, and `npm run test:browser` passes its browser, arena, puppet and
+reliability suites. Those browser checks cover desktop and phone layouts,
+short-landscape views, spatial combat, dense anatomy poses, pause/resume,
+dialogs, saved reports and recovery paths. They are regression checks, not a
+substitute for profiling on physical phones.
+
+The remaining review items need inputs or scope beyond this implementation
+pass: measure performance on representative physical devices before setting a
+budget or prefetch thresholds; author fitted torso/organ overlays before
+building their worn renderers; and regroup screen CSS further when a specific
+screen change makes the extraction reviewable. Current cascade layers,
+shared display modes and removed obsolete shop branches address the immediate
+precedence/duplication risks. These follow-ups do not block the completed
+correctness and architecture changes above.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -194,7 +214,7 @@ reporting. Record blocked purchases, satchel occupancy, spending, enemy
 composition and the actual termination reason. Preserve seeded reproducibility.
 Treat bot performance as diagnostic evidence rather than a difficulty verdict.
 
-**Implementation in progress:** the runner now iterates the actual offer list,
+**Implementation:** the runner iterates the actual offer list,
 records blocked purchases/transfers, sells a lower-value stash item when a full
 satchel would otherwise block an intended acquisition, and uses direct
 purchases for empty compatible slots. It reports gross gold spent, satchel
