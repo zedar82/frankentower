@@ -474,18 +474,21 @@ prompts, accepted/rejected source provenance and costs. Review board generation
 remains separate from pass/fail checks. Record which catalogue/commit a board
 actually depicts.
 
-The README still describes painted sockets and broad old art ownership. Older
-roadmap evidence has dates and should remain historical; point contributors to
-one current status/handoff instead of accumulating conflicting completion
-claims. Existing offline and manual private-host CI workflows are present and
-worth retaining. Extend them with catalogue validation and the targeted cases
-above when implementing; no replacement test framework is necessary.
+The README's stale painted-socket and broad art-ownership description has been
+corrected. Older roadmap evidence has dates and should remain historical; point
+contributors to one current status/handoff instead of accumulating conflicting
+completion claims. Existing offline and manual private-host CI workflows are
+present and worth retaining. Extend them with catalogue validation and the
+targeted cases above when implementing; no replacement test framework is
+necessary.
 
 **Implementation:** modular-body and footwear capture scripts now share
 `browser-support.mjs` for browser selection, local URL configuration and
 artifact-directory configuration. Their prior fixed Chrome executable paths
-and separate default Vite ports are removed. The RUN generator runner/manifest
-and README/roadmap cleanup remain.
+and separate default Vite ports are removed. README now describes direct graft
+joins, optional material mismatch, front-only gear and the current stalemate
+rule. The dated production roadmap remains a historical checkpoint. The RUN
+generator runner/manifest still needs consolidation.
 
 ## Suggested implementation sequence
 
