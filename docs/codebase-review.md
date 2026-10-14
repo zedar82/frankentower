@@ -63,13 +63,15 @@ build-time content validation, static combat previews, session/combat/navigation
 controllers and a shared display-mode subscription. The development ruleset is
 now `frankentower-4`. Per-asset readiness, modular geometry validation and
 visible-screen image loading are implemented. Obsolete shop selector branches
-are removed. HUD, shop and clinic composition now have separate stylesheets;
-global styles retain shared foundations and cross-screen materials. The item
-presentation catalogue now covers every equipment slot. Fight completion
-rejects duplicate terminal calls. Puppet layouts use a content-signature cache
-that detects in-place build edits and geometry readiness changes. Combat
-precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
-while paused or hidden. Remaining scoped follow-ups are physical-device
+are removed. Arena, HUD, shop and clinic composition now have separate
+stylesheets; global styles retain shared foundations and cross-screen
+materials. The item presentation catalogue now covers every equipment slot.
+Fight completion rejects duplicate terminal calls. Puppet layouts use a
+content-signature cache that detects in-place build edits and geometry
+readiness changes. Combat precomputes stable actor stats. Trunk paths and
+material patterns are cached by their geometry and asset inputs. Arena and
+dressing-room cosmetic loops stop while paused or hidden. Remaining scoped
+follow-ups are physical-device
 profiling and fitted torso/organ art and renderers. Poison uses one shared pool
 with latest-applicator actor credit;
 item-level tick attribution is deferred with item balance. Arena effects now
@@ -460,10 +462,14 @@ precompiled capacity total; runtime stat effects apply modifiers to that
 snapshot and recalculate only derived health, circulation efficiency and
 movement speed. Arena rendering resolves each build's layout once per frame and
 reuses bounds/torso for camera fit, target buttons, shield rings and health
-bars. Arena and dressing-room cosmetic RAF loops now stop while paused or the
-document is hidden; reduced-motion dressing rooms render one static frame.
-Completed arenas keep only a short final-effects fade. Device profiling remains
-open, and no performance budget is claimed yet.
+bars. Trunk outlines now use a bounded 64-entry cache keyed by their dimensions;
+material `CanvasPattern`s are cached per drawing context and revalidated against
+the source image and raster scale. The static room backdrop is rasterized once
+per arena, separately from actor and feedback drawing. Arena and dressing-room
+cosmetic RAF loops now stop while paused or the document is hidden;
+reduced-motion dressing rooms render one static frame. Completed arenas keep
+only a short final-effects fade. Device profiling remains open, and no
+performance budget is claimed yet.
 
 Separate static room drawing from animated feedback, and honor visibility/host
 pause in cosmetic scheduling. Profile representative phones and dense/many-limb

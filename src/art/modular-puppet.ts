@@ -35,6 +35,11 @@ let geometry: Record<string, Contract> = {};
 let ready = false;
 let geometryRevision = 0;
 const layoutCache = new WeakMap<Build, { key: string; layout: PuppetLayout }>();
+const trunkPathCache = new Map<string, Path2D>();
+const trunkPatternCache = new WeakMap<
+  CanvasRenderingContext2D,
+  Map<string, { image: HTMLImageElement; rasterScale: number; pattern: CanvasPattern }>
+>();
 const names = [
   'head-rat',
   'head-lizard',
@@ -94,7 +99,11 @@ function validateGeometry(value: unknown): asserts value is Record<string, Contr
     }
   }
 }
-const geometryReady = loadJsonAsset(`${base}geometry.json`, 'modular geometry', validateGeometry).then((value) => {
+const geometryReady = loadJsonAsset(
+  `${base}geometry.json`,
+  'modular geometry',
+  validateGeometry,
+).then((value) => {
   geometry = value;
   geometryRevision++;
 });
@@ -182,12 +191,66 @@ function widthAt(upper: number, lower: number, height: number, y: number) {
   const t = Math.max(0, Math.min(1, (y - start) / 48));
   return upper + (lower - upper) * t * t * (3 - 2 * t);
 }
+function trunkPath(upper: number, lower: number, height: number) {
+  const key = `${upper}:${lower}:${height}`;
+  const cached = trunkPathCache.get(key);
+  if (cached) {
+    trunkPathCache.delete(key);
+    trunkPathCache.set(key, cached);
+    return cached;
+  }
+  const start = upper > lower ? height - 64 : 16;
+  const path = new Path2D();
+  path.moveTo(-upper / 2 + 16, 2);
+  path.lineTo(upper / 2 - 16, 2);
+  path.quadraticCurveTo(upper / 2 - 2, 2, upper / 2 - 2, 16);
+  path.lineTo(upper / 2 - 2, start);
+  path.bezierCurveTo(
+    upper / 2 - 2,
+    start + 16,
+    lower / 2 - 2,
+    start + 32,
+    lower / 2 - 2,
+    start + 48,
+  );
+  path.lineTo(lower / 2 - 2, height - 16);
+  path.quadraticCurveTo(lower / 2 - 2, height - 2, lower / 2 - 16, height - 2);
+  path.lineTo(-lower / 2 + 16, height - 2);
+  path.quadraticCurveTo(-lower / 2 + 2, height - 2, -lower / 2 + 2, height - 16);
+  path.lineTo(-lower / 2 + 2, start + 48);
+  path.bezierCurveTo(-lower / 2 + 2, start + 32, -upper / 2 + 2, start + 16, -upper / 2 + 2, start);
+  path.lineTo(-upper / 2 + 2, 16);
+  path.quadraticCurveTo(-upper / 2 + 2, 2, -upper / 2 + 16, 2);
+  path.closePath();
+  trunkPathCache.set(key, path);
+  if (trunkPathCache.size > 64) trunkPathCache.delete(trunkPathCache.keys().next().value!);
+  return path;
+}
+function trunkPattern(
+  context: CanvasRenderingContext2D,
+  name: string,
+  image: HTMLImageElement,
+  rasterScale: number,
+) {
+  let cache = trunkPatternCache.get(context);
+  if (!cache) {
+    cache = new Map();
+    trunkPatternCache.set(context, cache);
+  }
+  const existing = cache.get(name);
+  if (existing?.image === image && existing.rasterScale === rasterScale) return existing.pattern;
+  const pattern = context.createPattern(image, 'repeat');
+  if (!pattern) return null;
+  pattern.setTransform(new DOMMatrix().scale(1 / rasterScale));
+  cache.set(name, { image, rasterScale, pattern });
+  return pattern;
+}
 export function modularLayout(build: Build, resting = false): PuppetLayout {
   // Builds are edited in place, so identity alone is not a safe cache key.
   // The signature contains every field used by the layout and attachment bounds.
   const key = `${geometryRevision}|${resting ? 1 : 0}|${build.parts
     .map((part) => {
-      const icon = part.item ? ITEM_MAP[part.item.defId]?.icon ?? '' : '';
+      const icon = part.item ? (ITEM_MAP[part.item.defId]?.icon ?? '') : '';
       return `${part.slot}:${part.variant}:${icon}`;
     })
     .join('|')}`;
@@ -334,7 +397,8 @@ function limb(
     c.rect(end.x - g.root.x - 10, end.y - g.root.y - 9, 20, 20);
     c.clip();
   }
-  if (image?.complete && image.naturalWidth) c.drawImage(image, -g.root.x, -g.root.y, g.width, g.height);
+  if (image?.complete && image.naturalWidth)
+    c.drawImage(image, -g.root.x, -g.root.y, g.width, g.height);
   else {
     const material =
       part.variant === 'bone' || part.variant === 'necrotic'
@@ -359,29 +423,8 @@ function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) 
     h = layout.torso.h,
     y = layout.torso.y;
   const start = upper > lower ? h - 64 : 16;
-  // One continuous texture field, bounded by the same fixed transition geometry.
-  const path = new Path2D();
-  path.moveTo(-upper / 2 + 16, 2);
-  path.lineTo(upper / 2 - 16, 2);
-  path.quadraticCurveTo(upper / 2 - 2, 2, upper / 2 - 2, 16);
-  path.lineTo(upper / 2 - 2, start);
-  path.bezierCurveTo(
-    upper / 2 - 2,
-    start + 16,
-    lower / 2 - 2,
-    start + 32,
-    lower / 2 - 2,
-    start + 48,
-  );
-  path.lineTo(lower / 2 - 2, h - 16);
-  path.quadraticCurveTo(lower / 2 - 2, h - 2, lower / 2 - 16, h - 2);
-  path.lineTo(-lower / 2 + 16, h - 2);
-  path.quadraticCurveTo(-lower / 2 + 2, h - 2, -lower / 2 + 2, h - 16);
-  path.lineTo(-lower / 2 + 2, start + 48);
-  path.bezierCurveTo(-lower / 2 + 2, start + 32, -upper / 2 + 2, start + 16, -upper / 2 + 2, start);
-  path.lineTo(-upper / 2 + 2, 16);
-  path.quadraticCurveTo(-upper / 2 + 2, 2, -upper / 2 + 16, 2);
-  path.closePath();
+  // Reuse the continuous outline until one of its layout dimensions changes.
+  const path = trunkPath(upper, lower, h);
   c.save();
   c.translate(0, y);
   c.filter = materialFilter(chestVariant(build), true);
@@ -393,10 +436,14 @@ function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) 
     c.fillStyle = material === 'fur' ? '#694b3c' : material === 'bone' ? '#8d826b' : '#7b4e4c';
     c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
   } else {
-    const pattern = c.createPattern(patternImage, 'repeat')!;
-    pattern.setTransform(new DOMMatrix().scale(1 / geometry[fill].rasterScale));
-    c.fillStyle = pattern;
-    c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
+    const pattern = trunkPattern(c, fill, patternImage, geometry[fill].rasterScale);
+    if (pattern) {
+      c.fillStyle = pattern;
+      c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
+    } else {
+      c.fillStyle = material === 'fur' ? '#694b3c' : material === 'bone' ? '#8d826b' : '#7b4e4c';
+      c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
+    }
   }
   c.restore();
   // Closed top/bottom sections, corners and fixed one/two-step side transitions.
