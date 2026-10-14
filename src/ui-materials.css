@@ -1,3 +1,5 @@
+/* Shared treatments for the authored iron, parchment and timber materials. */
+@layer materials {
 /* Live UI over authored pixel-art materials. Frames use nine-slice borders so
    decoration adapts to content without becoming a scaled screenshot. */
 .app-shell {
@@ -681,4 +683,5 @@ button:hover:not(:disabled) {
   .equipment-category > span:first-child {
     font-size: 12px;
   }
+}
 }

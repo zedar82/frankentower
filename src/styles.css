@@ -1,3 +1,7 @@
+/* Global primitives and defaults; shared materials and screen layouts follow. */
+@layer base, materials, workshop;
+
+@layer base {
 :root {
   font-family: 'Courier New', monospace;
   font-size: 14px;
@@ -1810,4 +1814,5 @@ canvas,
     grid-column: 2;
     grid-row: 2 / 4;
   }
+}
 }

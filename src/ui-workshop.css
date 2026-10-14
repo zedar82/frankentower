@@ -1,3 +1,5 @@
+/* Screen composition and responsive behavior for in-game workspaces. */
+@layer workshop {
 /* Ordinary shopping keeps the creature, sockets, satchel and offers together. */
 .app-shell,
 .boot-screen {
@@ -1354,4 +1356,5 @@
     grid-column: 1;
     grid-row: 3;
   }
+}
 }
