@@ -23,6 +23,8 @@ export interface Actor {
   side: 'player' | 'enemy';
   build: Build;
   stats: Stats;
+  capacityWithMana: number;
+  capacityWithoutMana: number;
   hp: number;
   mana: number;
   shield: number;

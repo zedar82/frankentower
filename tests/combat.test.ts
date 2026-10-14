@@ -249,6 +249,13 @@ test('necrotic heart capacity stops when Mana reaches zero', () => {
   b.parts.push({ uid: 'deadheart', slot: 'heart', variant: 'necrotic' });
   assert.equal(stats(b, 1).capacity, 340);
   assert.equal(stats(b, 0).capacity, 120);
+  const sim = new Combat(b, [human()], 31);
+  sim.player.mana = 0;
+  sim.step();
+  assert.equal(sim.player.stats.capacity, 120);
+  sim.player.mana = 1;
+  sim.step();
+  assert.equal(sim.player.stats.capacity, 340);
 });
 
 test('Mana regeneration and necrotic upkeep retain their per-second pacing', () => {

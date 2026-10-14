@@ -63,11 +63,12 @@ build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
 Session/controller ownership, unified art catalogues, retryable asset loading,
-CSS consolidation, compiled combat stats and structured command results remain
-planned work. Fight completion now rejects repeated calls after the combat phase.
-Puppet layout
-now has a content-signature cache that handles in-place build edits and geometry
-readiness changes; profiling and broader render optimization remain.
+CSS consolidation, full compiled combat stats and structured command results
+remain planned work. Fight completion now rejects repeated calls after the
+combat phase. Puppet layout has a content-signature cache that handles in-place
+build edits and geometry readiness changes. Combat now precomputes each actor's
+mana-positive and mana-depleted capacity, avoiding full stat reconstruction on
+every simulation step; broader profiling and render optimization remain.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -361,9 +362,12 @@ keyed only by Build object identity would be wrong after equipment or surgery.
 **Implementation:** modular puppet layouts now cache by the current ordered part
 slots, variants and held-item icon profiles, plus resting mode and geometry
 revision. This captures in-place anatomy/equipment changes and the transition
-from fallback to loaded geometry. Broader compiled-stat caching, camera/render
-work reduction, cosmetic scheduling changes and representative-device profiling
-remain open; no performance budget is claimed yet.
+from fallback to loaded geometry. Combat actors also cache the two stable capacity
+totals that vary with mana; each step applies the live capacity modifier and
+recomputes circulation efficiency from current load. Stat effects still perform
+a full recalculation when needed. Camera/render work reduction, cosmetic
+scheduling changes and representative-device profiling remain open; no
+performance budget is claimed yet.
 
 Separate static room drawing from animated feedback, and honor visibility/host
 pause in cosmetic scheduling. Profile representative phones and dense/many-limb

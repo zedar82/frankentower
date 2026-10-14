@@ -133,11 +133,7 @@ export function resolveEffect(
       }
       case 'stat':
         actor.modifiers[effect.stat] = (actor.modifiers[effect.stat] ?? 0) + amount;
-        actor.stats[effect.stat] = stats(actor.build, actor.mana, actor.modifiers)[effect.stat];
-        if (effect.stat === 'capacity')
-          actor.stats.efficiency = stats(actor.build, actor.mana, actor.modifiers).efficiency;
-        if (effect.stat === 'speed')
-          actor.stats.movementSpeed = stats(actor.build, actor.mana, actor.modifiers).movementSpeed;
+        actor.stats = stats(actor.build, actor.mana, actor.modifiers);
         actor.hp = Math.min(actor.hp, actor.stats.maxHp);
         actor.mana = Math.min(actor.mana, actor.stats.maxMana);
         break;

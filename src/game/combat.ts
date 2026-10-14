@@ -1,4 +1,3 @@
-import { stats } from './anatomy';
 import { Random, successes } from './random';
 import { ARM_STRIKE_TIME } from './attack-motion';
 import {
@@ -12,7 +11,7 @@ import {
   type Targeting,
 } from './types';
 import type { Actor, CombatAbility, CombatEvent, Job, LogEntry } from './combat/types';
-import { createCombatActors } from './combat/formation';
+import { createCombatActors, refreshCirculation } from './combat/formation';
 import { matchesReaction, matchesSelector, reactionsFor } from './combat/reactions';
 import { resolveEffect } from './combat/effects';
 import {
@@ -367,9 +366,7 @@ export class Combat {
     this.tickAccumulator += delta;
     moveActors(this.actors, this.time, delta, (actor) => this.target(actor));
     for (const actor of this.actors.filter((a) => a.hp > 0)) {
-      const normal = stats(actor.build, actor.mana, actor.modifiers);
-      actor.stats.capacity = normal.capacity;
-      actor.stats.efficiency = normal.efficiency;
+      refreshCirculation(actor);
       const rate = actor.stats.efficiency * actor.stats.speed;
       for (const node of actor.abilities) {
         if (!node.strike) {

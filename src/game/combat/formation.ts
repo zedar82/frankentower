@@ -1,11 +1,13 @@
 import { buildAbilities } from '../abilities';
-import { count, stats } from '../anatomy';
+import { circulationEfficiency, count, stats } from '../anatomy';
 import { clone, type Build } from '../types';
 import type { Actor, CombatAbility } from './types';
 
 function makeActor(build: Build, side: Actor['side'], id: string, hp?: number): Actor {
   build = clone(build);
-  const actorStats = stats(build);
+  const actorStats = stats(build),
+    capacityWithMana = actorStats.capacity,
+    capacityWithoutMana = stats(build, 0).capacity;
   const abilities: CombatAbility[] = buildAbilities(build).map((ability) => ({
     ...ability,
     remaining: ability.def.cooldown ?? Infinity,
@@ -20,6 +22,8 @@ function makeActor(build: Build, side: Actor['side'], id: string, hp?: number): 
     side,
     build,
     stats: actorStats,
+    capacityWithMana,
+    capacityWithoutMana,
     hp: Math.min(actorStats.maxHp, hp ?? actorStats.maxHp),
     mana: actorStats.maxMana,
     shield: 0,
@@ -41,6 +45,12 @@ function makeActor(build: Build, side: Actor['side'], id: string, hp?: number): 
     walked: 0,
     windup: 0,
   };
+}
+
+export function refreshCirculation(actor: Actor) {
+  const baseCapacity = actor.mana > 0 ? actor.capacityWithMana : actor.capacityWithoutMana;
+  actor.stats.capacity = baseCapacity + (actor.modifiers.capacity ?? 0);
+  actor.stats.efficiency = circulationEfficiency(actor.stats.capacity, actor.stats.load);
 }
 
 export function createCombatActors(player: Build, enemies: Build[], hp?: number): Actor[] {
