@@ -31,9 +31,16 @@ function resolvedProfile(id: string): ItemPresentation | undefined {
 const itemAssets = new Map<string, AssetRef>();
 for (const asset of Object.values(ITEM_ICON_ASSETS)) itemAssets.set(assetUrl(asset), asset);
 for (const profile of Object.values(ITEM_PRESENTATION)) itemAssets.set(assetUrl(profile.asset), profile.asset);
-for (const asset of itemAssets.values()) imageFor(asset);
-// Images are shared by URL and settle independently; drawing uses local fallbacks.
-export const itemArtReady = Promise.all([...itemAssets.keys()].map((url) => imageAssetReady(url))).then(() => undefined);
+// Explicit bulk preparation is reserved for asset studies and capture tools.
+// Runtime drawing requests each image only when its item is visible.
+export function prepareAllItemArt() {
+  return Promise.all(
+    [...itemAssets.values()].map((asset) => {
+      imageFor(asset);
+      return imageAssetReady(assetUrl(asset));
+    }),
+  ).then(() => undefined);
+}
 
 function footwearProfile(id: string) {
   const profile = resolvedProfile(id);

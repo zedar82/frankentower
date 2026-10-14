@@ -1,7 +1,7 @@
 import type { Build } from '../game/types';
 import { drawPuppet, puppetReady as anatomyReady, type Pose } from './puppet';
-import { drawGrotesqueItem, itemArtReady } from './item-assets';
-export const puppetReady = Promise.all([anatomyReady, itemArtReady]);
+import { drawGrotesqueItem } from './item-assets';
+export const puppetReady = anatomyReady;
 export { puppetBounds, fitPuppet } from './puppet';
 export type { Pose } from './puppet';
 

@@ -4,6 +4,8 @@ import { Arena, DressingRoom } from '../ui/Arena';
 import { Combat } from '../game/combat';
 import type { Build, Part } from '../game/types';
 import { puppetReady } from './pixel';
+import { prepareAllItemArt } from './item-assets';
+import { prepareAllModularArt } from './modular-puppet';
 
 if (!import.meta.env.DEV) throw new Error('Art review is development-only');
 type Options = {
@@ -209,5 +211,5 @@ function Review() {
 const style = document.createElement('style');
 style.textContent = `body{margin:0;background:#111016;color:#e5cca5;font:15px Georgia,serif}main{max-width:1060px;margin:auto;padding:24px}h1{font-size:25px}h2{font-size:17px}p{line-height:1.5;color:#c0aea0}.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.gallery section{background:#1a171f;padding:10px}.dressing-room{width:100%;height:auto;image-rendering:pixelated}.controls{display:flex;flex-wrap:wrap;gap:18px;background:#27202a;padding:15px;margin-bottom:20px}input[type=number]{width:40px}.interactive{display:grid;grid-template-columns:320px 1fr;gap:20px}.arena-scene{position:relative}.arena-scene canvas{width:100%;image-rendering:pixelated}.actor-target{position:absolute;background:transparent;border:0;cursor:pointer}.paused-banner{display:none}input[type=range]{width:75%}@media(max-width:750px){.gallery{grid-template-columns:repeat(2,1fr)}.interactive{grid-template-columns:1fr}}`;
 document.head.append(style);
-await puppetReady;
+await Promise.all([puppetReady, prepareAllItemArt(), prepareAllModularArt()]);
 createRoot(document.getElementById('root')!).render(<Review />);

@@ -8,7 +8,6 @@ import {
   drawHeldItem,
   heldHandLayer,
   heldItemCorners,
-  itemArtReady,
 } from './item-assets';
 import { imageAssetReady, loadJsonAsset, requestImageAsset } from './asset-loader';
 
@@ -99,13 +98,24 @@ const geometryReady = loadJsonAsset(`${base}geometry.json`, 'modular geometry', 
   geometry = value;
   geometryRevision++;
 });
-const imageReady = names.map((name) => {
-  const url = `${base}${name}.png`;
-  const image = requestImageAsset(url, `modular/${name}`);
-  images.set(name, image);
-  return imageAssetReady(url);
-});
-export const modularReady = Promise.all([itemArtReady, geometryReady, ...imageReady]).then(() => {
+function imageFor(name: string) {
+  let image = images.get(name);
+  if (!image) {
+    const url = `${base}${name}.png`;
+    image = requestImageAsset(url, `modular/${name}`);
+    images.set(name, image);
+  }
+  return image;
+}
+export function prepareAllModularArt() {
+  return Promise.all(
+    names.map((name) => {
+      imageFor(name);
+      return imageAssetReady(`${base}${name}.png`);
+    }),
+  ).then(() => undefined);
+}
+export const modularReady = geometryReady.then(() => {
   ready = true;
 });
 
@@ -278,7 +288,7 @@ function sprite(
   flipX = false,
   flipY = false,
 ) {
-  const image = images.get(name),
+  const image = imageFor(name),
     frame = geometry[name];
   if (!frame) return false;
   c.save();
@@ -303,7 +313,7 @@ function limb(
   coverFoot = false,
 ) {
   const name = asset(part),
-    image = images.get(name),
+    image = imageFor(name),
     g = geometry[name];
   if (!g) return;
   c.save();
@@ -378,10 +388,16 @@ function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) 
   c.save();
   c.clip(path);
   const fill = `fill-${material}`;
-  const pattern = c.createPattern(images.get(fill)!, 'repeat')!;
-  pattern.setTransform(new DOMMatrix().scale(1 / geometry[fill].rasterScale));
-  c.fillStyle = pattern;
-  c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
+  const patternImage = imageFor(fill);
+  if (!patternImage.complete || !patternImage.naturalWidth) {
+    c.fillStyle = material === 'fur' ? '#694b3c' : material === 'bone' ? '#8d826b' : '#7b4e4c';
+    c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
+  } else {
+    const pattern = c.createPattern(patternImage, 'repeat')!;
+    pattern.setTransform(new DOMMatrix().scale(1 / geometry[fill].rasterScale));
+    c.fillStyle = pattern;
+    c.fillRect(-layout.torso.w / 2, 0, layout.torso.w, h);
+  }
   c.restore();
   // Closed top/bottom sections, corners and fixed one/two-step side transitions.
   for (let x = -upper / 2 + 16; x < upper / 2 - 16; x += 24) {

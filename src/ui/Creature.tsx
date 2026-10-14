@@ -3,6 +3,7 @@ import { count } from '../game/anatomy';
 import type { Build } from '../game/types';
 import { monster, fitPuppet, puppetReady } from '../art/pixel';
 import { prepareCanvas } from '../art/canvas';
+import { subscribeAssets } from '../art/asset-loader';
 export function Creature({
   build,
   enemy = false,
@@ -28,6 +29,15 @@ export function Creature({
       const fit = fitPuppet(build, { x: 5, y: 5, w: 134, h: 150 }, 1);
       monster(c, build, fit.x, fit.y, fit.scale, { enemy, attacking: active, hurt });
     };
+    let frame = 0;
+    const scheduleDraw = () => {
+      if (!mounted || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        draw();
+      });
+    };
+    const unsubscribe = subscribeAssets(scheduleDraw);
     draw();
     puppetReady.then(draw);
     const resize = new ResizeObserver(draw);
@@ -35,10 +45,12 @@ export function Creature({
     window.addEventListener('resize', draw);
     return () => {
       mounted = false;
+      if (frame) cancelAnimationFrame(frame);
+      unsubscribe();
       resize.disconnect();
       window.removeEventListener('resize', draw);
     };
-  });
+  }, [build, enemy, active, hurt]);
   return (
     <canvas
       ref={ref}

@@ -337,9 +337,13 @@ optional image failures isolated, and gives required geometry a targeted retry
 action in recovery. Retry URLs bypass stale browser cache entries. Scene drawing
 checks the readiness of the individual backdrop it needs; body and item drawing
 retain their local fallbacks. A focused loader test verifies the original URL,
-failure state, cache-busted retry and successful reuse. The loader does not yet
-prioritize only the currently visible screen; all registered body and item art
-is still requested during startup.
+failure state, cache-busted retry and successful reuse. Runtime loading now
+prioritizes visible content. Modular geometry remains an essential startup
+dependency; body-part, torso-material and item images load on first draw and use
+local fallbacks while pending or after optional failure. Creature and item
+canvases subscribe to loader changes and coalesce redraws into animation frames.
+Art-study tools retain explicit bulk preparation so review boards still wait for
+complete catalogues. Device profiling and a measured prefetch policy remain open.
 
 ## 9. Responsive styling and display modes — P2
 
@@ -410,8 +414,10 @@ precompiled capacity total; runtime stat effects apply modifiers to that
 snapshot and recalculate only derived health, circulation efficiency and
 movement speed. Arena rendering resolves each build's layout once per frame and
 reuses bounds/torso for camera fit, target buttons, shield rings and health
-bars. Device profiling and cosmetic scheduling changes remain open; no
-performance budget is claimed yet.
+bars. Arena and dressing-room cosmetic RAF loops now stop while paused or the
+document is hidden; reduced-motion dressing rooms render one static frame.
+Completed arenas keep only a short final-effects fade. Device profiling remains
+open, and no performance budget is claimed yet.
 
 Separate static room drawing from animated feedback, and honor visibility/host
 pause in cosmetic scheduling. Profile representative phones and dense/many-limb

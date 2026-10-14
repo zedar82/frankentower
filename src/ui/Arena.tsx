@@ -164,6 +164,7 @@ export function Arena({
     let frame = 0,
       doneAt = 0;
     function draw(now: number) {
+      frame = 0;
       if (!canvas.current) return;
       const { combat: sim, paused: stopped } = latest.current;
       if (isImageAssetReady(arenaSceneryUrl) && !scenicBackdrop) {
@@ -319,11 +320,24 @@ export function Arena({
         .slice(-32))
         effect(c!, e, time, reduced);
       c!.restore();
-      frame = requestAnimationFrame(draw);
+      // A paused fight needs one fresh frame, then no cosmetic RAF churn.
+      // Completed fights keep animating briefly so their final hit effects fade.
+      if (!stopped && !document.hidden && (!sim.done || now - doneAt < 1100))
+        frame = requestAnimationFrame(draw);
     }
+    const visibilityChanged = () => {
+      if (document.hidden) {
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0;
+      } else if (!frame) frame = requestAnimationFrame(draw);
+    };
+    document.addEventListener('visibilitychange', visibilityChanged);
     frame = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frame);
-  }, [combat, floor]);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      document.removeEventListener('visibilitychange', visibilityChanged);
+    };
+  }, [combat, floor, paused]);
   return (
     <div className="arena-scene">
       <canvas
@@ -404,6 +418,7 @@ export function DressingRoom({
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let frame = 0;
     function draw(now: number) {
+      frame = 0;
       if (!canvas.current) return;
       const height = embedded
         ? (320 * canvas.current.clientHeight) / Math.max(1, canvas.current.clientWidth)
@@ -460,15 +475,25 @@ export function DressingRoom({
       monster(c!, build, 160 - ((b.left + b.right) * scale) / 2, ground, scale, {
         time: reduced ? 0 : now / 1000,
       });
-      frame = requestAnimationFrame(draw);
+      if (!reduced && !document.hidden) frame = requestAnimationFrame(draw);
     }
     function torchAt(now: number) {
       const t = reduced ? 0 : now / 1000;
       importTorch(c!, 30, 96, t);
       importTorch(c!, 287, 96, t);
     }
+    const visibilityChanged = () => {
+      if (document.hidden) {
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0;
+      } else if (!reduced && !frame) frame = requestAnimationFrame(draw);
+    };
+    document.addEventListener('visibilitychange', visibilityChanged);
     frame = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      document.removeEventListener('visibilitychange', visibilityChanged);
+    };
   }, [floor, surgery, embedded]);
   return (
     <canvas
