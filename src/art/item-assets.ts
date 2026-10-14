@@ -30,7 +30,8 @@ function resolvedProfile(id: string): ItemPresentation | undefined {
 }
 const itemAssets = new Map<string, AssetRef>();
 for (const asset of Object.values(ITEM_ICON_ASSETS)) itemAssets.set(assetUrl(asset), asset);
-for (const profile of Object.values(ITEM_PRESENTATION)) itemAssets.set(assetUrl(profile.asset), profile.asset);
+for (const profile of Object.values(ITEM_PRESENTATION))
+  itemAssets.set(assetUrl(profile.asset), profile.asset);
 // Explicit bulk preparation is reserved for asset studies and capture tools.
 // Runtime drawing requests each image only when its item is visible.
 export function prepareAllItemArt() {
@@ -77,6 +78,42 @@ export function drawFootwearItem(
     soleY - (profile.soleSeat.y - sy) * scale,
     sw * scale,
     sh * scale,
+  );
+  c.restore();
+  return true;
+}
+
+export function drawWornItem(
+  c: CanvasRenderingContext2D,
+  variant: string,
+  body: { x: number; y: number; w: number; h: number },
+  center?: Point,
+) {
+  const profile = resolvedProfile(variant);
+  if (profile?.kind !== 'torso' && profile?.kind !== 'organ') return false;
+  const image = imageFor(profile.asset);
+  if (!imageReady(profile.asset) || !image.complete || !image.naturalWidth) return false;
+  const [sx, sy, sw, sh] = sourceRect(profile.asset, image);
+  const width = body.w * profile.worn.width;
+  const height = body.h * profile.worn.height;
+  const scale = Math.min(width / sw, height / sh);
+  const cx = center?.x ?? body.x + body.w * profile.worn.center.x;
+  const cy = center?.y ?? body.y + body.h * profile.worn.center.y;
+  const drawWidth = sw * scale;
+  const drawHeight = sh * scale;
+  c.save();
+  c.imageSmoothingEnabled = false;
+  c.filter = profile.filter;
+  c.drawImage(
+    image,
+    sx,
+    sy,
+    sw,
+    sh,
+    cx - drawWidth / 2,
+    cy - drawHeight / 2,
+    drawWidth,
+    drawHeight,
   );
   c.restore();
   return true;

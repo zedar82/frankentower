@@ -16,6 +16,12 @@ export interface HeldGeometry {
   size: number;
   handLayer: 'front' | 'behind';
 }
+export interface WornGeometry {
+  anchor: 'torso' | 'heart';
+  width: number;
+  height: number;
+  center: Point;
+}
 export type ItemPresentation =
   | ({
       kind: 'held';
@@ -53,7 +59,7 @@ export type ItemPresentation =
       id: string;
       icon: string;
       asset: AssetRef;
-      worn: { anchor: 'torso'; status: 'icon-only' };
+      worn: WornGeometry & { anchor: 'torso' };
       filter: string;
     } & { attachment: 'chest' })
   | ({
@@ -61,7 +67,7 @@ export type ItemPresentation =
       id: string;
       icon: string;
       asset: AssetRef;
-      worn: { anchor: 'heart'; status: 'icon-only' };
+      worn: WornGeometry & { anchor: 'heart' };
       filter: string;
     } & { attachment: 'heart' });
 
@@ -271,7 +277,7 @@ function profileFor(id: string): ItemPresentation | undefined {
       id,
       icon: item.icon,
       asset: specialAssets[id] ?? iconAsset,
-      worn: { anchor: 'torso', status: 'icon-only' },
+      worn: { anchor: 'torso', width: 0.98, height: 0.96, center: { x: 0.5, y: 0.5 } },
       filter,
       attachment: 'chest',
     };
@@ -280,7 +286,7 @@ function profileFor(id: string): ItemPresentation | undefined {
     id,
     icon: item.icon,
     asset: iconAsset,
-    worn: { anchor: 'heart', status: 'icon-only' },
+    worn: { anchor: 'heart', width: 0.38, height: 0.4, center: { x: 0.5, y: 0.44 } },
     filter,
     attachment: 'heart',
   };
@@ -339,5 +345,18 @@ export function validatePresentationCatalog() {
       ].every(Number.isFinite)
     )
       throw new Error(`Invalid footwear mount for ${id}.`);
+    if (profile.kind === 'torso' || profile.kind === 'organ') {
+      const { width, height, center } = profile.worn;
+      if (
+        ![width, height, center.x, center.y].every(Number.isFinite) ||
+        width <= 0 ||
+        height <= 0 ||
+        center.x < 0 ||
+        center.x > 1 ||
+        center.y < 0 ||
+        center.y > 1
+      )
+        throw new Error(`Invalid worn-item geometry for ${id}.`);
+    }
   }
 }

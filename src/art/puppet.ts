@@ -40,6 +40,8 @@ export interface Bounds {
 }
 export interface PuppetLayout {
   torso: Frame;
+  /** Organ equipment centers in torso-local coordinates. */
+  organs: Point[];
   arms: Joint[];
   legs: Joint[];
   heads: Joint[];

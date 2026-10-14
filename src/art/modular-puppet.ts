@@ -3,6 +3,7 @@ import { ITEM_MAP } from '../game/content';
 import type { Joint, Pose, PuppetLayout } from './puppet';
 import {
   drawCrownItem,
+  drawWornItem,
   drawFootwearItem,
   footwearArtReady,
   drawHeldItem,
@@ -267,6 +268,12 @@ export function modularLayout(build: Build, resting = false): PuppetLayout {
     w: Math.max(upper, lower),
     h: height,
   };
+  const heartCount = select(build, 'heart').length;
+  const heartSpacing = heartCount > 1 ? Math.min(32, torso.w / (heartCount - 1)) : 0;
+  const organs = Array.from({ length: heartCount }, (_, index) => ({
+    x: (index - (heartCount - 1) / 2) * heartSpacing,
+    y: height * 0.44,
+  }));
   const joint = (part: Part, index: number, pin: Point, side: number): Joint => {
     const contract = geometry[asset(part)];
     return {
@@ -339,7 +346,7 @@ export function modularLayout(build: Build, resting = false): PuppetLayout {
     width: right - left + 8,
     height: bottom - top + 8,
   };
-  const layout = { torso, arms, legs, heads: necks, bounds };
+  const layout = { torso, organs, arms, legs, heads: necks, bounds };
   layoutCache.set(build, { key, layout });
   return layout;
 }
@@ -496,6 +503,20 @@ function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) 
   }
   c.restore();
 }
+function wornItems(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) {
+  const torso = layout.torso;
+  const body = { x: -torso.w / 2, y: 0, w: torso.w, h: torso.h };
+  const { upper, lower } = modularSpans(build);
+  c.save();
+  c.translate(0, torso.y);
+  c.clip(trunkPath(upper, lower, torso.h));
+  for (const [index, part] of select(build, 'heart').entries())
+    if (part.item && layout.organs[index])
+      drawWornItem(c, part.item.defId, body, layout.organs[index]);
+  const chest = select(build, 'chest')[0];
+  if (chest?.item) drawWornItem(c, chest.item.defId, body);
+  c.restore();
+}
 export function drawModularPuppet(
   c: CanvasRenderingContext2D,
   build: Build,
@@ -533,6 +554,7 @@ export function drawModularPuppet(
     limb(c, p, j, legAngle(j), false, covered);
   }
   trunk(c, build, layout);
+  wornItems(c, build, layout);
   for (const j of layout.heads) limb(c, heads[j.index], j, 0);
   for (const j of layout.heads) {
     const p = heads[j.index];

@@ -11,7 +11,9 @@ try {
   const result = await page.evaluate(async () => {
     const { puppetReady, puppetLayout, fitPuppet, drawPuppet, armAngle } =
       await import('/src/art/puppet.ts');
-    await puppetReady;
+    const { prepareAllItemArt } = await import('/src/art/item-assets.ts');
+    const { prepareAllModularArt } = await import('/src/art/modular-puppet.ts');
+    await Promise.all([puppetReady, prepareAllItemArt(), prepareAllModularArt()]);
     const fixtures = [
       ['Starting puppet', 2, 2, 1, 'living'],
       ['Four arms / four legs', 4, 4, 2, 'living'],
@@ -22,9 +24,8 @@ try {
       ['Rat graft', 2, 4, 1, 'rat'],
       ['Bone graft', 2, 2, 1, 'bone'],
     ];
-    const builds = fixtures.map(([name, hands, feet, heads, variant]) => ({
-      name,
-      parts: [
+    const builds = fixtures.map(([name, hands, feet, heads, variant], fixtureIndex) => {
+      const parts = [
         'chest',
         'heart',
         ...Array(hands).fill('hand'),
@@ -35,8 +36,36 @@ try {
         slot,
         variant,
         ...(slot === 'hand' ? { item: { uid: `weapon-${i}`, defId: 'knife', level: 1 } } : {}),
-      })),
-    }));
+      }));
+      if (fixtureIndex === 0 || fixtureIndex === 6) {
+        parts.find((part) => part.slot === 'chest').item = {
+          uid: `armour-${fixtureIndex}`,
+          defId: fixtureIndex === 6 ? 'spikes' : 'plate',
+          level: 1,
+        };
+      }
+      if (fixtureIndex === 7) {
+        parts.find((part) => part.slot === 'heart').item = {
+          uid: `heart-${fixtureIndex}`,
+          defId: 'heart',
+          level: 1,
+        };
+      }
+      if (fixtureIndex === 2) {
+        parts.find((part) => part.slot === 'heart').item = {
+          uid: 'heart-left',
+          defId: 'heart',
+          level: 1,
+        };
+        parts.push({
+          uid: 'extra-heart',
+          slot: 'heart',
+          variant,
+          item: { uid: 'heart-right', defId: 'heart', level: 1 },
+        });
+      }
+      return { name, parts };
+    });
     const canvas = document.createElement('canvas');
     canvas.width = 1500;
     canvas.height = 3100;
@@ -149,7 +178,7 @@ try {
   assert.deepEqual(result.failures, []);
   assert.deepEqual(errors, []);
   console.log(
-    'PASS: all arm, hip and neck buttons, sleeves, boots and faces connect to the torso in eight anatomies, three animation poses and both attack directions.',
+    'PASS: arm, hip and neck joins plus fitted torso/organ overlays render across eight anatomies, three animation poses and both attack directions.',
   );
 } finally {
   await browser.close();

@@ -34,11 +34,24 @@ test('equipment profiles preserve front-only coverage and explicit hand layering
   }
 });
 
-test('torso and organ art state their current worn-renderer boundary', () => {
+test('torso and organ profiles define fitted front-overlay geometry', () => {
   const chest = itemPresentation('plate'),
+    spikes = itemPresentation('spikes'),
     heart = itemPresentation('heart');
   assert.equal(chest?.kind, 'torso');
-  if (chest?.kind === 'torso') assert.equal(chest.worn.status, 'icon-only');
+  if (chest?.kind === 'torso') {
+    assert.equal(chest.worn.anchor, 'torso');
+    assert.equal(chest.asset.file, 'iron-breastplate-v2.png');
+    assert.ok(chest.worn.width > 0.9);
+    assert.ok(chest.worn.height > 0.9);
+  }
+  assert.equal(spikes?.kind, 'torso');
+  if (spikes?.kind === 'torso') assert.equal(spikes.asset.file, 'spiked-cuirass-v2.png');
   assert.equal(heart?.kind, 'organ');
-  if (heart?.kind === 'organ') assert.equal(heart.worn.status, 'icon-only');
+  if (heart?.kind === 'organ') {
+    assert.equal(heart.worn.anchor, 'heart');
+    assert.equal(heart.asset.file, 'heart.png');
+    assert.ok(heart.worn.width > 0.25 && heart.worn.width < 0.5);
+    assert.ok(heart.worn.height > 0.25 && heart.worn.height < 0.5);
+  }
 });

@@ -70,9 +70,9 @@ Fight completion rejects duplicate terminal calls. Puppet layouts use a
 content-signature cache that detects in-place build edits and geometry
 readiness changes. Combat precomputes stable actor stats. Trunk paths and
 material patterns are cached by their geometry and asset inputs. Arena and
-dressing-room cosmetic loops stop while paused or hidden. Remaining scoped
-follow-ups are physical-device
-profiling and fitted torso/organ art and renderers. Poison uses one shared pool
+dressing-room cosmetic loops stop while paused or hidden. The remaining scoped
+follow-up is physical-device profiling. Chest and heart items now have fitted
+front overlays in the modular renderer. Poison uses one shared pool
 with latest-applicator actor credit;
 item-level tick attribution is deferred with item balance. Arena effects now
 use a separate 64-entry visual feedback buffer; the report transcript retains
@@ -87,14 +87,15 @@ cover desktop and phone layouts, short-landscape views, spatial combat, dense
 anatomy poses, pause/resume, dialogs, saved reports and recovery paths. They
 are regression checks, not a substitute for profiling on physical phones.
 
-The remaining review items need inputs or scope beyond this implementation
-pass: measure performance on representative physical devices before setting a
-budget or prefetch thresholds; and author fitted torso/organ overlays before
-building their worn renderers. Current arena, shop, clinic and HUD composition
-now has screen-owned stylesheets; shared primitives and materials remain
-global. This CSS extraction improves maintainability but is not visual
-acceptance. The device and art/rendering work remains open; the review is not
-fully closed until those are assessed or deliberately deferred.
+The remaining review item needs physical devices: measure performance on
+representative phones before setting a budget or prefetch thresholds. The
+current front-facing breastplate, spiked cuirass and heart assets now use
+catalogue-owned fit envelopes, torso clipping and heart attachment positions;
+the puppet capture covers both chest designs, one and multiple organs, and
+several anatomies. Current arena, shop, clinic and HUD composition now has
+screen-owned stylesheets; shared primitives and materials remain global. This
+CSS extraction improves maintainability but is not visual acceptance. The
+device performance review remains open.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -319,23 +320,28 @@ grip/root, legs require sole/root/ankle, with finite in-frame coordinates.
 
 Keep the accepted direct joins, front-only headwear/footwear, capped tapers,
 optional asymmetry and unrestricted material colors. Torso/organ equipment
-should gain defined interfaces before further art is generated; accepted chest
-icons are not currently a worn chest renderer.
+needs declared fit envelopes, body-relative anchors and layering so artwork
+conforms to the assembled torso instead of appearing as a small icon stamped
+at its center. Keep the front-facing constraint for these overlays as for
+crowns and footwear.
 
 **Implementation:** one discriminated presentation catalogue now maps every
 content item to held, crown, footwear, torso or organ art. Held art resolves its
 content ID into one profile containing grip, axis, frame, hand layer, image and
 crop; drawing, bounds and hand-overlap order share that profile. Crown and
 footwear profiles declare their front-facing coverage and attachment landmarks.
-Torso and organ profiles establish their slot interfaces and explicitly record
-that current art is icon-only. Build validation checks profile-to-slot roles,
+Torso and organ profiles declare normalized fit envelopes and body-relative
+centers. The renderer clips them to the same tapered torso path used by the
+body, places multiple hearts separately, and paints chest gear over organs but
+under arms. Plate and spiked cuirass use their item-specific front artwork; the
+heart uses its anatomical image. Build validation checks profile-to-slot roles,
 finite landmarks and crops against the dimensions of existing PNG files.
 Modular generation landmarks now live in `scripts/modular-v2-source-spec.json`;
 the content check validates roles, frame dimensions, source/output landmarks,
 raster scale and agreement with generated geometry. A full generator run into a
-temporary directory reproduced all 81 current files byte-for-byte. Worn
-torso/organ renderers remain outstanding because the registered assets are
-icons rather than fitted body overlays.
+temporary directory reproduced all 81 current files byte-for-byte. The puppet
+capture preloads the catalogue before drawing, then covers both chest designs,
+one and multiple hearts, and several torso materials and poses.
 
 ## 8. Asset loading and recovery — P2
 
