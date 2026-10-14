@@ -38,7 +38,6 @@ export const VARIANT_DEFINITIONS: Record<Part['variant'], VariantDefinition> = {
           type: 'Weapon',
           tags: ['Poison', 'Melee'],
           cooldown: 3,
-          text: 'Every 3s: attack for 100 and apply 40 Poison.',
           effects: [
             { kind: 'damage', amount: 100, direct: true },
             { kind: 'poison', amount: 40 },

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { archetypes, equipped, identity, stats, SLOT_LABEL, LEVEL_SCALE } from '../game/anatomy';
+import { archetypes, equipped, identity, stats, SLOT_LABEL } from '../game/anatomy';
+import { describeAbilityRules, describeItemRules, describeSignature } from '../game/descriptions';
 import { buildAbilities } from '../game/abilities';
 import { ITEM_MAP } from '../game/content';
 import type { Build } from '../game/types';
@@ -49,7 +50,7 @@ export function PatientSummary({ build }: { build: Build }) {
               key={part.uid}
               onClick={() =>
                 setDetail(
-                  `${ITEM_MAP[item.defId].name} · Lv${item.level}\n${part.variant} ${SLOT_LABEL[part.slot]}\n\n${ITEM_MAP[item.defId].text}\n\nDamage, healing, Shield, status amounts and passive stats are ×${LEVEL_SCALE[item.level]}. Timers and cooldown reductions retain their listed values.\n\nLevel 3 signature${item.level === 3 ? ' — active' : ''}: ${ITEM_MAP[item.defId].signature}`,
+                  `${ITEM_MAP[item.defId].name} · Lv${item.level}\n${part.variant} ${SLOT_LABEL[part.slot]}\n\n${describeItemRules(ITEM_MAP[item.defId], item.level)}\n\nLevel 3 signature${item.level === 3 ? ' — active' : ''}:\n${describeSignature(ITEM_MAP[item.defId])}`,
                 )
               }
             >
@@ -75,7 +76,7 @@ export function PatientSummary({ build }: { build: Build }) {
               key={ability.uid}
               onClick={() =>
                 setDetail(
-                  `${ability.def.name}\n${ability.source.kind === 'limb' ? 'Anatomy ability' : 'Set bonus'}\n\n${ability.def.text}`,
+                  `${ability.def.name}\n${ability.source.kind === 'limb' ? 'Anatomy ability' : 'Set bonus'}\n\n${describeAbilityRules(ability.def, ability.level)}`,
                 )
               }
             >

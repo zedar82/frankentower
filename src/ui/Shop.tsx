@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SATCHEL_CAPACITY, type Item, type Run, type Slot, type Stats } from '../game/types';
 import { ITEM_MAP } from '../game/content';
+import { describeItemRules } from '../game/descriptions';
 import { archetypes } from '../game/anatomy';
 import { purchaseReason } from '../game/inventory';
 import { rerollCost, upgradeCost, RECOVERY_COST } from '../game/shop';
@@ -210,7 +211,7 @@ export function Shop({
                     <button
                       className="card-info"
                       aria-label={`Inspect ${def.name}`}
-                      aria-description={def.text}
+                      aria-description={describeItemRules(def, offer.level)}
                       onClick={() => onInspect(offer)}
                     >
                       <h3>{def.name}</h3>

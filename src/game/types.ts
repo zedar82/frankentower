@@ -78,7 +78,6 @@ export interface AbilityDef {
   type?: ItemType;
   tags: Tag[];
   icon: string;
-  text: string;
   cooldown?: number;
   targeting?: Targeting;
   effects?: Effect[];
@@ -92,7 +91,6 @@ export interface ItemDef extends AbilityDef {
   type: ItemType;
   rarity: number;
   price: number;
-  signature: string;
   requires?: { slot: Slot; count: number };
 }
 export interface Item {
@@ -130,7 +128,6 @@ export interface Stats {
 export interface Procedure {
   id: string;
   name: string;
-  text: string;
   quote: string;
   price: number;
   add?: { slot: Slot; variant?: Part['variant']; count: number }[];

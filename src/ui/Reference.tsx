@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ITEMS, ITEM_MAP } from '../game/content';
+import { describeItemRules } from '../game/descriptions';
 import { equipped, identity } from '../game/anatomy';
 import type { Build, CompletedFightReport, Item, Run, Save } from '../game/types';
 import { Icon } from './Icon';
@@ -326,7 +327,7 @@ export function Starter({ run, onChoose }: { run: Run; onChoose(id: string): voi
             <Icon name={ITEM_MAP[id].icon} variant={id} size={44} />
             <span>
               <strong>{ITEM_MAP[id].name}</strong>
-              <small>{ITEM_MAP[id].text}</small>
+              <small>{describeItemRules(ITEM_MAP[id], 1)}</small>
               <b>Choose →</b>
             </span>
           </button>

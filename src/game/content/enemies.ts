@@ -12,11 +12,9 @@ export const ENEMY_ITEMS: ItemDef[] = [
     rarity: 1,
     price: 0,
     icon: 'dagger',
-    text: 'Every 0.5s: attack for 50.',
     cooldown: 0.5,
     effects: [damage(50)],
     movement: { retreatAfterAttack: true },
-    signature: '',
   },
   {
     id: 'skeletonblade',
@@ -27,10 +25,8 @@ export const ENEMY_ITEMS: ItemDef[] = [
     rarity: 1,
     price: 0,
     icon: 'knife',
-    text: 'Every 2s: attack for 200.',
     cooldown: 2,
     effects: [damage(200)],
-    signature: '',
   },
   {
     id: 'ogrefist',
@@ -41,10 +37,8 @@ export const ENEMY_ITEMS: ItemDef[] = [
     rarity: 1,
     price: 0,
     icon: 'club',
-    text: 'Every 4s: attack for 500.',
     cooldown: 4,
     effects: [damage(500)],
-    signature: '',
   },
   {
     id: 'magebolt',
@@ -55,10 +49,8 @@ export const ENEMY_ITEMS: ItemDef[] = [
     rarity: 1,
     price: 0,
     icon: 'wand',
-    text: 'Every 2.5s: attack for 240.',
     cooldown: 2.5,
     effects: [damage(240)],
-    signature: '',
   },
   {
     id: 'archershot',
@@ -69,10 +61,8 @@ export const ENEMY_ITEMS: ItemDef[] = [
     rarity: 1,
     price: 0,
     icon: 'bow',
-    text: 'Every 1.5s: attack for 140.',
     cooldown: 1.5,
     effects: [damage(140)],
-    signature: '',
   },
 ];
 

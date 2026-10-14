@@ -21,13 +21,14 @@ function custom(def: Partial<ItemDef> & { id: string }): ItemDef {
     rarity: 1,
     price: 0,
     icon: 'dagger',
-    text: '',
-    signature: '',
     ...def,
   };
 }
 function catalog(...definitions: ItemDef[]): ItemCatalog {
-  return Object.freeze({ ...ITEM_MAP, ...Object.fromEntries(definitions.map((def) => [def.id, def])) });
+  return Object.freeze({
+    ...ITEM_MAP,
+    ...Object.fromEntries(definitions.map((def) => [def.id, def])),
+  });
 }
 test('combat fixtures use isolated catalogues and production definitions cannot be registered globally', () => {
   const fixture = custom({ id: 'test-isolated-catalogue' });
@@ -243,13 +244,15 @@ test('trigger ancestry is per branch, tracks instances, and stops recursive loop
           part.slot === 'head' ? 'test-hat' : part.slot === 'heart' ? 'test-heart' : 'test-wand',
         level: 1,
       };
-  const sim = closeRanks(new Combat(
-    build,
-    [armed('skeletonblade', 'Target')],
-    12,
-    undefined,
-    catalog(hatItem, wandItem, heartItem),
-  ));
+  const sim = closeRanks(
+    new Combat(
+      build,
+      [armed('skeletonblade', 'Target')],
+      12,
+      undefined,
+      catalog(hatItem, wandItem, heartItem),
+    ),
+  );
   sim.player.mana = 0;
   const hat = sim.player.abilities.find((n) => n.def.id === 'test-hat')!,
     heart = sim.player.abilities.find((n) => n.def.id === 'test-heart')!;

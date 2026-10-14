@@ -93,7 +93,6 @@ test('a declarative set supports static stats, timers, and source-filtered react
           name: 'Test blade bonus',
           icon: 'dagger',
           tags: ['Blade'],
-          text: '',
           stats: { armour: 7 },
           cooldown: 0.5,
           effects: [{ kind: 'heal', amount: 5 }],

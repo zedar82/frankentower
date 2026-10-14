@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ITEM_MAP } from '../game/content';
-import { LEVEL_SCALE, SLOT_LABEL } from '../game/anatomy';
+import { SLOT_LABEL } from '../game/anatomy';
+import { describeItemRules, describeSignature } from '../game/descriptions';
 import {
   combineResult,
   combineCandidate,
@@ -49,9 +50,9 @@ export function ItemInspector({
         : null;
   const text =
     section === 'Rules'
-      ? `${def.text}${selected.level > 1 ? `\n\nDamage, healing, Shield, status amounts and passive stats are ×${LEVEL_SCALE[selected.level]}. Timers and cooldown reductions retain their listed values.` : ''}${def.requires ? `\n\nRequires ${def.requires.count} ${SLOT_LABEL[def.requires.slot]} slots.` : ''}`
+      ? describeItemRules(def, selected.level)
       : section === 'Signature'
-        ? `Level 3 signature${selected.level === 3 ? ' — active' : ' — unlock by combining'}\n\n${def.signature}`
+        ? `Level 3 signature${selected.level === 3 ? ' — active' : ' — unlock by combining'}\n\n${describeSignature(def)}`
         : `${def.type} · ${SLOT_LABEL[def.slot]} equipment\nRarity ${def.rarity} · Level ${selected.level}\nTags: ${def.tags.join(', ') || 'None'}\n\nTwo identical items at the same level combine into the next level. Each instance activates once per causal branch; separate branches are independent.`;
   const act = (action: () => InventoryResult, event: string) => {
     const result = action();

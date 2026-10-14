@@ -175,8 +175,8 @@ export function validateContent() {
   for (const procedure of PROCEDURES) {
     ensure(!procedureIds.has(procedure.id), `duplicate procedure id ${procedure.id}.`);
     ensure(
-      !!procedure.name && !!procedure.text && !!procedure.quote,
-      `${procedure.id} needs authored name, text and quote.`,
+      !!procedure.name && !!procedure.quote,
+      `${procedure.id} needs an authored name and quote.`,
     );
     procedureIds.add(procedure.id);
     integer(procedure.price, `${procedure.id} price must be a nonnegative integer.`, 0);

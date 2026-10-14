@@ -213,6 +213,7 @@ try {
       const { defaultSave, newRun, startRun } = await import('/src/game/run.ts');
       const { stats } = await import('/src/game/anatomy.ts');
       const { ITEMS } = await import('/src/game/content.ts');
+      const { describeItemRules } = await import('/src/game/descriptions.ts');
       const save = defaultSave(),
         run = newRun(8675309);
       if (kind !== 'start') startRun(run, 'knife');
@@ -236,7 +237,9 @@ try {
           level: i < 2 ? 2 : 1,
         }));
         run.build.parts.find((p) => p.item).item.level = 2;
-        const longest = [...ITEMS].sort((a, b) => b.text.length - a.text.length)[0];
+        const longest = [...ITEMS].sort(
+          (a, b) => describeItemRules(b, 3).length - describeItemRules(a, 3).length,
+        )[0];
         run.offers[0] = { uid: 'long-offer', defId: longest.id, level: 3 };
         run.offers[1] = { uid: 'full-bag-purchase', defId: 'knife', level: 1 };
         if (kind === 'headless') {
@@ -475,11 +478,13 @@ try {
   await fixture('extreme');
   const expected = await mobile.evaluate(async () => {
     const { ITEM_MAP } = await import('/src/game/content.ts');
+    const { describeItemRules, describeSignature } = await import('/src/game/descriptions.ts');
     const offer = JSON.parse(localStorage.getItem('frankentower-save-v1')).run.offers[0];
+    const def = ITEM_MAP[offer.defId];
     return {
-      name: ITEM_MAP[offer.defId].name,
-      rules: ITEM_MAP[offer.defId].text,
-      signature: ITEM_MAP[offer.defId].signature,
+      name: def.name,
+      rules: describeItemRules(def, offer.level),
+      signature: describeSignature(def),
     };
   });
   await mobile.getByRole('button', { name: 'Inspect ' + expected.name, exact: true }).click();

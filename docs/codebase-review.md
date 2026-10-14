@@ -70,25 +70,31 @@ Fight completion rejects duplicate terminal calls. Puppet layouts use a
 content-signature cache that detects in-place build edits and geometry
 readiness changes. Combat precomputes stable actor stats. Trunk paths and
 material patterns are cached by their geometry and asset inputs. Arena and
-dressing-room cosmetic loops stop while paused or hidden. The remaining scoped
-follow-up is physical-device profiling. Chest and heart items now have fitted
+dressing-room cosmetic loops stop while paused or hidden. Remaining validation
+is a clean browser rerun and physical-device profiling. Chest and heart items now have fitted
 front overlays in the modular renderer. Poison uses one shared pool
 with latest-applicator actor credit;
 item-level tick attribution is deferred with item balance. Arena effects now
 use a separate 64-entry visual feedback buffer; the report transcript retains
-its independent 400-entry text-bearing history and truncation flag.
+its independent 400-entry text-bearing history and truncation flag. Item rules,
+level-three signatures and surgery projections now render from their rule data;
+duplicate authored item/procedure summaries were removed.
 
 ### Verification and remaining scope
 
-After the final implementation changes, all 77 unit tests and `npm run build`
-pass; the existing browser and arena suites also pass. The earlier full browser
-run passed browser, arena, puppet and reliability suites. Together those checks
-cover desktop and phone layouts, short-landscape views, spatial combat, dense
-anatomy poses, pause/resume, dialogs, saved reports and recovery paths. They
-are regression checks, not a substitute for profiling on physical phones.
+After the content-summary changes, all 81 unit tests and `npm run build` pass.
+The full browser, arena, puppet and reliability suites passed before this
+latest UI copy refactor. A rerun with installed Chrome timed out before the
+arena action became visible; Vite dependency optimization separately reported
+access denied while scanning above the workspace. The browser check therefore
+needs a clean rerun in an environment where the dev server can optimize its
+dependencies. Earlier browser coverage includes desktop and phone layouts,
+short-landscape views, spatial combat, dense anatomy poses, pause/resume,
+dialogs, saved reports and recovery paths. Browser regression checks still do
+not substitute for profiling on physical phones.
 
-The remaining review item needs physical devices: measure performance on
-representative phones before setting a budget or prefetch thresholds. The
+Remaining validation needs a clean browser run and representative phones before
+setting performance budgets or prefetch thresholds. The
 current front-facing breastplate, spiked cuirass and heart assets now use
 catalogue-owned fit envelopes, torso clipping and heart attachment positions;
 the puppet capture covers both chest designs, one and multiple organs, and
@@ -241,19 +247,21 @@ receives normal slot load. The count text now matches its data and the
 circulation claim has been removed. Skeletal circulation and item-balance
 decisions remain deferred; current rules and values were preserved.
 More generally, timers, amounts, requirements, signatures and procedure
-consequences have separately authored prose. The effect summary already derives
-much of its information from rules; extend that pattern for factual details.
-Keep names, flavor quotes and deliberate explanations authored by hand.
+consequences had separately authored prose. **Implemented:** item rules and
+signatures are generated from cooldowns, effects, reactions, targeting,
+requirements and stats. The surgery Changes page remains the live projection
+from the shared procedure plan and before/after physiology. Duplicate `text`
+and `signature` fields were removed from ability, item and procedure content.
+Names and procedure flavor quotes remain authored by hand.
 
 Duplicate item IDs now fail before ITEM_MAP creation. validateContent() is part
 of the build and checks item rarity/price/slot/type, finite rule values,
 cooldowns, target shapes, selector contradictions, duplicate explicit reaction
 IDs, set thresholds and procedure counts/variants. Item definitions default to
-explicit single-target metadata. The catalogue remains mutable because existing
-combat tests used to add definitions directly. **Implemented:** `ITEM_MAP` is
-now a frozen readonly lookup, and combat/preview fixture tests pass isolated
-item catalogues through the same production assembly path. The regression
-check confirms fixture definitions do not leak into the production catalogue.
+explicit single-target metadata. `ITEM_MAP` is a frozen readonly lookup, and
+combat/preview fixture tests pass isolated item catalogues through the same
+production assembly path. A regression check confirms fixture definitions do
+not leak into the production catalogue.
 ## 6. Extract application ownership — P2
 
 **Evidence:** `src/App.tsx:37–106`, `src/App.tsx:184–307`,
@@ -580,6 +588,10 @@ unchanged. A regression case renames an Ogre and verifies its anatomy and
 profile scale stay fixed.
 
 ## Suggested implementation sequence
+
+This was the original sequence. All code-side stages are implemented; a clean
+browser rerun and phone profiling remain validation tasks, and item-balance-
+dependent attribution remains deliberately deferred.
 
 1. Guarantee combat termination; correct diagnostic outcome classification.
 2. Make completed reports accurate after reload; fix factual content prose and

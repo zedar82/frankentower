@@ -196,7 +196,7 @@ export function Surgery({
             text={
               section === 'Changes'
                 ? changes
-                : `${p?.text ?? ''}\n\n“${p?.quote ?? 'Your procedure is complete.'}”\n— Dr. Sutcher\n\nOne procedure per visit. Your hearts must support your new anatomy.`
+                : `${p?.quote ?? 'Your procedure is complete.'}\n\n— Dr. Sutcher\n\nOne procedure per visit. Review the Changes page for anatomy, equipment displacement, and projected physiological effects.`
             }
             label={section}
           />

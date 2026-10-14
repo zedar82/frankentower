@@ -4,7 +4,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'arm',
     name: 'Additional arm',
-    text: '+1 Hand slot, +80 HP, +20 load.',
     quote: 'A little more reach should help.',
     price: 14,
     add: [{ slot: 'hand', count: 1 }],
@@ -13,7 +12,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'head',
     name: 'Additional head',
-    text: '+1 Head slot, +160 HP, +200 Mana, +30 load.',
     quote: 'A second opinion, whenever you need one.',
     price: 20,
     add: [{ slot: 'head', count: 1 }],
@@ -22,7 +20,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'heart',
     name: 'Second heart',
-    text: '+1 Heart slot, +120 HP, +120 capacity.',
     quote: 'The extra tissue deserves proper support.',
     price: 22,
     add: [{ slot: 'heart', count: 1 }],
@@ -31,7 +28,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'feet',
     name: 'Locomotor graft',
-    text: '+2 Foot slots, +160 HP, +30 load. Increased movement speed.',
     quote: 'We can distribute the weight more evenly.',
     price: 18,
     add: [{ slot: 'foot', count: 2 }],
@@ -40,7 +36,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'clockarm',
     name: 'Clockwork arm',
-    text: '+1 Hand slot, +80 HP. No circulatory load.',
     quote: 'Maintenance replaces the usual blood supply.',
     price: 30,
     add: [{ slot: 'hand', variant: 'clockwork', count: 1 }],
@@ -49,7 +44,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'necrotic',
     name: 'Necrotic heart',
-    text: '+1 Heart slot, +120 HP, +220 capacity. Consumes 20 Mana/s; stops at zero.',
     quote: 'An excellent pump, provided we keep it fed.',
     price: 26,
     add: [{ slot: 'heart', variant: 'necrotic', count: 1 }],
@@ -58,7 +52,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'polyhead',
     name: 'Polycephalic conversion',
-    text: 'Remove 2 Hands; add 2 Heads. Removed equipment returns to the satchel.',
     quote: 'Let us make more room for your thinking.',
     price: 12,
     remove: [{ slot: 'hand', count: 2 }],
@@ -68,7 +61,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'amputate',
     name: 'Arm consolidation',
-    text: 'Remove 1 Hand. −80 HP, −20 load. Equipment returns to the satchel.',
     quote: 'Sometimes the best addition is a subtraction.',
     price: 0,
     remove: [{ slot: 'hand', count: 1 }],
@@ -77,7 +69,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'footremove',
     name: 'Locomotor consolidation',
-    text: 'Remove 1 Foot. −80 HP, −15 load. Reduced movement speed.',
     quote: 'We can simplify your support requirements.',
     price: 0,
     remove: [{ slot: 'foot', count: 1 }],
@@ -86,7 +77,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'fourarms',
     name: 'Bilateral duplication',
-    text: '+2 Hand slots, +160 HP, +40 load.',
     quote: 'The symmetry is reassuring.',
     price: 28,
     add: [{ slot: 'hand', count: 2 }],
@@ -95,7 +85,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'octopod',
     name: 'Octopod preparation',
-    text: '+4 Foot slots, +320 HP, +60 load. Substantially increased movement speed.',
     quote: 'Your footwear collection will finally have a home.',
     price: 32,
     add: [{ slot: 'foot', count: 4 }],
@@ -104,7 +93,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'ratgraft',
     name: 'Rat graft',
-    text: 'Replace 1 Chest and 1 Head; add 1 Hand and 2 Feet. Grafted parts use rat anatomy.',
     quote: 'The donor tissue has adapted well to its previous environment.',
     price: 48,
     remove: [
@@ -122,7 +110,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'bonegraft',
     name: 'Osseous graft',
-    text: 'Replace 1 Chest and 1 Head; add 1 Hand and 2 Feet. Grafted parts use skeletal anatomy.',
     quote: 'The joints creak in a language the surgeon does not speak.',
     price: 48,
     remove: [
@@ -140,7 +127,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'serpent',
     name: 'Serpent’s head',
-    text: '+1 Head slot, +160 HP, +30 load. Bites every 3s for 100 damage and 40 Poison.',
     quote: 'A useful exception to ordinary cranial function.',
     price: 35,
     add: [{ slot: 'head', variant: 'serpent', count: 1 }],
@@ -149,7 +135,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'ganglion',
     name: 'Ganglion control',
-    text: 'Remove 1 Head; add a neural Heart slot. +60 capacity; allows headless function.',
     quote: 'Centralised thinking is largely a convention.',
     price: 18,
     remove: [{ slot: 'head', count: 1 }],
@@ -159,7 +144,6 @@ export const PROCEDURES: Procedure[] = [
   {
     id: 'tripump',
     name: 'Cardiac redundancy',
-    text: '+2 Heart slots, +240 HP, +240 capacity.',
     quote: 'There is room for another. And another.',
     price: 40,
     add: [{ slot: 'heart', count: 2 }],

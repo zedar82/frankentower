@@ -1,5 +1,6 @@
 import { LEVEL_SCALE } from '../game/abilities';
 import { SLOT_PLURAL } from '../game/anatomy';
+import { describeAbilityRules } from '../game/descriptions';
 import type { Effect, ItemDef, Reaction, Stat } from '../game/types';
 
 // Shared presentation vocabulary, derived from rules rather than item names or prose.
@@ -123,7 +124,7 @@ function EffectValue({ effect, scale }: { effect: Effect; scale: number }) {
 export function EffectSummary({ def, level }: { def: ItemDef; level: number }) {
   const scale = LEVEL_SCALE[level];
   return (
-    <span className="effect-summary" aria-label={def.text}>
+    <span className="effect-summary" aria-label={describeAbilityRules(def, level)}>
       {level > 1 && (
         <span className="effect-chip">
           <small>
