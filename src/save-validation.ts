@@ -3,6 +3,7 @@ import { ITEM_MAP, PROCEDURES } from './game/content';
 import { SLOT_DEFINITIONS, VARIANT_DEFINITIONS } from './game/anatomy-content';
 import { stats } from './game/anatomy';
 import { RULESET, SATCHEL_CAPACITY, type Save, type Build } from './game/types';
+import { ENEMY_PROFILE_BY_ID } from './game/content/enemies';
 
 export class InvalidSaveError extends Error {
   constructor() {
@@ -59,6 +60,8 @@ function item(value: unknown, seen: Set<string>, slot?: string) {
 function build(value: unknown, items = new Set<string>()) {
   const b = object(value);
   text(b.name);
+  if (b.enemyProfileId !== undefined)
+    requireValid(Object.hasOwn(ENEMY_PROFILE_BY_ID, text(b.enemyProfileId)));
   const parts = array(b.parts, 1000);
   requireValid(parts.length > 0);
   const ids = new Set<string>();
@@ -113,9 +116,16 @@ function fightReport(value: unknown) {
     const time = number(log.time, priorTime, 3600, false);
     priorTime = time;
     requireValid(
-      ['damage', 'heal', 'shield', 'activation', 'status', 'suppressed', 'resource', 'death'].includes(
-        text(log.kind),
-      ),
+      [
+        'damage',
+        'heal',
+        'shield',
+        'activation',
+        'status',
+        'suppressed',
+        'resource',
+        'death',
+      ].includes(text(log.kind)),
     );
     text(log.actor);
     if (log.target !== undefined) text(log.target);

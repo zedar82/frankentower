@@ -109,6 +109,7 @@ export interface Part {
 export interface Build {
   name: string;
   parts: Part[];
+  enemyProfileId?: string;
   healthFactor?: number;
   powerFactor?: number;
 }
@@ -161,7 +162,8 @@ export interface FightContribution {
 export interface FightTranscriptEntry {
   id: number;
   time: number;
-  kind: 'damage' | 'heal' | 'shield' | 'activation' | 'status' | 'suppressed' | 'resource' | 'death';
+  kind:
+    'damage' | 'heal' | 'shield' | 'activation' | 'status' | 'suppressed' | 'resource' | 'death';
   actor: string;
   target?: string;
   ability?: string;

@@ -1,140 +1,58 @@
-import { human, stats } from './anatomy';
+import { stats } from './anatomy';
+import { CHECKPOINT_ENEMY_PROFILES, ENEMY_PROFILES, ENEMY_PROFILE_BY_ID } from './content/enemies';
 import { Random } from './random';
-import { RULESET, clone, type Build, type Legacy, type Slot } from './types';
+import { RULESET, clone, type Build, type Legacy } from './types';
 
-function enemy(name: string, item: string, hp: number, power: number, armour = 0): Build {
-  const anatomy: Record<
-    string,
-    { slots: Slot[]; material: 'living' | 'clockwork' | 'necrotic' | 'rat' | 'bone' }
-  > = {
-    'Grave rat': {
-      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot', 'foot', 'foot'],
-      material: 'rat',
-    },
-    Skeleton: {
-      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'],
-      material: 'bone',
-    },
-    Ogre: {
-      slots: [
-        'head',
-        'head',
-        'chest',
-        'chest',
-        'heart',
-        'heart',
-        'hand',
-        'hand',
-        'hand',
-        'hand',
-        'foot',
-        'foot',
-      ],
-      material: 'living',
-    },
-    'Grave mage': {
-      slots: ['head', 'head', 'chest', 'heart', 'heart', 'hand', 'hand', 'foot', 'foot'],
-      material: 'necrotic',
-    },
-    'Bone archer': {
-      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'],
-      material: 'bone',
-    },
-    'Iron knight': {
-      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'],
-      material: 'clockwork',
-    },
-    Golem: {
-      slots: [
-        'head',
-        'chest',
-        'chest',
-        'heart',
-        'heart',
-        'heart',
-        'hand',
-        'hand',
-        'hand',
-        'hand',
-        'foot',
-        'foot',
-        'foot',
-        'foot',
-      ],
-      material: 'clockwork',
-    },
-  };
-  const profile = anatomy[name];
-  const b = human(name);
-  if (profile) {
-    b.parts = profile.slots.map((slot, i) => ({
-      uid: `${name.toLowerCase().replace(/\s+/g, '-')}-${i}`,
+function buildFromProfile(profileId: string, floor?: number): Build {
+  const profile = ENEMY_PROFILE_BY_ID[profileId];
+  if (!profile) throw new Error(`Unknown enemy profile: ${profileId}`);
+  const build: Build = {
+    name: profile.name,
+    enemyProfileId: profile.id,
+    parts: profile.anatomy.slots.map((slot, index) => ({
+      uid: `${profile.anatomy.partUidPrefix}-${index}`,
       slot,
-      variant: profile.material,
-    }));
+      variant: profile.anatomy.material,
+    })),
+  };
+
+  build.healthFactor =
+    profile.healthFactor ??
+    (profile.baseHp * (floor === undefined ? 1 : 1 + floor * 0.025)) / stats(build).maxHp;
+  build.powerFactor = profile.power * (floor === undefined ? 1 : 1 + floor * 0.009);
+
+  for (const item of profile.equipment) {
+    const part = build.parts.find((part) => part.slot === item.slot && !part.item);
+    if (!part)
+      throw new Error(
+        `Enemy profile ${profile.id} has no free ${item.slot} slot for ${item.defId}.`,
+      );
+    part.item = { uid: item.uid, defId: item.defId, level: item.level };
   }
-  // Keep each prototype's authored HP while letting its new anatomy determine the silhouette.
-  b.healthFactor = hp / stats(b).maxHp;
-  b.powerFactor = power;
-  b.parts.find((p) => p.slot === 'hand')!.item = { uid: `${name}-weapon`, defId: item, level: 1 };
-  if (armour)
-    b.parts.find((p) => p.slot === 'chest')!.item = {
-      uid: `${name}-armour`,
-      defId: armour >= 5 ? 'golemplate' : 'plate',
-      level: Math.min(3, armour),
-    };
-  return b;
+  return build;
 }
+
 export function encounter(floor: number, seed: number, legacy: Legacy[]): Build[] {
   if (floor % 20 === 0) {
-    const old = legacy.find((b) => b.checkpoint === floor && b.ruleset === RULESET);
+    const old = legacy.find((build) => build.checkpoint === floor && build.ruleset === RULESET);
     if (old) return [clone(old.build)];
-    const boss = human(
-      [
-        'Dr. Sutcher',
-        'The Ward Matron',
-        'Professor Polycard',
-        'The Chief Resident',
-        'The First Patient',
-      ][floor / 20 - 1],
+    const profile = CHECKPOINT_ENEMY_PROFILES.find(
+      (candidate) => candidate.id === `checkpoint-${floor}`,
     );
-    const byFloor: Record<number, string[]> = {
-      20: ['cleaver', 'shield', 'plate', 'horns', 'bloodboots', 'runners', 'heart'],
-      40: ['bloodletter', 'knife', 'barbed', 'redhat', 'bloodrunner', 'bloodboots', 'vampire'],
-      60: ['bonewand', 'stormwand', 'golemplate', 'conductor', 'rabbit', 'runners', 'wizardheart'],
-      80: ['maul', 'parry', 'donor', 'ram', 'spurs', 'octoboot', 'pump'],
-      100: ['saint', 'necrowand', 'donor', 'hydra', 'dance', 'plague', 'bloodengine'],
-    };
-    const ids = byFloor[floor];
-    const slots: Slot[] = ['hand', 'hand', 'chest', 'head', 'foot', 'foot', 'heart'];
-    slots.forEach((slot, i) => {
-      const part = boss.parts.find((p) => p.slot === slot && !p.item)!;
-      part.item = { uid: `boss-${floor}-${i}`, defId: ids[i], level: 1 };
-    });
-    boss.healthFactor = 1.25 + floor * 0.015;
-    boss.powerFactor = 0.65 + floor * 0.002;
-    return [boss];
+    return profile ? [buildFromProfile(profile.id)] : [];
   }
+
   const rng = new Random((seed ^ Math.imul(floor, 2654435761)) >>> 0);
-  const archetypes = [
-    { name: 'Grave rat', item: 'ratbite', cost: 2, hp: 420, power: 0.45, armour: 0 },
-    { name: 'Skeleton', item: 'skeletonblade', cost: 4, hp: 1000, power: 1, armour: 0 },
-    { name: 'Ogre', item: 'ogrefist', cost: 7, hp: 1600, power: 1.1, armour: 0 },
-    { name: 'Grave mage', item: 'magebolt', cost: 5, hp: 750, power: 0.95, armour: 0 },
-    { name: 'Bone archer', item: 'archershot', cost: 4, hp: 800, power: 0.9, armour: 0 },
-    { name: 'Iron knight', item: 'skeletonblade', cost: 6, hp: 1200, power: 0.85, armour: 2 },
-    { name: 'Golem', item: 'ogrefist', cost: 10, hp: 2000, power: 1.1, armour: 5 },
-  ];
-  if (floor === 1) return [enemy('Skeleton', 'skeletonblade', 1000, 1)];
+  if (floor === 1) return [buildFromProfile('skeleton')];
   let budget = 4 + Math.floor(floor / 7);
   const result: Build[] = [];
   while (budget >= 2 && result.length < 6) {
-    const pool = archetypes.filter((a) => a.cost <= budget && (floor >= 8 || a.cost <= 4));
-    const a = rng.pick(pool);
-    budget -= a.cost;
-    result.push(
-      enemy(a.name, a.item, a.hp * (1 + floor * 0.025), a.power * (1 + floor * 0.009), a.armour),
+    const pool = ENEMY_PROFILES.filter(
+      (profile) => profile.cost <= budget && (floor >= 8 || profile.cost <= 4),
     );
+    const profile = rng.pick(pool);
+    budget -= profile.cost;
+    result.push(buildFromProfile(profile.id, floor));
   }
   return result;
 }

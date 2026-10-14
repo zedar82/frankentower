@@ -468,15 +468,14 @@ bookkeeping separate from the agreed combined-pool gameplay.
 
 ### Authoring and tool consistency
 
-Move encounter anatomy, stats, equipment and presentation keys into stable enemy
-profiles. Rename a displayed enemy without changing its body or render scale.
-Keep encounter generation as the seeded budget selector over those profiles.
+Enemy anatomy, stats, equipment and presentation now live in stable profiles.
+The displayed name can change without changing its body or render scale. The
+seeded budget selector consumes the standard profiles; checkpoint bosses use
+their own authored profiles.
 
-Have current capture/registration tools use `scripts/browser-support.mjs` for
-browser selection and output configuration; newer captures and generators still
-default to a Windows Chrome path and differing localhost ports. Consolidate the
-active RUN generator runner and manifest validation while retaining historical
-prompts, accepted/rejected source provenance and costs. Review board generation
+Keep current browser captures on `scripts/browser-support.mjs` for browser
+selection, local URL and artifact output. Preserve historical image-generation
+prompts, accepted/rejected source provenance and costs. Review-board generation
 remains separate from pass/fail checks. Record which catalogue/commit a board
 actually depicts.
 
@@ -496,7 +495,13 @@ RUN launchers share a validated image-manifest runner with configurable CLI and
 project ID; historical art-study generators remain preserved. README now
 describes direct graft joins, optional material mismatch, front-only gear and
 the current stalemate rule. The dated production roadmap remains a historical
-checkpoint.
+checkpoint. `EnemyProfile` data now owns standard and checkpoint anatomy,
+equipment, health/power values and a stable presentation key/scale. Build saves
+retain an optional profile id for profile-specific rendering and validate that
+it still exists. Content checks validate profile IDs, anatomy, equipment slots,
+levels and presentation scales; the existing seeded budget selection remains
+unchanged. A regression case renames an Ogre and verifies its anatomy and
+profile scale stay fixed.
 
 ## Suggested implementation sequence
 

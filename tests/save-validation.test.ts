@@ -118,6 +118,10 @@ test('corrupt nested saves fail before reaching gameplay, including unowned inve
       s.run.lastEnemies = [null];
     },
     (s) => {
+      s.run.lastEnemies = encounter(2, s.run.seed, []);
+      s.run.lastEnemies[0].enemyProfileId = 'removed-enemy-profile';
+    },
+    (s) => {
       s.records = [{ build: null }];
     },
     (s) => {

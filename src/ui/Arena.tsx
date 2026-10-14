@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ARENA, armMotion, type LogEntry } from '../game/combat';
 import type { CombatView } from '../game/combat/types';
+import { ENEMY_PROFILE_BY_ID } from '../game/content/enemies';
 import {
   monster,
   oval,
@@ -191,7 +192,9 @@ export function Arena({
       const alive = sim.actors.filter((a) => a.hp > 0),
         subjects = alive.length ? alive : sim.actors;
       const renderScale = (a: CombatView['actors'][number]) =>
-        a.side === 'player' ? 1.1 : /Ogre|Brute/.test(a.build.name) ? 1.25 : 0.91;
+        a.side === 'player'
+          ? 1.1
+          : (ENEMY_PROFILE_BY_ID[a.build.enemyProfileId ?? '']?.presentation.scale ?? 0.91);
       const frameLayouts = new Map<Build, ReturnType<typeof puppetLayout>>();
       const layoutFor = (build: Build) => {
         let layout = frameLayouts.get(build);

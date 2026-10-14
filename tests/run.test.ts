@@ -2,14 +2,36 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { advance, defaultSave, finishFight, newRun, retire, startRun } from '../src/game/run';
 import { reroll, toggleShopFreeze } from '../src/game/shop';
-import { buy, combine, combineResult, equip, purchaseItem, sellResult, unequip, unequipResult } from '../src/game/inventory';
-import { operate, operateResult, procedurePlan, procedurePreview, procedureReason } from '../src/game/surgery';
+import {
+  buy,
+  combine,
+  combineResult,
+  equip,
+  purchaseItem,
+  sellResult,
+  unequip,
+  unequipResult,
+} from '../src/game/inventory';
+import {
+  operate,
+  operateResult,
+  procedurePlan,
+  procedurePreview,
+  procedureReason,
+} from '../src/game/surgery';
 import { encounter } from '../src/game/encounters';
 import { RULESET, SATCHEL_CAPACITY, clone } from '../src/game/types';
 import { PROCEDURES } from '../src/game/content';
+import { ENEMY_PROFILE_BY_ID } from '../src/game/content/enemies';
 import { count, equipped, stats } from '../src/game/anatomy';
 import { Combat } from '../src/game/combat';
-import { canMoveItem, moveItem, moveItemResult, planItemMove, purchaseItemResult } from '../src/game/inventory';
+import {
+  canMoveItem,
+  moveItem,
+  moveItemResult,
+  planItemMove,
+  purchaseItemResult,
+} from '../src/game/inventory';
 
 test('inventory moves validate ownership and targets before spending or removing items', () => {
   const run = newRun(12);
@@ -269,6 +291,11 @@ test('enemy archetypes use distinct paper-puppet anatomy and materials', () => {
   assert.equal(count(golem, 'foot'), 4);
   assert.ok(golem.parts.every((p) => p.variant === 'clockwork'));
   assert.ok(found.get('Skeleton')!.parts.every((p) => p.variant === 'bone'));
+  const renamedOgre = clone(ogre);
+  renamedOgre.name = 'The Brute';
+  assert.equal(renamedOgre.enemyProfileId, 'ogre');
+  assert.deepEqual(renamedOgre.parts, ogre.parts);
+  assert.equal(ENEMY_PROFILE_BY_ID[renamedOgre.enemyProfileId].presentation.scale, 1.25);
 });
 test('rat and bone donor grafts create reusable, equipable player anatomy', () => {
   const r = newRun(554);

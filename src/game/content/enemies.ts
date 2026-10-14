@@ -1,4 +1,4 @@
-import type { ItemDef } from '../types';
+import type { ItemDef, Part, Slot } from '../types';
 import { damage } from './helpers';
 
 // Enemy organs use exactly the same activation/effect vocabulary as equipment.
@@ -75,3 +75,272 @@ export const ENEMY_ITEMS: ItemDef[] = [
     signature: '',
   },
 ];
+
+export interface EnemyProfile {
+  id: string;
+  name: string;
+  cost: number;
+  baseHp: number;
+  power: number;
+  healthFactor?: number;
+  anatomy: { slots: Slot[]; material: Part['variant']; partUidPrefix: string };
+  equipment: { uid: string; slot: Slot; defId: string; level: number }[];
+  presentation: { artKey: string; scale: number };
+}
+
+export const ENEMY_PROFILES: EnemyProfile[] = [
+  {
+    id: 'grave-rat',
+    name: 'Grave rat',
+    cost: 2,
+    baseHp: 420,
+    power: 0.45,
+    anatomy: {
+      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot', 'foot', 'foot'],
+      material: 'rat',
+      partUidPrefix: 'grave-rat',
+    },
+    equipment: [{ uid: 'Grave rat-weapon', slot: 'hand', defId: 'ratbite', level: 1 }],
+    presentation: { artKey: 'grave-rat', scale: 0.91 },
+  },
+  {
+    id: 'skeleton',
+    name: 'Skeleton',
+    cost: 4,
+    baseHp: 1000,
+    power: 1,
+    anatomy: {
+      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'],
+      material: 'bone',
+      partUidPrefix: 'skeleton',
+    },
+    equipment: [{ uid: 'Skeleton-weapon', slot: 'hand', defId: 'skeletonblade', level: 1 }],
+    presentation: { artKey: 'skeleton', scale: 0.91 },
+  },
+  {
+    id: 'ogre',
+    name: 'Ogre',
+    cost: 7,
+    baseHp: 1600,
+    power: 1.1,
+    anatomy: {
+      slots: [
+        'head',
+        'head',
+        'chest',
+        'chest',
+        'heart',
+        'heart',
+        'hand',
+        'hand',
+        'hand',
+        'hand',
+        'foot',
+        'foot',
+      ],
+      material: 'living',
+      partUidPrefix: 'ogre',
+    },
+    equipment: [{ uid: 'Ogre-weapon', slot: 'hand', defId: 'ogrefist', level: 1 }],
+    presentation: { artKey: 'ogre', scale: 1.25 },
+  },
+  {
+    id: 'grave-mage',
+    name: 'Grave mage',
+    cost: 5,
+    baseHp: 750,
+    power: 0.95,
+    anatomy: {
+      slots: ['head', 'head', 'chest', 'heart', 'heart', 'hand', 'hand', 'foot', 'foot'],
+      material: 'necrotic',
+      partUidPrefix: 'grave-mage',
+    },
+    equipment: [{ uid: 'Grave mage-weapon', slot: 'hand', defId: 'magebolt', level: 1 }],
+    presentation: { artKey: 'grave-mage', scale: 0.91 },
+  },
+  {
+    id: 'bone-archer',
+    name: 'Bone archer',
+    cost: 4,
+    baseHp: 800,
+    power: 0.9,
+    anatomy: {
+      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'],
+      material: 'bone',
+      partUidPrefix: 'bone-archer',
+    },
+    equipment: [{ uid: 'Bone archer-weapon', slot: 'hand', defId: 'archershot', level: 1 }],
+    presentation: { artKey: 'bone-archer', scale: 0.91 },
+  },
+  {
+    id: 'iron-knight',
+    name: 'Iron knight',
+    cost: 6,
+    baseHp: 1200,
+    power: 0.85,
+    anatomy: {
+      slots: ['head', 'chest', 'heart', 'hand', 'hand', 'foot', 'foot'],
+      material: 'clockwork',
+      partUidPrefix: 'iron-knight',
+    },
+    equipment: [
+      { uid: 'Iron knight-weapon', slot: 'hand', defId: 'skeletonblade', level: 1 },
+      { uid: 'Iron knight-armour', slot: 'chest', defId: 'plate', level: 2 },
+    ],
+    presentation: { artKey: 'iron-knight', scale: 0.91 },
+  },
+  {
+    id: 'golem',
+    name: 'Golem',
+    cost: 10,
+    baseHp: 2000,
+    power: 1.1,
+    anatomy: {
+      slots: [
+        'head',
+        'chest',
+        'chest',
+        'heart',
+        'heart',
+        'heart',
+        'hand',
+        'hand',
+        'hand',
+        'hand',
+        'foot',
+        'foot',
+        'foot',
+        'foot',
+      ],
+      material: 'clockwork',
+      partUidPrefix: 'golem',
+    },
+    equipment: [
+      { uid: 'Golem-weapon', slot: 'hand', defId: 'ogrefist', level: 1 },
+      { uid: 'Golem-armour', slot: 'chest', defId: 'golemplate', level: 3 },
+    ],
+    presentation: { artKey: 'golem', scale: 0.91 },
+  },
+];
+
+export const CHECKPOINT_ENEMY_PROFILES: EnemyProfile[] = [
+  {
+    id: 'checkpoint-20',
+    name: 'Dr. Sutcher',
+    cost: 0,
+    baseHp: 0,
+    power: 0.69,
+    healthFactor: 1.55,
+    anatomy: {
+      slots: ['head', 'chest', 'hand', 'hand', 'foot', 'foot', 'heart'],
+      material: 'living',
+      partUidPrefix: 'part',
+    },
+    equipment: [
+      { uid: 'boss-20-0', slot: 'hand', defId: 'cleaver', level: 1 },
+      { uid: 'boss-20-1', slot: 'hand', defId: 'shield', level: 1 },
+      { uid: 'boss-20-2', slot: 'chest', defId: 'plate', level: 1 },
+      { uid: 'boss-20-3', slot: 'head', defId: 'horns', level: 1 },
+      { uid: 'boss-20-4', slot: 'foot', defId: 'bloodboots', level: 1 },
+      { uid: 'boss-20-5', slot: 'foot', defId: 'runners', level: 1 },
+      { uid: 'boss-20-6', slot: 'heart', defId: 'heart', level: 1 },
+    ],
+    presentation: { artKey: 'checkpoint-clinician', scale: 0.91 },
+  },
+  {
+    id: 'checkpoint-40',
+    name: 'The Ward Matron',
+    cost: 0,
+    baseHp: 0,
+    power: 0.73,
+    healthFactor: 1.85,
+    anatomy: {
+      slots: ['head', 'chest', 'hand', 'hand', 'foot', 'foot', 'heart'],
+      material: 'living',
+      partUidPrefix: 'part',
+    },
+    equipment: [
+      { uid: 'boss-40-0', slot: 'hand', defId: 'bloodletter', level: 1 },
+      { uid: 'boss-40-1', slot: 'hand', defId: 'knife', level: 1 },
+      { uid: 'boss-40-2', slot: 'chest', defId: 'barbed', level: 1 },
+      { uid: 'boss-40-3', slot: 'head', defId: 'redhat', level: 1 },
+      { uid: 'boss-40-4', slot: 'foot', defId: 'bloodrunner', level: 1 },
+      { uid: 'boss-40-5', slot: 'foot', defId: 'bloodboots', level: 1 },
+      { uid: 'boss-40-6', slot: 'heart', defId: 'vampire', level: 1 },
+    ],
+    presentation: { artKey: 'checkpoint-clinician', scale: 0.91 },
+  },
+  {
+    id: 'checkpoint-60',
+    name: 'Professor Polycard',
+    cost: 0,
+    baseHp: 0,
+    power: 0.77,
+    healthFactor: 2.15,
+    anatomy: {
+      slots: ['head', 'chest', 'hand', 'hand', 'foot', 'foot', 'heart'],
+      material: 'living',
+      partUidPrefix: 'part',
+    },
+    equipment: [
+      { uid: 'boss-60-0', slot: 'hand', defId: 'bonewand', level: 1 },
+      { uid: 'boss-60-1', slot: 'hand', defId: 'stormwand', level: 1 },
+      { uid: 'boss-60-2', slot: 'chest', defId: 'golemplate', level: 1 },
+      { uid: 'boss-60-3', slot: 'head', defId: 'conductor', level: 1 },
+      { uid: 'boss-60-4', slot: 'foot', defId: 'rabbit', level: 1 },
+      { uid: 'boss-60-5', slot: 'foot', defId: 'runners', level: 1 },
+      { uid: 'boss-60-6', slot: 'heart', defId: 'wizardheart', level: 1 },
+    ],
+    presentation: { artKey: 'checkpoint-clinician', scale: 0.91 },
+  },
+  {
+    id: 'checkpoint-80',
+    name: 'The Chief Resident',
+    cost: 0,
+    baseHp: 0,
+    power: 0.81,
+    healthFactor: 2.45,
+    anatomy: {
+      slots: ['head', 'chest', 'hand', 'hand', 'foot', 'foot', 'heart'],
+      material: 'living',
+      partUidPrefix: 'part',
+    },
+    equipment: [
+      { uid: 'boss-80-0', slot: 'hand', defId: 'maul', level: 1 },
+      { uid: 'boss-80-1', slot: 'hand', defId: 'parry', level: 1 },
+      { uid: 'boss-80-2', slot: 'chest', defId: 'donor', level: 1 },
+      { uid: 'boss-80-3', slot: 'head', defId: 'ram', level: 1 },
+      { uid: 'boss-80-4', slot: 'foot', defId: 'spurs', level: 1 },
+      { uid: 'boss-80-5', slot: 'foot', defId: 'octoboot', level: 1 },
+      { uid: 'boss-80-6', slot: 'heart', defId: 'pump', level: 1 },
+    ],
+    presentation: { artKey: 'checkpoint-clinician', scale: 0.91 },
+  },
+  {
+    id: 'checkpoint-100',
+    name: 'The First Patient',
+    cost: 0,
+    baseHp: 0,
+    power: 0.85,
+    healthFactor: 2.75,
+    anatomy: {
+      slots: ['head', 'chest', 'hand', 'hand', 'foot', 'foot', 'heart'],
+      material: 'living',
+      partUidPrefix: 'part',
+    },
+    equipment: [
+      { uid: 'boss-100-0', slot: 'hand', defId: 'saint', level: 1 },
+      { uid: 'boss-100-1', slot: 'hand', defId: 'necrowand', level: 1 },
+      { uid: 'boss-100-2', slot: 'chest', defId: 'donor', level: 1 },
+      { uid: 'boss-100-3', slot: 'head', defId: 'hydra', level: 1 },
+      { uid: 'boss-100-4', slot: 'foot', defId: 'dance', level: 1 },
+      { uid: 'boss-100-5', slot: 'foot', defId: 'plague', level: 1 },
+      { uid: 'boss-100-6', slot: 'heart', defId: 'bloodengine', level: 1 },
+    ],
+    presentation: { artKey: 'checkpoint-clinician', scale: 0.91 },
+  },
+];
+
+export const ENEMY_PROFILE_BY_ID: Record<string, EnemyProfile> = Object.fromEntries(
+  [...ENEMY_PROFILES, ...CHECKPOINT_ENEMY_PROFILES].map((profile) => [profile.id, profile]),
+);
