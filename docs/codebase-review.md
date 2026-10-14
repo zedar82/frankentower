@@ -4,8 +4,8 @@ Reviewed production code at `447803c`, following the project architecture,
 visual direction and UI expectations. Private runtime at this checkpoint is
 1.8.21. The findings are the baseline review; implementation progress and
 remaining work are tracked below. This is not release acceptance. Behavioral
-findings came from the reviewed call paths; physical-device performance still
-needs measurement.
+findings came from the reviewed call paths. A first physical-phone baseline is
+recorded; stress scenarios and a second-device comparison remain open.
 
 ## Assessment
 
@@ -31,8 +31,9 @@ and rendering. Fix the correctness issues below before broad restructuring.
 | Documentation | Architecture, design/visual/UI briefs, handoff and release guidance | Distinguish current guidance from historical checkpoints. |
 
 Historical generation experiments and binary artwork were not exhaustively
-reviewed for visual quality. Dependency versions, RUN service behavior and
-physical phone performance were not audited.
+reviewed for visual quality. Dependency versions and RUN service behavior
+were not audited. Physical performance has only a partial baseline from one
+phone; see the profiling notes below.
 
 ## Priority list
 
@@ -51,6 +52,7 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 | P2 | Handle asset readiness per asset/group | One failed image can disable unrelated artwork or abort the game UI. |
 | P2 | Consolidate responsive styling and display modes | Successive overrides and duplicate breakpoint logic make changes hard to reason about. |
 | P2 | Compile/cache stable build and rendering data | Complete stats and puppet geometry are rebuilt frequently. |
+| P2 | Validate landscape and dense-build performance on a second phone | One Edge 50 Neo sample ran the shop at about 45 fps in landscape at 90 Hz; no dense-build scenario or comparison device was available. |
 | P3 | Give commands structured results and reusable plans | UI, previews and tools need consistent failure reasons and consequences. |
 | P3 | Separate combat events, reports and status attribution | One truncated log currently serves several consumers; Poison remembers only an actor. |
 | P3 | Consolidate review tools and current documentation | Recent capture scripts bypass the portable browser helper; some prose describes obsolete art. |
@@ -70,8 +72,9 @@ Fight completion rejects duplicate terminal calls. Puppet layouts use a
 content-signature cache that detects in-place build edits and geometry
 readiness changes. Combat precomputes stable actor stats. Trunk paths and
 material patterns are cached by their geometry and asset inputs. Arena and
-dressing-room cosmetic loops stop while paused or hidden. The remaining
-validation is physical-device profiling. Chest and heart items now have fitted
+dressing-room cosmetic loops stop while paused or hidden. A first
+physical-device baseline is recorded; complete stress profiling remains open.
+Chest and heart items now have fitted
 front overlays in the modular renderer. Poison uses one shared pool
 with latest-applicator actor credit;
 item-level tick attribution is deferred with item balance. Arena effects now
@@ -89,18 +92,22 @@ combat, dense anatomy poses, pause/resume, dialogs, saved reports and recovery
 paths. Browser regression checks do not substitute for profiling on physical
 phones.
 
-The remaining validation needs representative phones before setting
-performance budgets or prefetch thresholds. The
+The first physical baseline used a Motorola Edge 50 Neo. Portrait shop
+rendering stayed near 60 fps; the landscape shop sample stayed near 45 fps on
+the active 90 Hz display mode. These measurements do not establish a budget.
+The dense anatomy, full-satchel and sustained arena scenarios still need a
+prepared test build, and a second representative phone is needed before
+setting performance budgets or prefetch thresholds. The
 current front-facing breastplate, spiked cuirass and heart assets now use
 catalogue-owned fit envelopes, torso clipping and heart attachment positions;
 the puppet capture covers both chest designs, one and multiple organs, and
 several anatomies. Current arena, shop, clinic and HUD composition now has
 screen-owned stylesheets; shared primitives and materials remain global. This
 CSS extraction improves maintainability but is not visual acceptance. The
-device performance review remains open.
+partial baseline and uncompleted stress scenarios remain open.
 
-The repeatable device scenarios and measurement fields are in
-[`phone-performance-profile.md`](phone-performance-profile.md).
+The repeatable device scenarios, baseline measurements and remaining gaps are
+documented in [`phone-performance-profile.md`](phone-performance-profile.md).
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -588,9 +595,10 @@ profile scale stay fixed.
 
 ## Suggested implementation sequence
 
-This was the original sequence. All code-side stages are implemented; phone
-profiling remains a validation task, and item-balance-dependent attribution
-remains deliberately deferred.
+This was the original sequence. All code-side stages are implemented. A first
+phone baseline is recorded, while dense-build and second-device profiling
+remain validation tasks. Item-balance-dependent attribution remains
+deliberately deferred.
 
 1. Guarantee combat termination; correct diagnostic outcome classification.
 2. Make completed reports accurate after reload; fix factual content prose and

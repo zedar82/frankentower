@@ -1,0 +1,18 @@
+﻿{
+  "captured": "2026-10-14",
+  "commit": "9ea754d",
+  "build": "Vite production build served locally with Vite preview; not the hosted run.world build",
+  "device": "motorola edge 50 neo",
+  "android": "16 (API 36)",
+  "chrome": "155.0.8059.39",
+  "physicalResolution": "2670x1200 landscape",
+  "viewportCssPixels": "1068x418",
+  "devicePixelRatio": 1.5,
+  "activeDisplayMode": "90 Hz",
+  "network": "Wi-Fi",
+  "battery": "84%, charging",
+  "batterySaver": false,
+  "scenario": "Floor 2 Quartermaster shop, landscape",
+  "traceCategories": ["devtools.timeline", "blink.user_timing", "disabled-by-default-devtools.timeline.frame"],
+  "measurementCaveat": "Trace is retained for qualitative inspection. Frame interval measurements were collected separately without tracing."
+}
