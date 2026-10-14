@@ -4,7 +4,7 @@ import { equipped, stats } from './game/anatomy';
 import { advance, finishFight, floorReward, newRun, retire, startRun } from './game/run';
 import { recover, reroll, toggleShopFreeze, upgradeShop } from './game/shop';
 import { canMoveItem, moveItem, purchaseItem } from './game/inventory';
-import { operate } from './game/surgery';
+import { operateResult } from './game/surgery';
 import { encounter } from './game/encounters';
 import { type Build, type Item, type Save, type Slot } from './game/types';
 import { hasOffensiveAbility } from './game/abilities';
@@ -606,11 +606,12 @@ export function App({ initialSave }: { initialSave: Save }) {
           onManage={() => manage()}
           onContinue={finishLab}
           onOperate={(id) => {
-            if (operate(run, id)) {
+            const result = operateResult(run, id);
+            if (result.ok) {
               sound('surgery', save.settings.sound);
               notify('Procedure complete.');
               update('procedure');
-            }
+            } else notify(result.reason);
           }}
         />
       )}

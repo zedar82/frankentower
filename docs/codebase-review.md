@@ -410,6 +410,15 @@ existing modules. `finishFight` now accepts calls only during combat and returns
 whether it applied a terminal result; duplicate callbacks cannot award rewards
 or records again.
 
+**Implementation:** surgery now builds one `procedurePlan` for anatomy changes,
+equipment displacement and eligibility. The patient preview, availability
+message and operation consume the same projected removal set. Procedure stock
+uses an explicit `stock` access context that skips visit, phase, gold and satchel
+constraints while preserving anatomical validity checks. `operateResult` gives
+the caller a clear failure message or the removed and displaced IDs; the App
+shows failed command reasons. Inventory command results and shared plan objects
+remain open.
+
 ### Events, reports and attribution
 
 `Combat.log()` keeps only 400 entries, but Report promises a complete transcript.

@@ -4,13 +4,26 @@ import { clone, SATCHEL_CAPACITY, type Part, type Procedure, type Run } from './
 import { Random } from './random';
 import { nextUid } from './run-id';
 
-export function procedurePreview(run: Run, p: Procedure) {
+export type ProcedureAccess = 'player' | 'stock';
+export type ProcedurePlan = {
+  build: Run['build'];
+  removed: Part[];
+  displaced: NonNullable<Part['item']>[];
+  reason: string | null;
+};
+
+/** One validated projection is shared by availability, preview and execution. */
+export function procedurePlan(
+  run: Run,
+  p: Procedure,
+  access: ProcedureAccess = 'player',
+): ProcedurePlan {
   const build = clone(run.build);
   const removed: Part[] = [];
   for (const remove of p.remove ?? [])
     for (let i = 0; i < remove.count; i++) {
       const candidates = build.parts.filter((part) => part.slot === remove.slot);
-      const part = candidates.find((part) => !part.item) ?? candidates[candidates.length - 1];
+      const part = candidates.find((candidate) => !candidate.item) ?? candidates[candidates.length - 1];
       if (!part) continue;
       removed.push(part);
       build.parts = build.parts.filter((candidate) => candidate.uid !== part.uid);
@@ -22,31 +35,48 @@ export function procedurePreview(run: Run, p: Procedure) {
         slot: add.slot,
         variant: add.variant ?? 'living',
       });
-  return { build, removed, displaced: removed.flatMap((part) => (part.item ? [part.item] : [])) };
+  const displaced = removed.flatMap((part) => (part.item ? [part.item] : []));
+  let reason: string | null = null;
+  if (access === 'player' && run.operated) reason = 'One procedure per visit.';
+  else if (access === 'player' && run.gold < p.price) reason = 'Insufficient gold.';
+  else if (access === 'player' && (run.phase !== 'build' || run.floor % 5 !== 0))
+    reason = 'Surgery opens every five floors.';
+  for (const remove of p.remove ?? [])
+    if (!reason && count(run.build, remove.slot) < remove.count)
+      reason = `Requires ${remove.count} ${remove.slot} slots.`;
+  if (!reason && !canFunction(build)) reason = 'A living head or ganglion controller is required.';
+  if (
+    !reason &&
+    access === 'player' &&
+    run.stash.length + displaced.length > SATCHEL_CAPACITY
+  )
+    reason = `Free ${run.stash.length + displaced.length - SATCHEL_CAPACITY} satchel space(s) for displaced equipment.`;
+  return { build, removed, displaced, reason };
 }
 
-export function procedureReason(run: Run, p: Procedure, ignoreMoney = false) {
-  if (!ignoreMoney && run.operated) return 'One procedure per visit.';
-  if (!ignoreMoney && run.gold < p.price) return 'Insufficient gold.';
-  if (!ignoreMoney && (run.phase !== 'build' || run.floor % 5 !== 0))
-    return 'Surgery opens every five floors.';
-  for (const remove of p.remove ?? [])
-    if (count(run.build, remove.slot) < remove.count)
-      return `Requires ${remove.count} ${remove.slot} slots.`;
-  const preview = procedurePreview(run, p);
-  if (!canFunction(preview.build)) return 'A living head or ganglion controller is required.';
-  if (!ignoreMoney && run.stash.length + preview.displaced.length > SATCHEL_CAPACITY)
-    return `Free ${run.stash.length + preview.displaced.length - SATCHEL_CAPACITY} satchel space(s) for displaced equipment.`;
-  return null;
+export function procedurePreview(run: Run, p: Procedure) {
+  const { build, removed, displaced } = procedurePlan(run, p);
+  return { build, removed, displaced };
 }
-export function operate(run: Run, id: string) {
-  const p = PROCEDURES.find((p) => p.id === id);
-  if (!p || !run.procedures.includes(id) || procedureReason(run, p)) return false;
+
+export function procedureReason(run: Run, p: Procedure, access: ProcedureAccess = 'player') {
+  return procedurePlan(run, p, access).reason;
+}
+
+export type ProcedureResult =
+  | { ok: true; removedPartUids: string[]; displacedItemUids: string[] }
+  | { ok: false; reason: string };
+
+export function operateResult(run: Run, id: string): ProcedureResult {
+  const p = PROCEDURES.find((procedure) => procedure.id === id);
+  if (!p || !run.procedures.includes(id))
+    return { ok: false, reason: 'This procedure is no longer available.' };
+  const plan = procedurePlan(run, p);
+  if (plan.reason) return { ok: false, reason: plan.reason };
   const before = stats(run.build).maxHp;
-  const preview = procedurePreview(run, p);
-  run.stash.push(...preview.displaced);
+  run.stash.push(...plan.displaced);
   run.build.parts = run.build.parts.filter(
-    (part) => !preview.removed.some((removed) => removed.uid === part.uid),
+    (part) => !plan.removed.some((removed) => removed.uid === part.uid),
   );
   for (const add of p.add ?? [])
     for (let i = 0; i < add.count; i++)
@@ -56,13 +86,21 @@ export function operate(run: Run, id: string) {
   run.surgeries++;
   const max = stats(run.build).maxHp;
   run.hp = Math.max(1, Math.min(max, run.hp + max - before));
-  return true;
+  return {
+    ok: true,
+    removedPartUids: plan.removed.map((part) => part.uid),
+    displacedItemUids: plan.displaced.map((item) => item.uid),
+  };
+}
+
+export function operate(run: Run, id: string) {
+  return operateResult(run, id).ok;
 }
 
 export function refreshProcedures(run: Run) {
   const rng = new Random(run.rng);
   const procedures = PROCEDURES.filter(
-    (p) => p.minFloor <= run.floor && procedureReason(run, p, true) === null,
+    (p) => p.minFloor <= run.floor && procedureReason(run, p, 'stock') === null,
   );
   const available = [...procedures];
   const choices: string[] = [];

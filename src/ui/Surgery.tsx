@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ITEM_MAP, PROCEDURES } from '../game/content';
 import { stats, SLOT_PLURAL } from '../game/anatomy';
-import { procedurePreview, procedureReason } from '../game/surgery';
+import { procedurePlan } from '../game/surgery';
 import { SATCHEL_CAPACITY, type Run } from '../game/types';
 import { DressingRoom } from './Arena';
 import { PagedText, Tabs } from './Paging';
@@ -24,10 +24,11 @@ export function Surgery({
   const [section, setSection] = useState<'Changes' | 'Procedure' | 'Patient'>('Patient');
   const [bodyView, setBodyView] = useState<'Current' | 'Proposed'>('Current');
   const p = PROCEDURES.find((p) => p.id === id);
-  const preview = p && !run.operated ? procedurePreview(run, p) : null;
+  const plan = p ? procedurePlan(run, p) : null;
+  const preview = plan && !run.operated ? plan : null;
   const before = stats(run.build),
     after = preview ? stats(preview.build) : before;
-  const reason = p ? procedureReason(run, p) : 'No procedures available.';
+  const reason = plan?.reason ?? (p ? null : 'No procedures available.');
   const changes =
     p && !run.operated
       ? [

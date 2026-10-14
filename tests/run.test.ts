@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { advance, defaultSave, finishFight, newRun, retire, startRun } from '../src/game/run';
 import { reroll, toggleShopFreeze } from '../src/game/shop';
 import { buy, combine, equip, purchaseItem, unequip } from '../src/game/inventory';
-import { operate, procedurePreview, procedureReason } from '../src/game/surgery';
+import { operate, operateResult, procedurePlan, procedurePreview, procedureReason } from '../src/game/surgery';
 import { encounter } from '../src/game/encounters';
 import { RULESET, SATCHEL_CAPACITY, clone } from '../src/game/types';
 import { PROCEDURES } from '../src/game/content';
@@ -85,12 +85,26 @@ test('surgery preview and capacity validation use the same removal selection', (
   }));
   const procedure = PROCEDURES.find((p) => p.id === 'amputate')!;
   const preview = procedurePreview(run, procedure);
+  const plan = procedurePlan(run, procedure);
   assert.equal(preview.removed[0].uid, hands[1].uid);
   assert.equal(preview.displaced[0].uid, 'second-knife');
+  assert.equal(plan.removed[0].uid, preview.removed[0].uid);
+  assert.equal(plan.displaced[0].uid, preview.displaced[0].uid);
   const before = clone(run);
   assert.match(procedureReason(run, procedure)!, /satchel/);
+  assert.deepEqual(operateResult(run, 'amputate'), {
+    ok: false,
+    reason: procedureReason(run, procedure),
+  });
   assert.equal(operate(run, 'amputate'), false);
   assert.deepEqual(run, before);
+  run.phase = 'combat';
+  run.operated = true;
+  run.gold = 0;
+  assert.equal(procedurePlan(run, procedure, 'stock').reason, null);
+  run.phase = 'build';
+  run.operated = false;
+  run.gold = 100;
   run.stash.pop();
   assert.equal(operate(run, 'amputate'), true);
   assert.equal(run.stash.length, SATCHEL_CAPACITY);
