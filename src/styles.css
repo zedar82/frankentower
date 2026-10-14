@@ -164,6 +164,7 @@ canvas,
   color: var(--mint);
 }
 .app-shell {
+  font-family: Georgia, 'Times New Roman', serif;
   height: 100dvh;
   width: 100%;
   max-width: 1600px;
@@ -187,6 +188,9 @@ canvas,
   background-size:
     160px 86px,
     160px 43px;
+}
+.boot-screen {
+  font-family: Georgia, 'Times New Roman', serif;
 }
 .main-header {
   display: flex;

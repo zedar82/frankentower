@@ -1,0 +1,72 @@
+/* Shared in-game header, resource bars and combat belt treatment. */
+@layer workshop {
+.main-header {
+  display: flex;
+  min-height: 44px;
+  padding: 0;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.main-header::before {
+  display: none;
+}
+.main-header .journey {
+  margin-left: 0;
+  gap: 6px;
+  font-size: var(--type-body);
+}
+.main-header .journey .pixel-icon,
+.main-header .journey > span {
+  display: inline-block;
+}
+.main-header .floor-label {
+  font-size: inherit;
+}
+.main-header .floor-label::before {
+  content: none;
+}
+.main-header .header-tools {
+  margin-left: auto;
+}
+.main-header .gold {
+  position: static;
+  font-size: 16px;
+}
+.main-header .save-status {
+  display: block;
+  position: static;
+  max-width: 64px;
+  font-size: 10px;
+  line-height: 1.1;
+  white-space: normal;
+}
+.app-notice:empty {
+  display: none;
+}
+.combat-vitals > div {
+  padding: 4px 6px;
+  font-size: 13px;
+}
+.combat-vitals .health-label {
+  margin-top: 2px;
+  font-size: 11px;
+}
+.combat-vitals .meter.health {
+  height: 6px;
+  margin-top: 3px;
+}
+.combat-vitals .mana-line {
+  margin-top: 3px;
+  gap: 2px;
+}
+.combat-vitals .mana-line .meter {
+  height: 4px;
+  margin: 0;
+}
+.combat-belt {
+  background: transparent;
+  border-top: 1px solid #856440;
+}
+}

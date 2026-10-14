@@ -63,7 +63,8 @@ build-time content validation, static combat previews, session/combat/navigation
 controllers and a shared display-mode subscription. The development ruleset is
 now `frankentower-4`. Per-asset readiness, modular geometry validation and
 visible-screen image loading are implemented. Obsolete shop selector branches
-have been removed; screen-by-screen CSS regrouping remains. The item
+are removed. HUD, shop and clinic composition now have separate stylesheets;
+further responsive/material regrouping remains. The item
 presentation catalogue now covers every equipment slot. Fight completion
 rejects duplicate terminal calls. Puppet layouts use a content-signature cache
 that detects in-place build edits and geometry readiness changes. Combat
@@ -414,7 +415,9 @@ two-by-two offer grid no longer compete with the live workshop layout. Further
 screen-by-screen regrouping is still open. Clinic layout and clinic-specific
 phone/short-landscape compositions now live in `src/ui-clinic.css`, loaded in
 the same `workshop` cascade layer; the shop-specific screen rules remain in
-`src/ui-workshop.css`.
+`src/ui-shop.css`. The shared in-game header and combat HUD overrides are now
+isolated in `src/ui-hud.css`; shell typography and boot-button material rules
+live with the base and material layers.
 
 Use the current browser/zoom/safe-area coverage as the regression gate for
 each extraction. Do not treat CSS cleanup as visual acceptance. Pagination's

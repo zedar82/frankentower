@@ -12,6 +12,12 @@
     url('/ui/quartermaster-scene-v1.png') center / cover no-repeat;
   text-shadow: 1px 1px #08070c;
 }
+.boot-screen > button {
+  background-image: url('/ui/button-timber-v1.png');
+  font:
+    bold 14px/1.2 Georgia,
+    serif;
+}
 .main-header,
 .iron-panel,
 .modal,
