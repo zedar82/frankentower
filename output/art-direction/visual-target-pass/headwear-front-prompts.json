@@ -5,6 +5,9 @@
     "model": "gemini-3.1-flash-image-preview",
     "reference": "public/ui/quartermaster-scene-v1.png",
     "output": "output/art-direction/visual-target-pass/sources/horned-crown-front-v2.png",
+    "aspectRatio": "1:1",
+    "removeBackground": true,
+    "backgroundRemoval": "birefnet",
     "prompt": "Use case: stylized-concept. Asset type: ONE transparent-ready FRONT OVERLAY for worn headgear in a frontal grotesque cartoon pixel-art game. The one reference is STYLE ONLY: match rich handcrafted pixel clusters, dark contours, worn materials and warm highlights. Draw ONLY the VISIBLE FRONT of a horned iron forehead band: a continuous broad dark iron horizontal strip with bronze rivets, a small pale bone ornament at its centre, two chunky ivory horns curving upward/outward at its ends. Treat this as an appliqué cutout placed OVER a character's forehead, not a standalone wearable object. Straight-on orthographic front elevation, camera at forehead height, zero top-down perspective. The front strip is fully opaque and solid from left to right; gently curved top and bottom outlines, approximately 5 times wider than the strip's own height. Horns rise above it. No rear half, no back rim, no visible inside, no hollow ring, no ellipse, no oval opening, no bowl, no top surface or top rim. Canvas square; total silhouette including horns fills about80 percent width and36 percent height, centred with ample white margins. Forehead attachment point is the upper edge of the central iron strip beneath the ornament. Fine detailed full-resolution pixel art, crisp stepped edges, no blur or low-resolution thumbnail upscale. Plain WHITE background for removal. No wearer, head, face, skin, eyes, torso, neck, hands, hood, mask, cheek guards, cast shadow, text, diagram, labels or UI frame. Exactly one connected front overlay. Do not draw the hidden rear of the headgear."
   },
   {
@@ -13,6 +16,9 @@
     "model": "gemini-3.1-flash-image-preview",
     "reference": "public/ui/quartermaster-scene-v1.png",
     "output": "output/art-direction/visual-target-pass/sources/bandaged-headband-front-v2.png",
+    "aspectRatio": "1:1",
+    "removeBackground": true,
+    "backgroundRemoval": "birefnet",
     "prompt": "Use case: stylized-concept. Asset type: ONE transparent-ready FRONT OVERLAY for worn headgear in a frontal grotesque cartoon pixel-art game. The one reference is STYLE ONLY: match rich handcrafted pixel clusters, dark contours, textured materials and warm highlights. Draw ONLY the VISIBLE FRONT of a cloth medical forehead band: one broad continuous opaque horizontal strip of layered off-white bandages, tan stitches, restrained frayed edges, a small RED CROSS patch centred on the front. Treat it as an appliqué cutout placed OVER a character's forehead, not a standalone wearable object. Straight-on orthographic front elevation, camera at forehead height, zero top-down perspective. Gently curved upper and lower outlines, slightly tapered ends, approximately4.5 times wider than high. The strip is opaque and solid across its ENTIRE width, with NO hole through it. No rear half, no back rim, no visible inside, no hollow ring, no ellipse, no oval opening, no bowl, no top surface or top rim, no rolled circular cuff. Canvas square; strip fills about80 percent width and18 percent height, centred with ample white margins. Forehead attachment point is the upper edge of the band at centre. Fine detailed full-resolution pixel art, crisp stepped edges, no blur or low-resolution thumbnail upscale. Plain WHITE background for removal. No wearer, head, face, skin, eyes, torso, neck, hands, cap dome, hood, mask, cheek guards, cast shadow, lettering, diagram, labels or UI frame. Exactly one connected front overlay. Do not draw the hidden rear of the headgear."
   }
 ]

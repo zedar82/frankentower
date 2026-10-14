@@ -485,10 +485,12 @@ necessary.
 **Implementation:** modular-body and footwear capture scripts now share
 `browser-support.mjs` for browser selection, local URL configuration and
 artifact-directory configuration. Their prior fixed Chrome executable paths
-and separate default Vite ports are removed. README now describes direct graft
-joins, optional material mismatch, front-only gear and the current stalemate
-rule. The dated production roadmap remains a historical checkpoint. The RUN
-generator runner/manifest still needs consolidation.
+and separate default Vite ports are removed. Current UI and visual-target-pass
+RUN launchers share a validated image-manifest runner with configurable CLI and
+project ID; historical art-study generators remain preserved. README now
+describes direct graft joins, optional material mismatch, front-only gear and
+the current stalemate rule. The dated production roadmap remains a historical
+checkpoint.
 
 ## Suggested implementation sequence
 

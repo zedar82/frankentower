@@ -4,5 +4,9 @@
   "model": "gemini-3.1-flash-image-preview",
   "quotedCredits": 165,
   "reference": "public/ui/quartermaster-scene-v1.png",
+  "output": "public/ui/display-stage-v1.png",
+  "aspectRatio": "3:2",
+  "removeBackground": true,
+  "backgroundRemoval": "birefnet",
   "prompt": "Use case: stylized-concept. ONE isolated reusable stone display plinth for FRANKENTOWER's grotesque cartoon pixel-art creature builder. The single image is STYLE ONLY: match its finely detailed handcrafted dark fantasy stone, wood and iron pixel-art density and warm lantern lighting. Do not copy the room or counter. NEW asset: a wide low roughly oval/octagonal raised dungeon platform made from three shallow tiers of chunky worn grey-purple stone slabs, top surface dark and flat enough for a creature to stand on, chipped edges, a few copper/iron corner fasteners, subtle warm highlights on stone lip. Frontal low orthographic game view, top of plinth visible as a shallow oval, no dramatic perspective. Entire isolated object centred with generous margin, width about80% canvas, height about45% canvas, top standing plane around40% canvas height and base near75% height. Crisp small pixel clusters, rich controlled material texture, stepped outline. Plain WHITE background for removal; NO surrounding room, wall, floor, cast shadow, candle, skull, plant, creature, body part, text, guide, icon or user-interface frame. Landscape3:2. This is a stage prop, not a whole illustration."
 }

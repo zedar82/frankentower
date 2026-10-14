@@ -50,9 +50,19 @@ size, DPR and nearest-neighbour sampling.
    Failed body-part trials are documented in [the RUN study](../run-generation-study/README.md).
 
 Exact RUN manifests: [stage](run-stage-prompt.json), [timber](run-timber-prompt.json).
-The corresponding `generate-stage.mjs` and `generate-timber.mjs` demonstrate CLI
-arguments and skip existing files. Author a new manifest/output for a new asset.
-`RUNDOT_EXECUTABLE` can override the installed Windows CLI location.
+The stage, timber and visual-target-pass launchers share
+`scripts/run-rundot-image-manifest.mjs`. It validates each complete manifest
+before launching, skips existing outputs, supports one job or a job list, and
+reads the CLI from `RUNDOT_EXECUTABLE` (default: `rundot` on `PATH`). Validate
+without spending credits with:
+
+```sh
+node scripts/run-rundot-image-manifest.mjs output/art-direction/ui-pass/run-stage-prompt.json --validate-only
+```
+
+Manifests retain the prompt, model, reference, output, quoted estimate and date;
+set `FRANKENTOWER_RUN_GAME_ID` only when targeting a different RUN project. Use
+a new versioned output for retries.
 
 [Earlier built-in provenance](prior-prompts.json) records the source filenames.
 The scene prompt was recovered from the subsequent trial manifest. Complete

@@ -6,10 +6,14 @@ not replacement concept screenshots. Status and acceptance remain in
 
 ## Repeatable RUN workflow
 
-Run from the repository root, with an authenticated RUN CLI. The runners accept
-`RUNDOT_EXECUTABLE` to select the CLI installed on another machine. They use
-production game `mjkCVhrId815cvHaoaqj` for asset generation; they do not publish.
-No credentials or private preview links are included here.
+Run from the repository root, with an authenticated RUN CLI. The wrappers use
+`scripts/run-rundot-image-manifest.mjs`; it validates every job before launching,
+preserves each prompt's model/reference/output/background-removal settings, and
+skips outputs already on disk. Set `RUNDOT_EXECUTABLE` if `rundot` is not on
+`PATH`; `FRANKENTOWER_RUN_GAME_ID` overrides the default production game ID.
+Generation does not publish the game. No credentials or private preview links
+are included here. Validate a manifest without spending credits with
+`node scripts/run-rundot-image-manifest.mjs <manifest.json> --validate-only`.
 
 1. Author a versioned prompt manifest. Supply only
    `public/ui/quartermaster-scene-v1.png` as the **style** reference, rather than

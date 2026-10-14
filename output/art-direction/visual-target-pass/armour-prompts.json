@@ -5,6 +5,9 @@
     "model": "gemini-3.1-flash-image-preview",
     "reference": "public/ui/quartermaster-scene-v1.png",
     "output": "output/art-direction/visual-target-pass/sources/iron-breastplate-v2.png",
+    "aspectRatio": "1:1",
+    "removeBackground": true,
+    "backgroundRemoval": "birefnet",
     "prompt": "Use case: stylized-concept. One isolated inventory illustration of a worn IRON BREASTPLATE for a grotesque cartoon dark fantasy pixel-art dungeon game. The one reference image is STYLE ONLY: match its finely detailed handcrafted pixel clusters, warm torch highlights, battered material texture and stepped outlines; do not copy the room. NEW wearable torso armour, front view, symmetrical readable vest silhouette, curved dull steel chest plates, short segmented shoulder guards, dark brown leather fastening straps, bronze rivets, small scratches and dents, an empty neck opening. Grey iron should dominate, with warm edge reflections and dark seams. It must read instantly as manufactured metal protection, not flesh, a body part or a heap of scraps. Entire item centred, occupying about 80% of a square canvas with clear margins. Plain WHITE background for removal. No wearer, arms, head, hands, legs, stand, skull face, eye, blood, text, UI border, numbers, cast shadow or composition guides. No smooth vector gradients or photographic rendering."
   },
   {
@@ -13,6 +16,9 @@
     "model": "gemini-3.1-flash-image-preview",
     "reference": "public/ui/quartermaster-scene-v1.png",
     "output": "output/art-direction/visual-target-pass/sources/spiked-cuirass-v2.png",
+    "aspectRatio": "1:1",
+    "removeBackground": true,
+    "backgroundRemoval": "birefnet",
     "prompt": "Use case: stylized-concept. One isolated inventory illustration of a SPIKED CUIRASS for a grotesque cartoon dark fantasy pixel-art dungeon game. The one reference image is STYLE ONLY: match its finely detailed handcrafted pixel clusters, warm torch highlights, battered material texture and stepped outlines; do not copy the room. NEW wearable torso armour, front view, clear balanced vest silhouette with dark oxblood/burgundy leather and curved rusty metal plates, thick pale bone spikes projecting from both shoulder edges and several shorter spikes on the chest, bone-coloured edge binding, dark straps and old iron clasps. It is grotesque protective equipment, with humour in its exaggerated spikes. Make the red leather, pale bone and rusty metal clearly distinguishable. Entire item centred, occupying about 80% of a square canvas with clear margins. Plain WHITE background for removal. No wearer, head, limbs, hands, organ, eye, face, living body, stand, text, UI border, numbers, cast shadow or composition guides. No smooth vector gradients or photographic rendering."
   }
 ]
