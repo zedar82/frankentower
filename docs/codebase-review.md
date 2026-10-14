@@ -58,12 +58,12 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 ### Implementation status
 
 Implemented and committed locally: terminal stalemate victories, locked action
-targeting, saved completed-fight reports, corrected balance diagnostics and
-build-time content validation. The development ruleset is now
-`frankentower-4`. Static combat previews and one shared display-mode
-subscription are in progress. Session/controller ownership, art
-catalogues/readiness, CSS consolidation and render/stat performance remain
-planned work.
+targeting, saved completed-fight reports, corrected balance diagnostics,
+build-time content validation, static combat previews and one shared display-
+mode subscription. The development ruleset is now `frankentower-4`. Per-asset
+readiness and modular geometry validation are also implemented locally.
+Session/controller ownership, unified art catalogues, retryable asset loading,
+CSS consolidation and render/stat performance remain planned work.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -284,18 +284,26 @@ icons are not currently a worn chest renderer.
 `src/art/modular-puppet.ts:64`, `src/ui/Creature.tsx:29`,
 `src/ui/Arena.tsx:39–49`, `src/main.tsx:125`.
 
-All item images and modular parts participate in combined decode promises.
-A failed unrelated image prevents modular readiness; derived rejected promises
-can reach the global recovery screen. Four shop/clinic backgrounds share a
-single readiness flag, so one failed clinic background hides available shop
-backgrounds. Merely returning false from a painter is not a complete recovery
-path if the combined readiness promise already rejected.
+At review time, all item images and modular parts participated in combined
+decode promises. A failed unrelated image prevented modular readiness; derived
+rejected promises could reach the global recovery screen. Four shop/clinic
+backgrounds shared a single readiness flag, so one failed clinic background
+hid available shop backgrounds. Merely returning false from a painter was not
+a complete recovery path if the combined readiness promise had already rejected.
 
 Use a shared loader keyed by asset URL with explicit loading/ready/error state,
 named diagnostics, per-scene essentials, sensible optional fallbacks and a
 targeted retry. Multiple footwear aliases can share one decoded asset. Validate
 files and metadata before deployment, and prioritize assets needed for the
 current screen. Keep an honest failure view for indispensable assets.
+
+**Implementation:** item-image readiness now settles per file so one missing
+optional icon uses its existing pixel fallback without rejecting the whole
+group. Quartermaster and clinic backgrounds track readiness independently.
+Modular geometry is validated for finite dimensions and required head crown,
+arm grip, leg sole/ankle and root landmarks. A failed optional body sprite logs
+its asset name and draws a material-colored fallback block; the geometry file
+remains essential. A shared URL cache and targeted retry are still future work.
 
 ## 9. Responsive styling and display modes — P2
 

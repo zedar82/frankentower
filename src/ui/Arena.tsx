@@ -37,17 +37,14 @@ const portraitClinic = new Image();
 portraitClinic.src = `${import.meta.env.BASE_URL}ui/clinic-alcove-v1.png`;
 const landscapeClinic = new Image();
 landscapeClinic.src = `${import.meta.env.BASE_URL}ui/clinic-alcove-landscape-v1.png`;
-let alcoveReady = false;
-void Promise.all([
-  portraitAlcove.decode(),
-  landscapeAlcove.decode(),
-  portraitClinic.decode(),
-  landscapeClinic.decode(),
-])
-  .then(() => {
-    alcoveReady = true;
-  })
-  .catch(() => {});
+let portraitAlcoveReady = false,
+  landscapeAlcoveReady = false,
+  portraitClinicReady = false,
+  landscapeClinicReady = false;
+void portraitAlcove.decode().then(() => (portraitAlcoveReady = true)).catch(() => {});
+void landscapeAlcove.decode().then(() => (landscapeAlcoveReady = true)).catch(() => {});
+void portraitClinic.decode().then(() => (portraitClinicReady = true)).catch(() => {});
+void landscapeClinic.decode().then(() => (landscapeClinicReady = true)).catch(() => {});
 let displayStageReady = false;
 void displayStage
   .decode()
@@ -418,14 +415,22 @@ export function DressingRoom({
       c!.clearRect(0, 0, 320, height);
       c!.imageSmoothingEnabled = false;
       if (embedded) {
+        const landscape = height < 260;
+        const alcove = surgery
+          ? landscape
+            ? landscapeClinic
+            : portraitClinic
+          : landscape
+            ? landscapeAlcove
+            : portraitAlcove;
+        const alcoveReady = surgery
+          ? landscape
+            ? landscapeClinicReady
+            : portraitClinicReady
+          : landscape
+            ? landscapeAlcoveReady
+            : portraitAlcoveReady;
         if (alcoveReady) {
-          const alcove = surgery
-            ? height < 260
-              ? landscapeClinic
-              : portraitClinic
-            : height < 260
-              ? landscapeAlcove
-              : portraitAlcove;
           const roomHeight = (320 * alcove.naturalHeight) / alcove.naturalWidth;
           c!.drawImage(alcove, 0, ground + 35 * stageScale - roomHeight * 0.93, 320, roomHeight);
         }

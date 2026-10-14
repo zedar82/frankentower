@@ -156,9 +156,11 @@ const variantImages = Object.fromEntries(
     return [id, image];
   }),
 ) as Record<string, HTMLImageElement>;
-export const itemArtReady = Promise.all(
+// Optional item art resolves independently. Draw helpers already use the
+// pixel fallback for a missing image, so one bad file must not block others.
+export const itemArtReady = Promise.allSettled(
   [...Object.values(itemImages), ...Object.values(variantImages)].map((image) => image.decode()),
-);
+).then(() => undefined);
 
 function sourceRect(image: HTMLImageElement, variant: string): [number, number, number, number] {
   return presentationVariants[variant]?.crop ?? [0, 0, image.naturalWidth, image.naturalHeight];

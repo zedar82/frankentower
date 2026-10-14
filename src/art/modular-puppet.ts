@@ -61,23 +61,53 @@ for (const material of ['flesh', 'fur', 'bone', 'metal', 'scales']) {
   for (const n of [0, 1, 2])
     for (const direction of ['in', 'out']) names.push(`taper-${n}-${direction}-${material}`);
 }
-export const modularReady = Promise.all([
-  itemArtReady,
-  fetch(`${base}geometry.json`)
-    .then((r) => {
-      if (!r.ok) throw new Error('Missing modular geometry');
-      return r.json();
-    })
-    .then((value) => {
-      geometry = value;
-    }),
-  ...names.map((name) => {
-    const image = new Image();
-    images.set(name, image);
-    image.src = `${base}${name}.png`;
-    return image.decode();
-  }),
-]).then(() => {
+function validateGeometry(value: unknown): asserts value is Record<string, Contract> {
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    throw new Error('Invalid modular geometry: expected an asset catalogue.');
+  const entries = value as Record<string, unknown>;
+  for (const name of names) {
+    const entry = entries[name] as Contract | undefined;
+    if (!entry) throw new Error(`Invalid modular geometry: missing ${name}.`);
+    for (const key of ['width', 'height', 'rasterScale'] as const)
+      if (!Number.isFinite(entry[key]) || entry[key] <= 0)
+        throw new Error(`Invalid modular geometry: ${name}.${key} must be positive and finite.`);
+    const point = (value: Point | undefined, role: string) => {
+      if (
+        !value ||
+        !Number.isFinite(value.x) ||
+        !Number.isFinite(value.y) ||
+        value.x < 0 ||
+        value.y < 0 ||
+        value.x > entry.width ||
+        value.y > entry.height
+      )
+        throw new Error(`Invalid modular geometry: ${name} has an invalid ${role} landmark.`);
+    };
+    point(entry.root, 'root');
+    if (name.startsWith('head-')) point(entry.crown, 'crown');
+    if (name.startsWith('arm-')) point(entry.end, 'grip');
+    if (name.startsWith('leg-')) {
+      point(entry.end, 'sole');
+      point(entry.ankle, 'ankle');
+    }
+  }
+}
+const geometryReady = fetch(`${base}geometry.json`).then((r) => {
+  if (!r.ok) throw new Error(`Unable to load modular geometry (${r.status}).`);
+  return r.json();
+}).then((value: unknown) => {
+  validateGeometry(value);
+  geometry = value;
+});
+const imageReady = names.map((name) => {
+  const image = new Image();
+  images.set(name, image);
+  image.src = `${base}${name}.png`;
+  return image.decode().catch(() => {
+    console.warn(`Optional modular image failed to load: ${name}.`);
+  });
+});
+export const modularReady = Promise.all([itemArtReady, geometryReady, ...imageReady]).then(() => {
   ready = true;
 });
 
@@ -237,13 +267,21 @@ function sprite(
   flipX = false,
   flipY = false,
 ) {
-  const image = images.get(name)!;
-  const frame = geometry[name];
+  const image = images.get(name),
+    frame = geometry[name];
+  if (!frame) return false;
   c.save();
   c.translate(Math.round(x), Math.round(y));
   c.scale(flipX ? -1 : 1, flipY ? -1 : 1);
-  c.drawImage(image, 0, 0, frame.width, frame.height);
+  if (image?.complete && image.naturalWidth) c.drawImage(image, 0, 0, frame.width, frame.height);
+  else {
+    c.fillStyle = '#51434a';
+    c.fillRect(0, 0, frame.width, frame.height);
+    c.fillStyle = '#79656a';
+    c.fillRect(3, 3, Math.max(1, frame.width - 6), Math.max(1, frame.height - 6));
+  }
   c.restore();
+  return true;
 }
 function limb(
   c: CanvasRenderingContext2D,
@@ -254,8 +292,9 @@ function limb(
   coverFoot = false,
 ) {
   const name = asset(part),
-    image = images.get(name)!,
+    image = images.get(name),
     g = geometry[name];
+  if (!g) return;
   c.save();
   c.translate(j.pin.x, j.pin.y);
   c.filter = materialFilter(part.variant);
@@ -274,7 +313,23 @@ function limb(
     c.rect(end.x - g.root.x - 10, end.y - g.root.y - 9, 20, 20);
     c.clip();
   }
-  c.drawImage(image, -g.root.x, -g.root.y, g.width, g.height);
+  if (image?.complete && image.naturalWidth) c.drawImage(image, -g.root.x, -g.root.y, g.width, g.height);
+  else {
+    const material =
+      part.variant === 'bone' || part.variant === 'necrotic'
+        ? '#a89978'
+        : part.variant === 'clockwork'
+          ? '#9a8a68'
+          : part.variant === 'serpent'
+            ? '#78916d'
+            : part.variant === 'rat'
+              ? '#8a634a'
+              : '#c97f75';
+    c.fillStyle = '#493940';
+    c.fillRect(-g.root.x, -g.root.y, g.width, g.height);
+    c.fillStyle = material;
+    c.fillRect(-g.root.x + 3, -g.root.y + 3, Math.max(1, g.width - 6), Math.max(1, g.height - 6));
+  }
   c.restore();
 }
 function trunk(c: CanvasRenderingContext2D, build: Build, layout: PuppetLayout) {
