@@ -33,6 +33,8 @@ const base = `${import.meta.env.BASE_URL}grotesque/modular-v2/`;
 const images = new Map<string, HTMLImageElement>();
 let geometry: Record<string, Contract> = {};
 let ready = false;
+let geometryRevision = 0;
+const layoutCache = new WeakMap<Build, { key: string; layout: PuppetLayout }>();
 const names = [
   'head-rat',
   'head-lizard',
@@ -98,6 +100,7 @@ const geometryReady = fetch(`${base}geometry.json`).then((r) => {
 }).then((value: unknown) => {
   validateGeometry(value);
   geometry = value;
+  geometryRevision++;
 });
 const imageReady = names.map((name) => {
   const image = new Image();
@@ -175,6 +178,16 @@ function widthAt(upper: number, lower: number, height: number, y: number) {
   return upper + (lower - upper) * t * t * (3 - 2 * t);
 }
 export function modularLayout(build: Build, resting = false): PuppetLayout {
+  // Builds are edited in place, so identity alone is not a safe cache key.
+  // The signature contains every field used by the layout and attachment bounds.
+  const key = `${geometryRevision}|${resting ? 1 : 0}|${build.parts
+    .map((part) => {
+      const icon = part.item ? ITEM_MAP[part.item.defId]?.icon ?? '' : '';
+      return `${part.slot}:${part.variant}:${icon}`;
+    })
+    .join('|')}`;
+  const cached = layoutCache.get(build);
+  if (cached?.key === key) return cached.layout;
   const hands = select(build, 'hand'),
     heads = select(build, 'head'),
     feet = select(build, 'foot');
@@ -257,7 +270,9 @@ export function modularLayout(build: Build, resting = false): PuppetLayout {
     width: right - left + 8,
     height: bottom - top + 8,
   };
-  return { torso, arms, legs, heads: necks, bounds };
+  const layout = { torso, arms, legs, heads: necks, bounds };
+  layoutCache.set(build, { key, layout });
+  return layout;
 }
 function sprite(
   c: CanvasRenderingContext2D,

@@ -63,7 +63,9 @@ build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
 Session/controller ownership, unified art catalogues, retryable asset loading,
-CSS consolidation and render/stat performance remain planned work.
+CSS consolidation and compiled combat stats remain planned work. Puppet layout
+now has a content-signature cache that handles in-place build edits and geometry
+readiness changes; profiling and broader render optimization remain.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -353,6 +355,13 @@ membership and base physiology. Keep Mana-dependent hearts and runtime modifiers
 as explicit dynamic inputs. Cache resolved art/layout/bounds/patterns by a build
 revision and asset-catalogue revision. Current builds mutate in place, so a cache
 keyed only by Build object identity would be wrong after equipment or surgery.
+
+**Implementation:** modular puppet layouts now cache by the current ordered part
+slots, variants and held-item icon profiles, plus resting mode and geometry
+revision. This captures in-place anatomy/equipment changes and the transition
+from fallback to loaded geometry. Broader compiled-stat caching, camera/render
+work reduction, cosmetic scheduling changes and representative-device profiling
+remain open; no performance budget is claimed yet.
 
 Separate static room drawing from animated feedback, and honor visibility/host
 pause in cosmetic scheduling. Profile representative phones and dense/many-limb
