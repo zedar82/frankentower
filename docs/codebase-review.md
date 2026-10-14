@@ -62,7 +62,7 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-Session/controller ownership, unified art catalogues, retryable asset loading,
+Session/controller ownership, the full art catalogue, retryable asset loading,
 CSS consolidation, full compiled combat stats and structured command results
 remain planned work. Fight completion now rejects repeated calls after the
 combat phase. Puppet layout has a content-signature cache that handles in-place
@@ -282,6 +282,13 @@ Keep the accepted direct joins, front-only headwear/footwear, capped tapers,
 optional asymmetry and unrestricted material colors. Torso/organ equipment
 should gain defined interfaces before further art is generated; accepted chest
 icons are not currently a worn chest renderer.
+
+**Implementation:** held art now resolves each content item ID into one
+presentation containing its icon-based grip, axis, frame and hand layer plus
+its item-specific image and crop. Drawing, bounds and hand-overlap order use
+that same resolver, and authored hand items fail fast if their icon has no held
+profile. Crown, footwear, torso and organ profiles and generator links remain
+to be consolidated.
 
 ## 8. Asset loading and recovery — P2
 

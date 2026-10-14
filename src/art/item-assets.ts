@@ -1,3 +1,5 @@
+import { ITEM_MAP } from '../game/content';
+
 const itemFiles = {
   dagger: 'dagger.png',
   club: 'club.png',
@@ -77,6 +79,19 @@ const heldAttachments = {
 } satisfies Partial<Record<ItemIconName, HeldAttachment>>;
 type HeldIcon = keyof typeof heldAttachments;
 const attachment = (name: string): HeldAttachment | undefined => heldAttachments[name as HeldIcon];
+type HeldProfile = { icon: ItemIconName; attachment: HeldAttachment };
+// Resolve held geometry from the content ID once. Bounds and drawing then use
+// the same icon profile, including when a content item has its own image.
+const heldByItemId = new Map<string, HeldProfile>();
+for (const item of Object.values(ITEM_MAP)) {
+  if (item.slot !== 'hand') continue;
+  const profile = attachment(item.icon);
+  if (!profile) throw new Error(`Missing held presentation profile for ${item.id} (${item.icon}).`);
+  heldByItemId.set(item.id, {
+    icon: item.icon as ItemIconName,
+    attachment: profile,
+  });
+}
 const base = `${import.meta.env.BASE_URL}grotesque/items/`;
 // Inventory pictures use the same accepted silhouettes as the assembled creature.
 const modularBase = `${import.meta.env.BASE_URL}grotesque/modular-v2/`;
@@ -165,6 +180,19 @@ export const itemArtReady = Promise.allSettled(
 function sourceRect(image: HTMLImageElement, variant: string): [number, number, number, number] {
   return presentationVariants[variant]?.crop ?? [0, 0, image.naturalWidth, image.naturalHeight];
 }
+type ResolvedHeldPresentation = HeldProfile & {
+  image: HTMLImageElement;
+  source: [number, number, number, number];
+};
+function heldPresentation(name: string, itemId = ''): ResolvedHeldPresentation | undefined {
+  const profile = heldByItemId.get(itemId) ?? (() => {
+    const fallback = attachment(name);
+    return fallback ? { icon: name as ItemIconName, attachment: fallback } : undefined;
+  })();
+  if (!profile) return undefined;
+  const image = variantImages[itemId] ?? heldImages[profile.icon];
+  return { ...profile, image, source: sourceRect(image, itemId) };
+}
 
 // A front-only shoe replaces the hidden bare foot, instead of centring an icon
 // on top of its toes. Uniform scaling fits the 28px leg pitch without collisions.
@@ -250,9 +278,10 @@ function heldTransform(profile: HeldAttachment) {
     );
   return { grip, angle, scale: profile.size / Math.max(profile.frame.x, profile.frame.y) };
 }
-export function heldItemCorners(name: string): Point[] {
-  const profile = attachment(name);
-  if (!profile) return [];
+export function heldItemCorners(name: string, itemId = ''): Point[] {
+  const presentation = heldPresentation(name, itemId);
+  if (!presentation) return [];
+  const profile = presentation.attachment;
   const { grip, angle, scale } = heldTransform(profile);
   return [0, profile.frame.x].flatMap((x) =>
     [0, profile.frame.y].map((y) => ({
@@ -261,8 +290,8 @@ export function heldItemCorners(name: string): Point[] {
     })),
   );
 }
-export function heldHandLayer(name: string) {
-  return attachment(name)?.handLayer ?? 'front';
+export function heldHandLayer(name: string, itemId = '') {
+  return heldPresentation(name, itemId)?.attachment.handLayer ?? 'front';
 }
 export function drawHeldItem(
   c: CanvasRenderingContext2D,
@@ -271,9 +300,9 @@ export function drawHeldItem(
   y: number,
   variant = '',
 ) {
-  const profile = attachment(name);
-  if (!profile) return false;
-  const image = variantImages[variant] ?? heldImages[name as ItemIconName];
+  const presentation = heldPresentation(name, variant);
+  if (!presentation) return false;
+  const { attachment: profile, image, source } = presentation;
   if (!image?.complete || !image.naturalWidth) return false;
   const { grip, angle, scale } = heldTransform(profile);
   c.save();
@@ -284,7 +313,7 @@ export function drawHeldItem(
   c.filter = filterFor(variant);
   c.drawImage(
     image,
-    ...sourceRect(image, variant),
+    ...source,
     -grip.x,
     -grip.y,
     profile.frame.x,

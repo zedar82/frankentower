@@ -249,7 +249,8 @@ export function modularLayout(build: Build, resting = false): PuppetLayout {
         }
       if (hands[j.index].item) {
         const grip = g.end ?? { x: 64, y: 78 };
-        const corners = heldItemCorners(ITEM_MAP[hands[j.index].item!.defId].icon);
+        const heldItem = hands[j.index].item!;
+        const corners = heldItemCorners(ITEM_MAP[heldItem.defId].icon, heldItem.defId);
         for (const point of corners) {
           const x = grip.x - g.root.x + point.x,
             y = grip.y - g.root.y + point.y;
@@ -523,7 +524,7 @@ export function drawModularPuppet(
       gy = end.y - g.root.y;
     drawHeldItem(c, def.icon, gx, gy, p.item.defId);
     c.restore();
-    if (heldHandLayer(def.icon) === 'front') limb(c, p, j, angle, true);
+    if (heldHandLayer(def.icon, p.item.defId) === 'front') limb(c, p, j, angle, true);
   }
   c.restore();
   return true;
