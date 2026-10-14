@@ -403,9 +403,10 @@ revision. This captures in-place anatomy/equipment changes and the transition
 from fallback to loaded geometry. Combat actors also cache the two stable capacity
 totals that vary with mana; each step applies the live capacity modifier and
 recomputes circulation efficiency from current load. Stat effects still perform
-a full recalculation when needed. Camera/render work reduction, cosmetic
-scheduling changes and representative-device profiling remain open; no
-performance budget is claimed yet.
+a full recalculation when needed. Arena rendering now resolves each build's
+layout once per frame and reuses bounds/torso for camera fit, target buttons,
+shield rings and health bars. Device profiling and cosmetic scheduling changes
+remain open; no performance budget is claimed yet.
 
 Separate static room drawing from animated feedback, and honor visibility/host
 pause in cosmetic scheduling. Profile representative phones and dense/many-limb

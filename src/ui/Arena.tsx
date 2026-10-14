@@ -192,16 +192,32 @@ export function Arena({
         subjects = alive.length ? alive : sim.actors;
       const renderScale = (a: CombatView['actors'][number]) =>
         a.side === 'player' ? 1.1 : /Ogre|Brute/.test(a.build.name) ? 1.25 : 0.91;
+      const frameLayouts = new Map<Build, ReturnType<typeof puppetLayout>>();
+      const layoutFor = (build: Build) => {
+        let layout = frameLayouts.get(build);
+        if (!layout) {
+          layout = puppetLayout(build);
+          frameLayouts.set(build, layout);
+        }
+        return layout;
+      };
+      const subjectBounds = subjects.map((actor) => ({
+        actor,
+        bounds: layoutFor(actor.build).bounds,
+        scale: renderScale(actor),
+      }));
       const minX = Math.min(
-          ...subjects.map((a) => a.x + puppetBounds(a.build).left * renderScale(a)),
-        ),
-        maxX = Math.max(...subjects.map((a) => a.x + puppetBounds(a.build).right * renderScale(a)));
+        ...subjectBounds.map(({ actor, bounds, scale }) => actor.x + bounds.left * scale),
+      );
+      const maxX = Math.max(
+        ...subjectBounds.map(({ actor, bounds, scale }) => actor.x + bounds.right * scale),
+      );
       const minY = Math.min(
-          ...subjects.map((a) => a.y + puppetBounds(a.build).top * renderScale(a)),
-        ),
-        maxY = Math.max(
-          ...subjects.map((a) => a.y + puppetBounds(a.build).bottom * renderScale(a)),
-        );
+        ...subjectBounds.map(({ actor, bounds, scale }) => actor.y + bounds.top * scale),
+      );
+      const maxY = Math.max(
+        ...subjectBounds.map(({ actor, bounds, scale }) => actor.y + bounds.bottom * scale),
+      );
       const left = small ? minX : Math.min(0, minX - 8),
         right = small ? maxX : Math.max(640, maxX + 8),
         top = small ? minY : Math.min(0, minY - 8),
@@ -218,7 +234,7 @@ export function Arena({
         .forEach((button, i) => {
           const a = alive[i];
           if (a) {
-            const b = puppetLayout(a.build).torso,
+            const b = layoutFor(a.build).torso,
               s = renderScale(a);
             button.style.left = `${(((a.x + (b.x + b.w / 2) * s) * zoom + ox) / w) * 100}%`;
             button.style.top = `${(((a.y + (b.y + b.h / 2) * s) * zoom + oy) / h) * 100}%`;
@@ -265,7 +281,7 @@ export function Arena({
         });
         if (a.hp <= 0) continue;
         if (a.shield > 0) {
-          const body = puppetLayout(a.build).torso;
+          const body = layoutFor(a.build).torso;
           for (let i = 0; i < 20; i++) {
             const t = (i * Math.PI) / 10;
             rect(
@@ -278,7 +294,7 @@ export function Arena({
             );
           }
         }
-        const barY = a.y + puppetBounds(a.build).top * scale - 3,
+        const barY = a.y + layoutFor(a.build).bounds.top * scale - 3,
           bw = a.side === 'player' ? 52 : 37;
         rect(c!, a.x - bw / 2 - 1, barY - 1, bw + 2, 5, '#14141a');
         rect(
