@@ -34,6 +34,7 @@ import { Surgery } from './ui/Surgery';
 import { Help, Hall, Catalogue, Report, Starter } from './ui/Reference';
 import { PagedText, useDisplayMode } from './ui/Paging';
 import { useRunSession } from './useRunSession';
+import { useCombatSession } from './useCombatSession';
 
 const SHOP_ACTIONS = { reroll, upgrade: upgradeShop, recover, freeze: toggleShopFreeze };
 type FlowStep = 'log' | 'lab' | 'shop' | null;
@@ -68,8 +69,6 @@ export function App({ initialSave }: { initialSave: Save }) {
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState('');
   const [fightError, setFightError] = useState<string | null>(null);
-  const pauseRef = useRef(paused);
-  pauseRef.current = paused;
   const isCombat = run.phase === 'combat';
   const isEnd = ['dead', 'retired', 'complete'].includes(run.phase);
   const nextEnemies = encounter(run.floor, run.seed, save.legacy);
@@ -175,122 +174,47 @@ export function App({ initialSave }: { initialSave: Save }) {
     const timer = setTimeout(() => setToast(''), 3200);
     return () => clearTimeout(timer);
   }, [toast]);
-  useEffect(() => {
-    let frame = 0,
-      last = performance.now(),
-      accumulator = 0,
-      lastRender = 0,
-      lastSound = 0,
-      freezeUntil = 0,
-      lastImpact = 0,
-      lastFreeze = 0;
-    let observed: Combat | null = null;
-    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const recoverFight = (message: string) => {
-      const current = saveRef.current.run!;
-      telemetry('simulation_failed', {
-        seed: current.seed,
-        floor: current.floor,
-        message: message.slice(0, 256),
-      });
-      // The run still contains the pre-fight HP, inventory, and currency.
-      current.phase = 'build';
-      combatRef.current = null;
-      previewRef.current = null;
-      accumulator = 0;
-      setPaused(false);
-      setFlowStep('shop');
-      setFightError(message);
-      void persist(saveRef.current);
-      refresh();
-    };
-    const tick = (now: number) => {
-      const delta = Math.min((now - last) / 1000, 0.15);
-      last = now;
-      const current = saveRef.current.run!,
-        combat = combatRef.current;
-      if (combat !== observed) {
-        observed = combat;
-        accumulator = 0;
-        lastSound = 0;
-        lastImpact = 0;
-        freezeUntil = 0;
-      }
-      if (
-        current.phase === 'combat' &&
-        combat &&
-        !pauseRef.current &&
-        !hostPaused() &&
-        !document.hidden
-      ) {
-        if (now >= freezeUntil) accumulator += delta * saveRef.current.settings.speed;
-        while (accumulator >= 0.05 && !combat.done) {
-          try {
-            combat.step(0.05);
-          } catch (error) {
-            recoverFight(error instanceof Error ? error.message : 'Combat could not continue.');
-            frame = requestAnimationFrame(tick);
-            return;
-          }
-          accumulator -= 0.05;
-        }
-        const hits = combat.logs
-          .slice(-24)
-          .filter((l) => l.kind === 'damage' && l.id > lastImpact && (l.value ?? 0) > 0);
-        if (hits.length) {
-          const heavy = hits.some((l) => l.attack === 'heavy');
-          if (combat.time - lastSound > 0.18) {
-            sound(heavy ? 'heavy' : 'hit', saveRef.current.settings.sound);
-            lastSound = combat.time;
-          }
-          if (
-            !reducedMotion &&
-            now - lastFreeze > 220 &&
-            hits.some((l) => l.attack === 'heavy' && (l.value ?? 0) >= 1200)
-          ) {
-            freezeUntil = now + 55;
-            lastFreeze = now;
-            accumulator = 0;
-          }
-          lastImpact = hits[hits.length - 1].id;
-        }
-        if (combat.failure) {
-          recoverFight(combat.failure);
-          frame = requestAnimationFrame(tick);
-          return;
-        }
-        if (combat.done) {
-          accumulator = 0;
-          current.lastReport = combat.completedReport(
-            current.floor,
-            current.seed ^ (current.floor * 15485863),
-          );
-          finishFight(current, combat.player.hp, combat.won, saveRef.current);
-          sound(combat.won ? 'win' : 'lose', saveRef.current.settings.sound);
-          telemetry('fight_complete', {
-            floor: current.floor,
-            won: combat.won,
-            duration: combat.time,
-            damage: combat.player.damage,
-            healing: combat.player.healing,
-            suppressed: combat.suppressed,
-            equipment: equipped(current.build)
-              .map((x) => `${x.item.defId}:${x.item.level}`)
-              .join(','),
-            anatomy: current.build.parts.map((p) => `${p.slot}:${p.variant}`).join(','),
-          });
-          void persist(saveRef.current);
-          refresh();
-        } else if (now - lastRender > 70) {
-          lastRender = now;
-          refresh();
-        }
-      } else accumulator = 0;
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const recoverFight = (message: string) => {
+    const current = saveRef.current.run!;
+    telemetry('simulation_failed', {
+      seed: current.seed,
+      floor: current.floor,
+      message: message.slice(0, 256),
+    });
+    // The run still contains the pre-fight HP, inventory, and currency.
+    current.phase = 'build';
+    combatRef.current = null;
+    previewRef.current = null;
+    setPaused(false);
+    setFlowStep('shop');
+    setFightError(message);
+    void persist(saveRef.current);
+    refresh();
+  };
+  const completeFight = (combat: Combat) => {
+    const current = saveRef.current.run!;
+    current.lastReport = combat.completedReport(
+      current.floor,
+      current.seed ^ (current.floor * 15485863),
+    );
+    finishFight(current, combat.player.hp, combat.won, saveRef.current);
+    sound(combat.won ? 'win' : 'lose', saveRef.current.settings.sound);
+    telemetry('fight_complete', {
+      floor: current.floor,
+      won: combat.won,
+      duration: combat.time,
+      damage: combat.player.damage,
+      healing: combat.player.healing,
+      suppressed: combat.suppressed,
+      equipment: equipped(current.build)
+        .map((entry) => `${entry.item.defId}:${entry.item.level}`)
+        .join(','),
+      anatomy: current.build.parts.map((part) => `${part.slot}:${part.variant}`).join(','),
+    });
+    void persist(saveRef.current);
+    refresh();
+  };
+  useCombatSession({ combatRef, saveRef, paused, refresh, onFailure: recoverFight, onComplete: completeFight });
   useEffect(() => {
     if (
       run.phase === 'result' ||

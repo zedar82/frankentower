@@ -62,7 +62,7 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-Session/controller ownership, CSS consolidation,
+Navigation/outcome ownership, CSS consolidation,
 full compiled combat stats and structured command results remain planned work.
 The item presentation catalogue now covers every equipment slot. Fight
 completion now rejects repeated calls after the combat phase. Puppet layout has
@@ -256,8 +256,10 @@ instantiate Combat only for a fight or an explicit simulation study.
 are exposed through a read-only `CombatView`. Rendering a preview no longer
 constructs the combat engine or runs start reactions. `useRunSession` now owns
 the mutable save/run reference, missing-run initialization, React refresh,
-persistence scheduling and common action analytics. App still owns navigation,
-the combat clock and fight feedback; the broader controller extraction remains.
+persistence scheduling and common action analytics. `useCombatSession` owns the
+fixed-step clock, pause/visibility checks and hit feedback. App still owns
+navigation and game-specific recovery/completion callbacks; those transitions
+remain the next controller boundary.
 
 ## 7. One presentation catalogue — P2
 
