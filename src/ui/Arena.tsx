@@ -19,20 +19,14 @@ import { isImageAssetReady, requestImageAsset } from '../art/asset-loader';
 
 const assetUrl = (path: string) => `${import.meta.env.BASE_URL}ui/${path}`;
 const arenaSceneryUrl = assetUrl('arena-chamber-v1.png');
-const arenaScenery = requestImageAsset(arenaSceneryUrl, 'arena scenery');
 // Measured floor landmarks register generated scenery to the unchanged combat ellipse.
 const ARENA_ART_FLOOR = { cx: 0.5, cy: 0.604, rx: 0.395, ry: 0.307 };
 
 const displayStageUrl = assetUrl('display-step-v2.png');
-const displayStage = requestImageAsset(displayStageUrl, 'display stage');
 const portraitAlcoveUrl = assetUrl('quartermaster-alcove-v2.png');
-const portraitAlcove = requestImageAsset(portraitAlcoveUrl, 'quartermaster portrait alcove');
 const landscapeAlcoveUrl = assetUrl('quartermaster-alcove-landscape-v2.png');
-const landscapeAlcove = requestImageAsset(landscapeAlcoveUrl, 'quartermaster landscape alcove');
 const portraitClinicUrl = assetUrl('clinic-alcove-v1.png');
-const portraitClinic = requestImageAsset(portraitClinicUrl, 'clinic portrait alcove');
 const landscapeClinicUrl = assetUrl('clinic-alcove-landscape-v1.png');
-const landscapeClinic = requestImageAsset(landscapeClinicUrl, 'clinic landscape alcove');
 
 function text(c: Pen, value: string, x: number, y: number, colour: string, size = 10) {
   c.font = `bold ${size}px monospace`;
@@ -155,6 +149,7 @@ export function Arena({
   useEffect(() => {
     const c = canvas.current?.getContext('2d');
     if (!c) return;
+    const arenaScenery = requestImageAsset(arenaSceneryUrl, 'arena scenery');
     const backdrop = document.createElement('canvas');
     backdrop.width = ARENA.width;
     backdrop.height = ARENA.height;
@@ -380,6 +375,7 @@ export function DressingRoom({
   useEffect(() => {
     const c = canvas.current?.getContext('2d');
     if (!c) return;
+    const stage = embedded ? requestImageAsset(displayStageUrl, 'display stage') : undefined;
     const bg = document.createElement('canvas');
     bg.width = 320;
     bg.height = 340;
@@ -430,27 +426,24 @@ export function DressingRoom({
       c!.imageSmoothingEnabled = false;
       if (embedded) {
         const landscape = height < 260;
-        const alcove = surgery
+        const alcoveUrl = surgery
           ? landscape
-            ? landscapeClinic
-            : portraitClinic
+            ? landscapeClinicUrl
+            : portraitClinicUrl
           : landscape
-            ? landscapeAlcove
-            : portraitAlcove;
-        const alcoveReady = surgery
-          ? landscape
-            ? isImageAssetReady(landscapeClinicUrl)
-            : isImageAssetReady(portraitClinicUrl)
-          : landscape
-            ? isImageAssetReady(landscapeAlcoveUrl)
-            : isImageAssetReady(portraitAlcoveUrl);
-        if (alcoveReady) {
+            ? landscapeAlcoveUrl
+            : portraitAlcoveUrl;
+        const alcove = requestImageAsset(
+          alcoveUrl,
+          surgery ? 'clinic alcove' : 'quartermaster alcove',
+        );
+        if (isImageAssetReady(alcoveUrl)) {
           const roomHeight = (320 * alcove.naturalHeight) / alcove.naturalWidth;
           c!.drawImage(alcove, 0, ground + 35 * stageScale - roomHeight * 0.93, 320, roomHeight);
         }
-        if (isImageAssetReady(displayStageUrl))
+        if (stage && isImageAssetReady(displayStageUrl))
           c!.drawImage(
-            displayStage,
+            stage,
             64,
             303,
             1136,

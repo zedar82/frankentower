@@ -2,10 +2,10 @@
 
 Reviewed production code at `447803c`, following the project architecture,
 visual direction and UI expectations. Private runtime at this checkpoint is
-1.8.21. This is a source review and improvement plan, not implementation or
-release acceptance. No tests, balance campaigns, browser checks or performance
-benchmarks were run for this review. Behavioral findings below come from the
-current call paths; performance recommendations still need measurements.
+1.8.21. The findings are the baseline review; implementation progress and
+remaining work are tracked below. This is not release acceptance. Behavioral
+findings came from the reviewed call paths; physical-device performance still
+needs measurement.
 
 ## Assessment
 
@@ -59,16 +59,18 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 
 Implemented and committed locally: terminal stalemate victories, locked action
 targeting, saved completed-fight reports, corrected balance diagnostics,
-build-time content validation, static combat previews and one shared display-
-mode subscription. The development ruleset is now `frankentower-4`. Per-asset
-readiness and modular geometry validation are also implemented locally.
-CSS selector consolidation remains planned work.
-The item presentation catalogue now covers every equipment slot. Fight
-completion now rejects repeated calls after the combat phase. Puppet layout has
-a content-signature cache that handles in-place
-build edits and geometry readiness changes. Combat now precomputes each actor's
-mana-positive and mana-depleted capacity, avoiding full stat reconstruction on
-every simulation step; broader profiling and render optimization remain.
+build-time content validation, static combat previews, session/combat/navigation
+controllers and a shared display-mode subscription. The development ruleset is
+now `frankentower-4`. Per-asset readiness, modular geometry validation and
+visible-screen image loading are implemented. Obsolete shop selector branches
+have been removed; screen-by-screen CSS regrouping remains. The item
+presentation catalogue now covers every equipment slot. Fight completion
+rejects duplicate terminal calls. Puppet layouts use a content-signature cache
+that detects in-place build edits and geometry readiness changes. Combat
+precomputes stable actor stats. Arena and dressing-room cosmetic loops stop
+while paused or hidden. Remaining work includes physical-device profiling,
+generator metadata, worn torso/organ renderers and source-credit policy for
+combined statuses.
 
 ## 1. Combat can continue indefinitely — P1
 
@@ -339,8 +341,9 @@ checks the readiness of the individual backdrop it needs; body and item drawing
 retain their local fallbacks. A focused loader test verifies the original URL,
 failure state, cache-busted retry and successful reuse. Runtime loading now
 prioritizes visible content. Modular geometry remains an essential startup
-dependency; body-part, torso-material and item images load on first draw and use
-local fallbacks while pending or after optional failure. Creature and item
+dependency; body-part, torso-material and item images load on first draw, while
+arena and shop/clinic scene art loads only when that scene is mounted. Images
+use local fallbacks while pending or after optional failure. Creature and item
 canvases subscribe to loader changes and coalesce redraws into animation frames.
 Art-study tools retain explicit bulk preparation so review boards still wait for
 complete catalogues. Device profiling and a measured prefetch policy remain open.
