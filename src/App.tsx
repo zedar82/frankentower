@@ -36,6 +36,7 @@ import { PagedText, useDisplayMode } from './ui/Paging';
 import { useRunSession } from './useRunSession';
 import { useCombatSession } from './useCombatSession';
 import { useRunNavigation } from './ui/useRunNavigation';
+import { useAppOverlay } from './ui/useAppOverlay';
 
 const SHOP_ACTIONS = { reroll, upgrade: upgradeShop, recover, freeze: toggleShopFreeze };
 export function App({ initialSave }: { initialSave: Save }) {
@@ -46,20 +47,22 @@ export function App({ initialSave }: { initialSave: Save }) {
   });
   const { screen: flowStep, enterCombat, enterNextFloor, finishClinic, resetForNewRun, returnToShop } =
     useRunNavigation(run.phase, run.floor, initialSave.run?.phase);
-  const [modal, setModal] = useState<
-    'help' | 'hall' | 'catalogue' | 'report' | 'new' | 'settings' | null
-  >(null);
-  const [selected, setSelected] = useState<Item | null>(null);
-  const [equipment, setEquipment] = useState<{
-    slot?: Slot;
-    item?: Item;
-    view?: 'Slots' | 'Satchel';
-  } | null>(null);
+  const {
+    overlay,
+    modal,
+    selected,
+    equipment,
+    inspected,
+    fightError,
+    setModal,
+    setSelected,
+    setEquipment,
+    setInspected,
+    setFightError,
+  } = useAppOverlay();
   const { compact } = useDisplayMode();
-  const [inspected, setInspected] = useState<Build | null>(null);
   const [paused, setPaused] = useState(false);
   const [toast, setToast] = useState('');
-  const [fightError, setFightError] = useState<string | null>(null);
   const isCombat = run.phase === 'combat';
   const isEnd = ['dead', 'retired', 'complete'].includes(run.phase);
   const nextEnemies = encounter(run.floor, run.seed, save.legacy);
@@ -214,11 +217,7 @@ export function App({ initialSave }: { initialSave: Save }) {
           e.target instanceof Element &&
           e.target.closest('button, a, input, select, textarea, [role="dialog"]')
         ) &&
-        !modal &&
-        !fightError &&
-        !selected &&
-        !equipment &&
-        !inspected &&
+        !overlay &&
         run.phase !== 'start'
       ) {
         e.preventDefault();

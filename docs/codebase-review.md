@@ -46,7 +46,7 @@ work. P3 means a smaller follow-up or an extension point to prepare when needed.
 | P2 | Define targeting across an activation | Follow-up effects can silently switch opponents after a kill. |
 | P2 | Correct balance diagnostics | Floor 100 losses count as completions; failures and blocked purchases skew results. |
 | P2 | Validate content and derive factual descriptions | Procedure prose already contradicts its data. |
-| P2 | Extract run/session and combat controllers | App still owns overlay state and game-specific recovery/completion callbacks. |
+| P2 | Extract run/session and combat controllers | App still owns game-specific recovery/completion callbacks. |
 | P2 | Create one validated presentation catalogue | Drawing, bounds, loading and generators currently maintain overlapping contracts. |
 | P2 | Handle asset readiness per asset/group | One failed image can disable unrelated artwork or abort the game UI. |
 | P2 | Consolidate responsive styling and display modes | Successive overrides and duplicate breakpoint logic make changes hard to reason about. |
@@ -62,7 +62,7 @@ targeting, saved completed-fight reports, corrected balance diagnostics,
 build-time content validation, static combat previews and one shared display-
 mode subscription. The development ruleset is now `frankentower-4`. Per-asset
 readiness and modular geometry validation are also implemented locally.
-Navigation/outcome ownership, CSS consolidation, full compiled combat stats,
+Recovery/completion ownership, CSS consolidation, full compiled combat stats,
 and complete inventory command results/plans remain planned work.
 The item presentation catalogue now covers every equipment slot. Fight
 completion now rejects repeated calls after the combat phase. Puppet layout has
@@ -262,8 +262,10 @@ game-specific recovery/completion callbacks. `useRunNavigation` owns the
 primary-screen state and phase synchronization. It deliberately restores a
 saved build to the shop after reload; clinic navigation remains transient, and
 the saved `operated` rule still prevents repeating surgery. App continues to
-connect user intents to these boundaries; consolidating overlay ownership and
-moving recovery/completion callbacks remain open.
+connect user intents to these boundaries. `useAppOverlay` stores modal, item,
+equipment, build-inspection and fight-recovery views as one exclusive union;
+item paging remains local to its inspector. Moving recovery/completion callbacks
+out of App remains open.
 
 ## 7. One presentation catalogue — P2
 
