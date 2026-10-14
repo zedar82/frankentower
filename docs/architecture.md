@@ -84,6 +84,23 @@ have selectors rather than damage amounts. Add a new primitive to that union
 and the effect executor only when the existing vocabulary cannot express a
 rule. Do not dispatch by item names, anatomy names, or set names inside combat.
 
+### Planned action targeting contract
+
+The agreed 14 October targeting policy is recorded in `design.txt` and the
+codebase review; it is not implemented yet. Items declare single, fixed-count
+or area/radius targeting. Select a target set once when an action is made and
+keep it through completion. Damage/status follow-ups never replace a dead target
+or add actors that enter an already selected area. Owner-directed support
+effects retain their owner. New triggered actions acquire their own target sets.
+
+Implement this in the shared ability vocabulary for equipment, limbs and sets,
+with an action context holding selected actor IDs and any spatial area origin.
+Actor targeting and ability selectors are separate concepts. Resolve effects,
+pending strikes and visual feedback from the same context. Whirlwinds around
+the actor and explosions around an impact point are intended area examples.
+Commitment timing, acquisition rules and impact-time reach checks still need
+explicit decisions; none should silently retarget an action.
+
 ## Invariants and verification
 
 - All randomness goes through the seeded `Random` instance. Definition order

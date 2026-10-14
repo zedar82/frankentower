@@ -126,15 +126,30 @@ with a preferred ID because `target()` falls back when that opponent is dead.
 The original reach check was against A. This is an implicit target policy,
 not a runtime reproduction performed during this review.
 
-**Recommendation:** distinguish target acquisition for a new activation from
-target resolution inside it. Give an activation a target context and define
-whether subsequent effects stop, remain attached to that target, or explicitly
-retarget. New triggered activations may still acquire another living enemy.
-Keep all-target effects and own-hit reactions on the same engine.
+**Agreed policy — 14 October:** each item declares single, fixed-count or
+area/radius targeting. Daniel confirmed that range means a spatial area.
+Targets are selected once when an action is made, then locked through its
+completion. All hostile effects in that action use that target set; a dead
+target is not replaced, and actors entering an area later are not added.
+Whirlwinds centred on the wielder and magical explosions around a chosen impact
+point are desired examples. Owner-directed support effects retain their owner.
 
-**Future regression:** a damage-plus-status ability kills A with B outside
-reach; its follow-up follows the documented policy. Preserve sibling ancestry
-and own-hit behavior while changing this boundary.
+**Recommendation:** add the targeting contract to shared ability definitions so
+equipment, limbs and sets stay on one engine. Store an action context containing
+the selected actor IDs and, for area attacks, the chosen spatial origin/radius.
+Use that context for effects, pending strikes, feedback and reports. A newly
+triggered action acquires its own targets without mutating its parent's set or
+ancestry. Separate hostile-target queries from ability selectors.
+
+The exact commitment moment relative to windup/contact, acquisition ordering,
+available-count behavior, and reach/movement checks remain to be settled during
+implementation. A range check may invalidate a hit according to that policy;
+it must not substitute a different actor. Runtime behavior has not yet changed.
+
+**Future regression:** a damage-plus-status ability kills A and does not apply
+its follow-up to B. Fixed-count and area attacks retain their selected sets when
+targets die or other actors enter the area. New triggered actions acquire their
+own sets. Preserve sibling ancestry and own-hit behavior through these changes.
 
 ## 4. Balance output needs correction before tuning — P2
 
