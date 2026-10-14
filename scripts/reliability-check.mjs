@@ -182,9 +182,34 @@ try {
   await page.getByRole('heading', { name: 'Your appointment was interrupted.' }).waitFor();
   await page.getByRole('button', { name: 'Reconnect' }).click();
   await page.getByRole('button', { name: 'To the arena →' }).waitFor();
+  // An ordinary player death must complete through the same lifecycle and save
+  // a truthful report, rather than being handled as a simulation failure.
+  await page.evaluate(async () => {
+    const { Combat } = await import('/src/game/combat.ts');
+    Combat.prototype.step = function () {
+      this.player.hp = 0;
+      this.done = true;
+      this.won = false;
+      this.outcome = 'defeat';
+    };
+  });
+  const beforeDefeat = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem('frankentower-save-v1')),
+  );
+  await page.getByRole('button', { name: /To the arena/ }).click();
+  await page.getByText('PATIENT LOST', { exact: true }).waitFor();
+  const defeated = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem('frankentower-save-v1')),
+  );
+  assert.equal(defeated.run.phase, 'dead');
+  assert.equal(defeated.run.hp, 0);
+  assert.equal(defeated.run.lastReport.outcome, 'defeat');
+  assert.equal(defeated.records.length, beforeDefeat.records.length + 1);
+  await page.getByRole('button', { name: /View battle log/ }).click();
+  await page.getByText('Patient died', { exact: false }).waitFor();
   assert.deepEqual(unexpected, []);
   console.log(
-    'PASS: corrupt-save recovery, automatic/manual write retry, coalescing, pre-fight replay, budget/exception recovery, runtime/promise/render crashes.',
+    'PASS: corrupt-save recovery, automatic/manual write retry, coalescing, pre-fight replay, budget/exception recovery, ordinary defeat completion, runtime/promise/render crashes.',
   );
 } catch (error) {
   await page?.screenshot({ path: artifact('reliability-error.png') });

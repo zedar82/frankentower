@@ -126,8 +126,10 @@ inventing a result. Saved report metadata is handled in the next implementation
 stage.
 
 **Regression coverage:** a living player receives a stalemate outcome at the
-shared timeout, while a short diagnostic horizon stays unresolved. Follow-up
-coverage should verify App recovery for engine failure and ordinary player death.
+shared timeout, while a short diagnostic horizon stays unresolved. The existing
+reliability check injects budget failure and engine exceptions to confirm the
+pre-fight save survives; it also injects ordinary player death and verifies the
+dead phase, final report and record are saved through the completion path.
 
 ## 2. Completed reports become fresh previews after reload — P1
 
@@ -520,10 +522,11 @@ bookkeeping separate if that later balance pass needs it.
 
 **Implementation:** combat now retains a bounded 64-entry visual feedback
 buffer containing only damage, healing, shield and status events. Arena hit
-effects and screen shake read this buffer; the bounded transcript keeps its
-human-readable text and remains the source for saved reports. The static combat
-preview exposes an empty feedback buffer. A regression test verifies that the
-feedback is bounded and does not retain transcript text.
+effects, screen shake, hit audio and hit-stop read this buffer; the bounded
+transcript keeps its human-readable text and remains the source for saved
+reports. The static combat preview exposes an empty feedback buffer. A
+regression test verifies that the feedback is bounded and does not retain
+transcript text.
 
 ### Authoring and tool consistency
 

@@ -60,7 +60,7 @@ export function useCombatSession(options: Options) {
           }
           accumulator -= 0.05;
         }
-        const hits = combat.logs
+        const hits = combat.feedback
           .slice(-24)
           .filter((entry) => entry.kind === 'damage' && entry.id > lastImpact && (entry.value ?? 0) > 0);
         if (hits.length) {
