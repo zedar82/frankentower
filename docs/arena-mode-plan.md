@@ -23,20 +23,20 @@ integrity or reliable community frontier ownership.
 
 ## Important corrections and decisions
 
-| Issue                                 | Recommended initial behavior                                                                                                                                                                                                                                                                               |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Submission before lookup              | Freeze the entry build first. The service selects from previously admitted snapshots and admits the new snapshot in one operation, before combat. The current submission cannot match itself. Losing entrants remain in the pool.                                                                          |
-| Two players reach the same empty day  | Serialize frontier claims. Exactly one establishes that day; the other receives the newly admitted build as an opponent. A request retry returns its original decision.                                                                                                                                    |
-| Only the player's own snapshots exist | This is an established day with no eligible opponent, not unexplored territory. Try an eligible same-stage Tower fallback within the proposed early-day band; otherwise return a retryable no-opponent state. Do not award a second frontier victory.                                                      |
-| Starting from an empty Arena          | An unseeded Arena ends the first run on Day 1. With strict self-exclusion, one account cannot bootstrap it alone. Prefer compatible Tower floor snapshots as explicitly sourced early-day seed opponents; keep declared developer seeds as a private-test option. The fallback depth remains to be agreed. |
-| What state a defender starts with     | Capture entry HP as well as the build; use that HP when reconstructing the defender. Refill Mana and reset combat-only state for both sides exactly as normal combat does. Full-health defenders would be a different policy and need an explicit decision.                                                |
-| Frontier completion                   | End the run once the service acknowledges the first snapshot for that day. Record a frontier achievement, not a fabricated fight, kill or battle report. Do not award combat gold or victory healing for an unfought encounter.                                                                            |
-| Timeouts                              | Retain the current 160-second victory for a living challenger initially. This favors the challenger, including against an identical defender. Measure stalemates; changing this policy would be an explicit balance decision.                                                                              |
-| Day 20/100                            | Arena has no guardian checkpoint, retirement-to-Legacy flow or Day 100 ending. Keep the existing reward formula, including its every-20-stage gold bonus, and surgery every fifth day. Tower remains unchanged.                                                                                            |
-| Historical gaps                       | Deleting/quarantining all opponents on an established day must not create a new frontier win. Retain a monotonic established frontier and recover missing pools separately.                                                                                                                                |
+| Issue                                 | Recommended initial behavior                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Submission before lookup              | Freeze the entry build first. The service selects from previously admitted snapshots and admits the new snapshot in one operation, before combat. The current submission cannot match itself. Losing entrants remain in the pool.                                                                                                             |
+| Two players reach the same empty day  | Serialize frontier claims. Exactly one establishes that day; the other receives the newly admitted build as an opponent. A request retry returns its original decision.                                                                                                                                                                       |
+| Only the player's own snapshots exist | This is an established day with no eligible opponent, not unexplored territory. Try an eligible same-stage Tower fallback within the proposed early-day band; otherwise return a retryable no-opponent state. Do not award a second frontier victory.                                                                                         |
+| Starting from an empty Arena          | An unseeded Arena ends the first run on Day 1. With strict self-exclusion, one account cannot bootstrap it alone. Prefer compatible Tower floor snapshots as explicitly sourced early-day seed opponents; keep declared developer seeds as a private-test option. The preferred initial fallback window is Days 1–10, subject to playtesting. |
+| What state a defender starts with     | Capture entry HP as well as the build; use that HP when reconstructing the defender. Refill Mana and reset combat-only state for both sides exactly as normal combat does. Full-health defenders would be a different policy and need an explicit decision.                                                                                   |
+| Frontier completion                   | End the run once the service acknowledges the first snapshot for that day. Use “Champion of the Arena” as the working frontier title and record the established day, not a fabricated fight, kill or battle report. Do not award combat gold or victory healing for an unfought encounter.                                                    |
+| Timeouts                              | Retain the current 160-second victory for a living challenger initially. This favors the challenger, including against an identical defender. Measure stalemates; changing this policy would be an explicit balance decision.                                                                                                                 |
+| Day 20/100                            | Arena has no guardian checkpoint, retirement-to-Legacy flow or Day 100 ending. Keep the existing reward formula, including its every-20-stage gold bonus, and surgery every fifth day. Tower remains unchanged.                                                                                                                               |
+| Historical gaps                       | Deleting/quarantining all opponents on an established day must not create a new frontier win. Retain a monotonic established frontier and recover missing pools separately.                                                                                                                                                                   |
 
 These are recommendations where the proposal is ambiguous. In particular,
-entry HP, the Tower fallback band/self-only behavior, frontier rewards and the challenger-favored
+entry HP, self-only behavior, frontier rewards and the challenger-favored
 timeout should be settled before implementing their affected paths.
 
 Normal losses still end a run. A service outage, authorization failure,
@@ -48,15 +48,16 @@ insert generated encounters during a service error.
 ## Tower-build fallback
 
 Daniel suggested using regular-mode builds when Arena builds are scarce on
-15 October. This is a proposed refinement; the early-day range and collection
-policy are still open. It can bootstrap the Arena with actual player creatures
+15 October. His preferred starting point is Tower fallback for approximately
+the first ten Arena days, followed by a champion result on reaching a genuinely
+empty day. Ten remains a tuning proposal; the collection policy is still open. It can bootstrap the Arena with actual player creatures
 and reduce the need to author separate seed opponents.
 
 Recommend the following first version:
 
 - Prefer eligible Arena snapshots. If none are available, use a compatible Tower
-  snapshot from Floor N for Arena Day N within an explicitly configured early-day
-  band. A broader minimum-variety threshold can follow playtesting.
+  snapshot from Floor N for Arena Day N on Days 1–10. Day 11 onward uses
+  Arena snapshots exclusively. A broader minimum-variety threshold can follow playtesting.
 - Capture Tower builds at the same pre-fight point, including entry HP. Keep
   losing entrants eligible. Do not substitute a later retired/final build for an
   earlier floor, or change its strength to fit that floor.
@@ -67,7 +68,7 @@ Recommend the following first version:
   days established before enabling it. Seed admission is distinct from an Arena
   frontier achievement. Missing or removed seed opponents require repair, not
   first-arrival awards. Tower fallback does not extend the Arena frontier beyond
-  the configured early-day band.
+  Day 10 under the initial proposal.
 - Capture new Tower snapshots without changing Tower combat or progression.
   Background collection failure must not block an ordinary Tower run. Existing
   saves do not retain every historical pre-fight build, so there is no complete
@@ -80,6 +81,19 @@ Recommend the following first version:
 This keeps ordinary Arena opponents tied to the same progression stage while
 allowing the early pools to benefit from Tower participation. Once an eligible
 Arena opponent exists, the initial policy uses it rather than Tower fallback.
+
+For example, a player clears Day 10 and prepares for Day 11. If the service
+confirms that Day 11 has never been populated, it admits that prepared build as
+the first Day 11 opponent and ends the run with the working title **Champion of
+the Arena**. The next player reaching Day 11 fights a saved Arena build. If they
+win and reach an empty Day 12, they can become the next champion. Losing builds
+continue to join established-day pools as described in the original proposal.
+
+An unavailable Tower seed on Days 1–10 is a bootstrap problem to repair, not an
+early champion result. A service error or a pool containing only the player's
+own builds also remains distinct from a genuinely new frontier day. Champion
+wording should say which day the creature established; it need not claim that
+the player defeated an opponent there.
 
 ## Platform evidence and limits
 
@@ -161,7 +175,8 @@ output of the feasibility step.
 4. In a transaction or equivalently serialized operation, inspect the compatible
    registry, including admitted Tower fallback snapshots, before admitting the current snapshot. If this is the next
    never-established day, admit the snapshot, advance the frontier, end this run
-   and return a frontier receipt. Initially the frontier is zero.
+   and return a frontier receipt. The frontier starts at zero before seeding;
+   preparing Days 1–10 establishes those days without awarding player titles.
 5. Otherwise choose a previous valid same-day snapshot owned by another player,
    admit this entrant's immutable snapshot, and return a pinned match receipt.
    Selection uses service-controlled randomness; retries cannot reroll it.
@@ -258,7 +273,7 @@ also remain valid for actually reachable builds.
    Resolve visibility and quotas. Record SDK/runtime versions and evidence.
    Stop the hosted integration path if a required guarantee is missing.
 2. **Add pure mode and snapshot rules.** Preserve all Tower regressions; cover
-   Arena days 20, 100, 101 and a large day, unchanged economy/surgery, entry HP,
+   Arena days 10, 11, 20, 100, 101 and a large day, unchanged economy/surgery, entry HP,
    canonical stats and malformed/forged snapshots. Reset development saves when
    needed. This stage can use an in-memory service for tests, not a claimed live
    community feature.
