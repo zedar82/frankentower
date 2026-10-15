@@ -11,13 +11,7 @@ import { hasOffensiveAbility } from './game/abilities';
 import { Combat } from './game/combat';
 import { createCombatPreview } from './game/combat/view';
 import type { CombatView } from './game/combat/types';
-import {
-  hostPaused,
-  platformStatus,
-  subscribePlatform,
-  retrySave,
-  savePending,
-} from './platform';
+import { hostPaused, platformStatus, subscribePlatform, retrySave, savePending } from './platform';
 import { sound } from './audio';
 import { useItemDrag } from './ui/hooks/useItemDrag';
 import { ItemDetails } from './ui/ItemDetails';
@@ -44,8 +38,14 @@ export function App({ initialSave }: { initialSave: Save }) {
   const { saveRef, save, run, refresh, update } = useRunSession(initialSave, () => {
     if (!combatRef.current) previewRef.current = null;
   });
-  const { screen: flowStep, enterCombat, enterNextFloor, finishClinic, resetForNewRun, returnToShop } =
-    useRunNavigation(run.phase, run.floor, initialSave.run?.phase);
+  const {
+    screen: flowStep,
+    enterCombat,
+    enterNextFloor,
+    finishClinic,
+    resetForNewRun,
+    returnToShop,
+  } = useRunNavigation(run.phase, run.floor, initialSave.run?.phase);
   const {
     overlay,
     modal,
@@ -565,8 +565,18 @@ export function App({ initialSave }: { initialSave: Save }) {
             </Modal>
           )}
           {modal === 'report' && (
-            <Modal title="Patient outcome report" onClose={() => setModal(null)} wide>
-              <Report report={run.lastReport} />
+            <Modal
+              title={isCombat ? 'Current battle report' : 'Patient outcome report'}
+              onClose={() => setModal(null)}
+              wide
+            >
+              <Report
+                report={
+                  isCombat && combatRef.current
+                    ? combatRef.current.reportSnapshot(run.floor, run.seed ^ (run.floor * 15485863))
+                    : run.lastReport
+                }
+              />
             </Modal>
           )}
           {modal === 'settings' && (

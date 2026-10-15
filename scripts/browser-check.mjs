@@ -20,6 +20,31 @@ async function openUtility(page, name) {
     await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await page.getByRole('button', { name, exact: true }).click();
 }
+async function inspectActiveBattle(page, floor) {
+  await page.waitForFunction(
+    () => parseFloat(document.querySelector('.battle-clock')?.textContent) >= 1,
+  );
+  const savedReport = await page.evaluate(
+    () => JSON.parse(localStorage.getItem('frankentower-save-v1')).run.lastReport,
+  );
+  await page.getByRole('button', { name: 'Battle log ↗', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Current battle report', exact: true });
+  await dialog.getByText('Fight in progress', { exact: false }).waitFor();
+  assert.match(await dialog.innerText(), new RegExp(`Floor ${floor}\\b`));
+  assert.deepEqual(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem('frankentower-save-v1')).run.lastReport,
+    ),
+    savedReport,
+    'inspecting active combat must preserve the completed report',
+  );
+  if (floor === 1) assert.equal(savedReport, null);
+  else assert.equal(savedReport.floor, floor - 1);
+  await page.getByLabel('Battle report', { exact: true }).selectOption('Transcript');
+  await dialog.getByRole('region', { name: 'Scrollable combat log' }).waitFor();
+  await page.getByRole('button', { name: 'Close dialog' }).click();
+  await page.getByRole('button', { name: 'Resume combat', exact: true }).click();
+}
 try {
   const options = {
     viewport: physicalSize({ width: 1440, height: 1080 }),
@@ -90,6 +115,7 @@ try {
     'true',
   );
   await page.getByRole('button', { name: 'To the arena →' }).click();
+  await inspectActiveBattle(page, 1);
   await page.getByRole('button', { name: '4×', exact: true }).click();
   await page.locator('.flow-card').waitFor({ timeout: 15000 });
   await page.locator('.flow-card').getByRole('button', { name: 'View battle log ↗' }).click();
@@ -101,6 +127,8 @@ try {
   await page.getByRole('button', { name: 'To the arena →' }).waitFor();
   assert.deepEqual(await page.locator('.shop-card h3').allTextContents(), frozenOffers);
   await page.getByRole('button', { name: 'Unfreeze stock', exact: true }).click();
+  await page.getByRole('button', { name: 'To the arena →' }).click();
+  await inspectActiveBattle(page, 2);
   // A later appointment exercises dynamic slots and equipment conversion.
   await page.evaluate(async () => {
     const { defaultSave, newRun, startRun } = await import('/src/game/run.ts');

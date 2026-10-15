@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { defaultSave, newRun, startRun } from '../src/game/run';
+import { defaultSave, finishFight, newRun, startRun } from '../src/game/run';
 import { encounter } from '../src/game/encounters';
 import { human } from '../src/game/anatomy';
 import { Combat } from '../src/game/combat';
@@ -34,6 +34,23 @@ test('completed fight reports survive save reload without using a fresh preview'
   assert.deepEqual(restored.run!.lastReport, run.lastReport);
   assert.equal(restored.run!.lastReport!.outcome, 'defeat');
   assert.equal(restored.run!.lastReport!.patient.hp, 0);
+});
+test('completed reports round trip when the encounter seed expression is signed', () => {
+  for (const seed of [0x80000000, 0xffffffff]) {
+    const save = defaultSave();
+    const run = (save.run = newRun(seed));
+    startRun(run, 'knife');
+    const fightSeed = run.seed ^ (run.floor * 15485863);
+    assert.ok(fightSeed < 0);
+    const combat = new Combat(run.build, encounter(run.floor, run.seed, []), fightSeed, run.hp);
+    run.phase = 'combat';
+    combat.runToEnd();
+    run.lastReport = combat.completedReport(run.floor, fightSeed);
+    finishFight(run, combat.player.hp, combat.won, save);
+    assert.equal(run.lastReport.seed, fightSeed >>> 0);
+    const serialized = JSON.stringify(save);
+    assert.deepEqual(parseSave(serialized), JSON.parse(serialized));
+  }
 });
 test('missing and incompatible saves reset without migration; interrupted combat returns to build', () => {
   assert.deepEqual(parseSave(null), defaultSave());

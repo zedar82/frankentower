@@ -7,6 +7,7 @@ import {
   type CompletedFightReport,
   type Effect,
   type FightActorReport,
+  type FightReport,
   type Selector,
   type Targeting,
 } from './types';
@@ -57,7 +58,13 @@ export class Combat {
   private serial = 0;
   private jobs: Job[] = [];
   private tickAccumulator = 0;
-  constructor(player: Build, enemies: Build[], seed: number, hp?: number, itemCatalog: ItemCatalog = ITEM_MAP) {
+  constructor(
+    player: Build,
+    enemies: Build[],
+    seed: number,
+    hp?: number,
+    itemCatalog: ItemCatalog = ITEM_MAP,
+  ) {
     this.rng = new Random(seed);
     this.actors = createCombatActors(player, enemies, hp, itemCatalog);
     for (const actor of this.actors) this.emit(actor, { kind: 'start', ancestry: [] });
@@ -514,6 +521,10 @@ export class Combat {
   completedReport(floor: number, seed: number): CompletedFightReport {
     if (!this.done || this.outcome === 'ongoing' || this.outcome === 'failure')
       throw new Error('Only a completed fight can be saved as a report.');
+    return { ...this.reportSnapshot(floor, seed), outcome: this.outcome };
+  }
+  reportSnapshot(floor: number, seed: number): FightReport {
+    if (this.outcome === 'failure') throw new Error('An interrupted fight has no battle report.');
     const snapshot = (actor: Actor): FightActorReport => ({
       build: clone(actor.build),
       hp: actor.hp,
@@ -526,7 +537,8 @@ export class Combat {
     });
     return {
       floor,
-      seed,
+      // Bitwise encounter seed expressions are signed; Random uses their uint32 value.
+      seed: seed >>> 0,
       outcome: this.outcome,
       duration: this.time,
       patient: snapshot(this.player),

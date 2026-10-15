@@ -184,6 +184,10 @@ export interface CompletedFightReport {
   transcript: FightTranscriptEntry[];
   transcriptTruncated: boolean;
 }
+/** An inspection snapshot may describe an active fight; only completed reports are saved. */
+export type FightReport = Omit<CompletedFightReport, 'outcome'> & {
+  outcome: Exclude<CombatOutcome, 'failure'>;
+};
 export interface Run {
   seed: number;
   rng: number;

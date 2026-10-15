@@ -61,8 +61,7 @@ function effectText(effect: Effect, scale: number): string {
   if (effect.kind === 'cdr')
     return `reduce cooldown of ${selectorLabel(effect.select ?? {})} by ${format(effect.amount * (effect.percent ? 100 : 1))}${effect.percent ? '%' : 's'}`;
   if (effect.kind === 'stat') {
-    const amount =
-      effect.amount * scale * (effect.stat === 'speed' || effect.stat === 'chance' ? 100 : 1);
+    const amount = effect.amount * (effect.stat === 'speed' || effect.stat === 'chance' ? 100 : 1);
     return `${amount >= 0 ? 'gain' : 'lose'} ${format(Math.abs(amount))}${['speed', 'chance', 'crit'].includes(effect.stat) ? '%' : ''} ${statLabel[effect.stat]}`;
   }
   const amount = format(effect.amount * scale);
@@ -120,8 +119,9 @@ export function describeAbilityRules(
   if (def.cooldown !== undefined) lines.push(`Cooldown: ${format(def.cooldown)}s.`);
   const targeting = targetingText(def.targeting ?? { kind: 'single' });
   if (targeting) lines.push(targeting);
+  // Passive equipment stats scale with level; runtime stat effects retain their authored amount.
   for (const [stat, value] of Object.entries(def.stats ?? {}))
-    lines.push(`${effectText({ kind: 'stat', stat: stat as Stat, amount: value }, scale)}.`);
+    lines.push(`${effectText({ kind: 'stat', stat: stat as Stat, amount: value * scale }, 1)}.`);
   for (const effect of def.effects ?? [])
     lines.push(
       `${effectText(effect, scale)}${effect.chance === undefined ? '' : ` (${effect.chance}% chance)`}.`,
@@ -137,6 +137,6 @@ export function describeItemRules(def: ItemDef, level: number): string {
 }
 
 export function describeSignature(def: ItemDef): string {
-  const rules = (def.lv3 ?? []).map((reaction) => reactionText(reaction, 1));
+  const rules = (def.lv3 ?? []).map((reaction) => reactionText(reaction, LEVEL_SCALE[3]));
   return rules.join('\n') || 'No level 3 effect.';
 }

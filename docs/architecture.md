@@ -49,6 +49,11 @@ Lower-level ability assembly imports `body.ts` directly to avoid a cycle through
 stat calculation. `content.ts` is the catalogue entry point, not a registration
 system with import-order side effects.
 
+Battle inspection uses `Combat.reportSnapshot` for the active, paused fight.
+`Combat.completedReport` requires a terminal outcome and is the only report
+stored in the run. Both snapshots normalize the encounter seed to its unsigned
+32-bit value, matching the seeded RNG and save validator.
+
 ## Adding content
 
 Equipment uses named fields, not positional arguments. Add an `item({...})`

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ITEMS, ITEM_MAP } from '../game/content';
 import { describeItemRules } from '../game/descriptions';
 import { equipped, identity } from '../game/anatomy';
-import type { Build, CompletedFightReport, Item, Run, Save } from '../game/types';
+import type { Build, FightReport, Item, Run, Save } from '../game/types';
 import { Icon } from './Icon';
 import { Creature } from './Creature';
 import { ItemInspector } from './ItemDetails';
@@ -191,7 +191,7 @@ export function Catalogue({ run, onChange }: { run: Run; onChange(event?: string
   );
 }
 
-export function Report({ report }: { report: CompletedFightReport | null }) {
+export function Report({ report }: { report: FightReport | null }) {
   const [section, setSection] = useState<
     'Summary' | 'Contribution' | 'Patient' | 'Enemies' | 'Transcript'
   >('Summary');
@@ -204,8 +204,10 @@ export function Report({ report }: { report: CompletedFightReport | null }) {
         <p>No completed fight report is available.</p>
       </div>
     );
-  const outcome =
-    report.outcome === 'defeat'
+  const ongoing = report.outcome === 'ongoing';
+  const outcome = ongoing
+    ? 'Fight in progress'
+    : report.outcome === 'defeat'
       ? 'Patient died'
       : report.outcome === 'stalemate'
         ? 'Stalemate victory'
@@ -258,8 +260,9 @@ export function Report({ report }: { report: CompletedFightReport | null }) {
         <>
           <PatientSummary build={report.patient.build} />
           <p>
-            End of fight: {Math.round(report.patient.hp)} / {Math.round(report.patient.maxHp)} HP ·{' '}
-            {Math.round(report.patient.mana)} / {Math.round(report.patient.maxMana)} Mana
+            {ongoing ? 'Current state' : 'End of fight'}: {Math.round(report.patient.hp)} /{' '}
+            {Math.round(report.patient.maxHp)} HP · {Math.round(report.patient.mana)} /{' '}
+            {Math.round(report.patient.maxMana)} Mana
           </p>
         </>
       ) : section === 'Enemies' ? (

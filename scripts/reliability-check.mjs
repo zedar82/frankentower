@@ -184,6 +184,16 @@ try {
   await page.getByRole('button', { name: 'To the arena →' }).waitFor();
   // An ordinary player death must complete through the same lifecycle and save
   // a truthful report, rather than being handled as a simulation failure.
+  // Use a high-bit seed to exercise the signed encounter seed at completion/reload.
+  await page.evaluate(async () => {
+    const { newRun, startRun } = await import('/src/game/run.ts');
+    const save = JSON.parse(localStorage.getItem('frankentower-save-v1'));
+    save.run = newRun(0x80000000);
+    startRun(save.run, 'knife');
+    localStorage.setItem('frankentower-save-v1', JSON.stringify(save));
+  });
+  await page.reload();
+  await page.getByRole('button', { name: 'To the arena →' }).waitFor();
   await page.evaluate(async () => {
     const { Combat } = await import('/src/game/combat.ts');
     Combat.prototype.step = function () {
@@ -204,7 +214,12 @@ try {
   assert.equal(defeated.run.phase, 'dead');
   assert.equal(defeated.run.hp, 0);
   assert.equal(defeated.run.lastReport.outcome, 'defeat');
+  assert.equal(defeated.run.lastReport.seed, (0x80000000 ^ 15485863) >>> 0);
   assert.equal(defeated.records.length, beforeDefeat.records.length + 1);
+  await page.getByRole('button', { name: /View battle log/ }).click();
+  await page.getByText('Patient died', { exact: false }).waitFor();
+  await page.reload();
+  await page.getByText('PATIENT LOST', { exact: true }).waitFor();
   await page.getByRole('button', { name: /View battle log/ }).click();
   await page.getByText('Patient died', { exact: false }).waitFor();
   assert.deepEqual(unexpected, []);

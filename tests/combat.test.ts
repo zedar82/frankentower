@@ -80,6 +80,24 @@ test('visual combat feedback is bounded and separate from transcript entries', (
   assert.ok(sim.feedback.every((entry) => !('text' in entry)));
   assert.ok(sim.feedback.length <= 64);
 });
+test('active battle reports capture current combat without inventing a completed outcome', () => {
+  const sim = duel();
+  sim.step();
+  sim.hit(sim.player, sim.enemies[0], sim.player.abilities[0], 100);
+  const report = sim.reportSnapshot(2, 1234);
+  const captured = structuredClone(report);
+  assert.equal(report.outcome, 'ongoing');
+  assert.equal(report.floor, 2);
+  assert.equal(report.duration, sim.time);
+  assert.equal(report.patient.damage, sim.player.damage);
+  assert.equal(report.enemies[0].hp, sim.enemies[0].hp);
+  assert.ok(report.transcript.some((entry) => entry.kind === 'damage'));
+  assert.ok(report.contributions[0].damage > 0);
+  assert.throws(() => sim.completedReport(2, 1234), /Only a completed fight/);
+  sim.player.build.name = 'Changed after inspection';
+  sim.hit(sim.player, sim.enemies[0], sim.player.abilities[0], 100);
+  assert.deepEqual(report, captured);
+});
 test('Shield absorbs one attack and discards its unused remainder', () => {
   const sim = duel(),
     node = sim.player.abilities[0],
