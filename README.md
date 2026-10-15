@@ -4,6 +4,10 @@ A roguelite autobattler for RUN.world's October 2026 **Monster Mash** jam, built
 
 Start human. Equipment creates your combat engine; anatomy creates its sockets; circulation determines how quickly it operates. Climb 100 floors, retire at a checkpoint, and meet your previous successful builds as guardians in later runs.
 
+[Arena Mode](docs/arena-mode-plan.md) is a reviewed feature proposal for endless
+asynchronous build battles. Its design decisions, RUN feasibility gates and
+implementation sequence are documented there; the mode is not implemented.
+
 ## Play locally
 
 ```sh

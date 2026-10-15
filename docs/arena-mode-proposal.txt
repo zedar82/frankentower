@@ -1,0 +1,483 @@
+Frankentower — Arena Mode
+
+Status: Feature proposal
+Core concept: Endless asynchronous PvP using saved player builds
+Design principle: Reuse the existing Frankentower game loop and combat systems. Arena Mode primarily replaces generated encounters with player-created opponents.
+
+1. Overview
+
+Arena Mode is an asynchronous competitive mode in which players progress through Frankentower normally, but fight saved builds created by other players instead of the standard generated encounters.
+
+Players continue to:
+
+* Shop for equipment.
+* Equip and combine items.
+* Modify their anatomy.
+* Manage circulation and other build constraints.
+* Fight using the existing autobattle system.
+* Receive normal progression and rewards.
+* Advance through successive days.
+
+The principal difference is opponent selection.
+
+In Tower Mode, the game selects or generates the encounter appropriate to the current floor.
+
+In Arena Mode, the game selects a saved player build from the corresponding day.
+
+Arena Mode has no predefined final day.
+
+The furthest point reached by the player community becomes the current frontier. A player who reaches a day for which no opponent yet exists wins the current Arena run and establishes the first opponent for that new day.
+
+The Arena therefore grows as players push its frontier forward.
+
+⸻
+
+2. Design goals
+
+Arena Mode should:
+
+* Provide effectively endless replayability.
+* Make player-created monsters meaningful beyond their original run.
+* Require minimal divergence from the existing Frankentower systems.
+* Allow asynchronous competition without requiring players to be online together.
+* Preserve the existing build, shop, surgery and combat experience.
+* Produce encounters against strange and memorable builds that the game’s normal encounter generator could not create.
+* Allow the community itself to determine how deep the Arena currently extends.
+* Make reaching the frontier feel like a meaningful achievement.
+* Continue functioning with a relatively small active player population.
+
+Arena Mode should not become a separate competitive ruleset unless playtesting demonstrates that this is necessary.
+
+⸻
+
+3. Core loop
+
+The Arena loop is:
+
+1. Begin an Arena run.
+2. Enter Day 1.
+3. Prepare the creature using the existing shop, equipment and anatomy systems.
+4. Save the player’s Day 1 build.
+5. Select an opponent from saved Day 1 builds.
+6. Fight using the normal combat engine.
+7. Resolve the normal post-combat progression.
+8. Advance to Day 2.
+9. Repeat.
+
+The game continues for as long as the player can continue winning and opponents exist.
+
+There is no predetermined Day 20, Day 100 or other final encounter.
+
+⸻
+
+4. Day snapshots
+
+Arena matchmaking operates on saved snapshots, not on another player’s current character.
+
+A snapshot represents the exact combat-ready state of a creature on a particular Arena day.
+
+A snapshot should contain everything required to reconstruct that combatant, including:
+
+* Anatomy.
+* Equipment.
+* Item levels.
+* Derived statistics.
+* Relevant permanent effects.
+* Appearance information.
+* Player/creature display identity.
+* Arena day.
+* Rules/content version information required for compatibility.
+* Any other state required by the combat engine.
+
+Once submitted to the Arena pool, a snapshot does not change when its original player subsequently modifies their creature.
+
+For example:
+
+Alice reaches Day 14 and submits Agnes as a Day 14 snapshot.
+Alice later reaches Day 21 and substantially changes Agnes.
+Players matched against Day 14 Agnes still encounter the original Day 14 version.
+
+This allows the Arena to retain a history of builds at every stage of progression.
+
+⸻
+
+5. Matchmaking
+
+For an ordinary Arena day, the game selects an eligible saved player snapshot from that same day.
+
+Basic rule
+
+Day N players fight Day N opponents.
+
+Do not initially attempt to calculate an abstract power rating and match creatures by estimated strength.
+
+Differences in build effectiveness are part of the competitive game.
+
+A player who discovers an exceptionally effective Day 12 build should create a difficult Day 12 opponent.
+
+Opponent selection
+
+Where multiple snapshots exist, matchmaking should select among them with enough randomness to prevent runs from becoming predictable.
+
+Selection may later account for considerations such as:
+
+* Avoiding the player’s own snapshots.
+* Avoiding the same opponent repeatedly within one run.
+* Providing reasonable variety between players.
+* Reducing excessive repetition of extremely common builds.
+
+These are matchmaking refinements rather than changes to combat balance.
+
+⸻
+
+6. The frontier
+
+The defining Arena mechanic is the frontier.
+
+The frontier is the highest Arena day currently populated by player snapshots.
+
+Suppose the community has produced opponents through Day 23.
+
+A player who defeats a Day 23 opponent advances to Day 24.
+
+If no Day 24 opponent exists, that player has reached unexplored territory.
+
+The game declares them an Arena winner.
+
+Their Day 24 build is then saved as the first Day 24 opponent.
+
+Day 24 has become part of the Arena.
+
+The next player to reach Day 24 must fight a saved Day 24 build.
+
+If they win and no Day 25 opponent exists, they become the first player to establish Day 25.
+
+In this way, the Arena’s maximum depth emerges from player activity rather than from a developer-defined endpoint.
+
+⸻
+
+7. Frontier victory
+
+Reaching an empty day should be presented as a significant achievement.
+
+The player has not defeated a special scripted final boss. They have reached a point nobody has previously populated.
+
+The victory presentation should communicate something equivalent to:
+
+THE FRONTIER
+
+No challenger has reached Day 37 before you.
+
+Your creature now stands as the first Day 37 opponent.
+
+The exact wording and presentation can follow the final Frankentower UI style.
+
+The run may end at this point.
+
+The newly submitted creature remains available for future challengers.
+
+This creates an emergent competitive objective:
+
+Reach the frontier, then become part of the obstacle preventing the next player from advancing beyond it.
+
+⸻
+
+8. Multiple opponents per day
+
+Ordinary days should accumulate multiple player snapshots.
+
+The Arena should not consist solely of one linear sequence of champions.
+
+If 100 players reach Day 12, the Day 12 pool can contain builds from those runs.
+
+This produces variety and prevents Arena Mode from becoming a fixed player-created campaign.
+
+The frontier is unusual only because a newly established day initially contains a single build.
+
+As additional players reach that day, its opponent pool naturally expands.
+
+⸻
+
+9. Snapshot submission timing
+
+The player’s build should be captured at a consistent point in the day.
+
+The preferred rule is:
+
+Submit the combat-ready build immediately before its Arena fight.
+
+This ensures that the opponent pool contains creatures representing the actual builds players chose to take into combat on that day.
+
+The frontier case uses the build that would have entered combat if an opponent had existed.
+
+Snapshot submission must not depend on winning the subsequent fight. Losing builds are still legitimate Arena opponents.
+
+This is important for maintaining build diversity and preventing the pool from containing only successful meta builds.
+
+⸻
+
+10. Combat
+
+Arena combat should use the existing Frankentower combat engine without special PvP combat rules.
+
+Once combat begins, the engine should ideally not care whether an opponent originated from:
+
+* A normal generated encounter.
+* A scripted boss.
+* A retired player boss.
+* An Arena snapshot.
+
+All should resolve through the same combatant representation wherever practical.
+
+This reduces implementation complexity and prevents Arena Mode from developing a parallel combat system.
+
+Where possible, Arena combat should be reproducible from saved combatants and the combat seed. This assists debugging and validation.
+
+⸻
+
+11. Progression and economy
+
+Arena Mode should initially reuse the existing progression economy.
+
+Do not create separate Arena versions of:
+
+* Shop prices.
+* Item rarity.
+* Equipment levels.
+* Combining.
+* Surgery.
+* Circulation.
+* Anatomy rules.
+* Combat rules.
+* Reward progression.
+
+The assumption should be that the existing game works unchanged until Arena playtesting proves otherwise.
+
+If Arena-specific balance problems emerge, address the smallest necessary rule rather than immediately creating a parallel competitive ruleset.
+
+The objective is for knowledge gained in Tower Mode to transfer directly into Arena Mode.
+
+⸻
+
+12. Low-population behaviour
+
+Arena Mode must account for days with small opponent pools.
+
+A newly populated day may have only one opponent.
+
+That is intentional at the frontier.
+
+For established days, repeated encounters with the same build may become undesirable.
+
+Possible later mitigations include:
+
+* Prefer opponents the player has not encountered during the current run.
+* Weight selection toward less recently encountered snapshots.
+* Maintain developer-created Arena snapshots for early days.
+* Use suitable existing saved builds as fallback opponents.
+
+The exact fallback strategy can depend on expected player population.
+
+However, the game must preserve the fundamental distinction between:
+
+No opponent exists because the player has reached the frontier
+
+and:
+
+The matchmaking pool exists but currently has limited variety.
+
+The first condition is a victory. The second is not.
+
+⸻
+
+13. Player identity and privacy
+
+Arena opponents should primarily be remembered as creatures, not accounts.
+
+The encounter presentation should emphasise:
+
+* Creature name.
+* Appearance.
+* Anatomy.
+* Equipment/build.
+* Arena day.
+
+Displaying the creator’s account name is optional and should follow whatever identity/privacy model RUN.world supports.
+
+A player should never need another player’s live presence or contact information to participate.
+
+⸻
+
+14. Arena history
+
+Arena Mode creates several potentially interesting statistics without requiring them for the first implementation.
+
+Examples include:
+
+* Highest day reached.
+* Number of frontier victories.
+* Current Arena frontier.
+* Number of challengers defeated by a submitted build.
+* Most successful creature.
+* Deepest creature snapshot.
+* Builds responsible for extending the frontier.
+* Number of unique opponents encountered.
+
+A later Arena history screen could preserve notable frontier holders.
+
+This should remain secondary to getting the core asynchronous matchmaking working.
+
+⸻
+
+15. Relationship to the Hall of Shame
+
+Arena snapshots and retired bosses are related concepts but serve different purposes.
+
+Hall of Shame / retired bosses
+
+Represent notable completed creatures preserved as part of the player’s history and existing boss system.
+
+Arena snapshots
+
+Represent creatures captured at particular stages of active Arena progression and used for asynchronous matchmaking.
+
+A single creature may therefore produce many Arena snapshots during one run.
+
+The systems may share serialization and rendering infrastructure without becoming the same feature.
+
+⸻
+
+16. Rules and version compatibility
+
+Because Arena opponents persist beyond the session in which they were created, saved snapshots must account for game updates.
+
+A snapshot should identify the rules/content version under which it was created.
+
+The first implementation does not need an elaborate migration system.
+
+Reasonable strategies include:
+
+* Only matching snapshots from compatible rules versions.
+* Invalidating Arena pools after incompatible balance changes during development.
+* Regenerating derived statistics from canonical saved build information where safe.
+
+During the game jam and early development, clearing incompatible Arena data is preferable to maintaining complicated historical compatibility.
+
+⸻
+
+17. Abuse and validation
+
+Player snapshots must not be trusted merely because they were submitted by a client.
+
+Before an Arena build enters the matchmaking pool, the game should validate that its state is legal under the relevant game rules.
+
+At minimum, validate:
+
+* Anatomy configuration.
+* Equipment ownership and placement.
+* Item levels.
+* Slot compatibility.
+* Derived statistics where appropriate.
+* Circulation/anatomy constraints.
+* Day/progression state.
+* Any economy-derived state required to prevent impossible builds.
+
+The exact trust boundary depends on RUN.world’s architecture, but Arena Mode should be designed with the assumption that persisted competitive builds require validation.
+
+⸻
+
+18. UI requirements
+
+Arena Mode should require relatively little new game UI.
+
+At run start, allow the player to choose between:
+
+Tower
+
+Fight the tower’s normal encounters.
+
+Arena
+
+Fight creatures created by other players and try to reach the frontier.
+
+During an Arena run, the existing shop, surgery, equipment and combat interfaces should remain substantially unchanged.
+
+Before combat, the game may identify the opponent as a player-created Arena creature.
+
+The HUD should display the current Arena day rather than implying a finite floor objective.
+
+When the player reaches the frontier, show a dedicated victory presentation explaining that their current build has established the next Arena day.
+
+The mode should not require a persistent leaderboard or social interface for its initial implementation.
+
+⸻
+
+19. Architectural intent
+
+Arena Mode should be implemented as an alternative source of encounters rather than as a second copy of Frankentower.
+
+Conceptually:
+
+              Frankentower Run
+                     |
+        Shop / Surgery / Equipment
+                     |
+              Select Opponent
+                /          \
+               /            \
+       Tower Encounter    Arena Snapshot
+               \            /
+                \          /
+                Combat Engine
+                     |
+                  Outcome
+                     |
+                 Next Day
+
+The implementation should preserve this separation.
+
+The combat system receives a valid opponent.
+
+It should not need substantial Arena-specific logic after that point.
+
+⸻
+
+20. Initial implementation scope
+
+A minimal Arena Mode requires:
+
+1. Arena/Tower mode selection.
+2. Serialization of combat-ready player snapshots.
+3. Submission of snapshots by Arena day.
+4. Retrieval of eligible same-day snapshots.
+5. Random opponent selection.
+6. Prevention of obvious self-matching.
+7. Existing combat against the retrieved snapshot.
+8. Detection of an empty next-day pool.
+9. Frontier victory.
+10. Submission of the first snapshot for the new frontier day.
+11. Basic compatibility/version handling.
+12. Appropriate fallback/error behaviour when matchmaking services are unavailable.
+
+Everything else—leaderboards, opponent records, frontier history, build popularity, rankings and sophisticated matchmaking—can follow later.
+
+⸻
+
+21. Success criteria
+
+Arena Mode succeeds if:
+
+* A Tower player can enter Arena Mode and immediately understand the existing game systems.
+* Arena runs require almost no duplicated gameplay implementation.
+* Player builds can be reliably reconstructed as opponents.
+* Two creatures at the same day can fight using the existing combat engine.
+* Arena days naturally accumulate a variety of opponents.
+* Reaching an unpopulated day reliably establishes a new frontier.
+* The frontier can advance indefinitely without requiring new developer-authored encounters.
+* Seeing another player’s bizarre creature is itself an enjoyable part of reaching the next fight.
+
+The central design test is simple:
+
+Could Frankentower keep going forever if the developers never authored another enemy?
+
+For Arena Mode, the answer should be yes.
